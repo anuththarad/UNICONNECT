@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>UniConnect Welcome Email</title>
+  <link rel="stylesheet" href="Email.css">
+</head>
+
+<body>
+
+<div class="email-wrapper">
+
+  <!-- COVER IMAGE -->
+  <div class="cover">
+    <img src="http://localhost:3000/images/Homehero.png" alt="UniConnect Cover">
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="card">
+
+    <!-- HEADER -->
+    <div class="header">
+      <img src="http://localhost:3000/images/UClogo.png" class="logo">
+      <h1>UniConnect</h1>
+      <p>Connecting University Communities</p>
+    </div>
+
+   
+   <!-- BODY -->
+<div class="body">
+  <h2>Hello, {{name}} 🎉</h2> 
+
+  <p class="text">
+    Your registration was successful! You are now part of the UniConnect platform. 
+    Explore events, connect with students, and manage your academic activities all in one place.
+  </p>
+
+  <!-- USER INFO -->
+  <div class="info-box">
+    <p><b>User ID:</b> {{user_id}}</p>
+    <p><b>Role:</b> {{role}}</p>
+    <p><b>University:</b> {{university}}</p>
+  </div>
+
+  <p class="text">Ready to see what's happening on campus?</p>
+
+  <!-- BUTTON -->
+  <a href="http://localhost:3000/login" class="btn">
+    Click here to Explore UniConnect
+  </a>
+
+  <p class="small">
+    If the button doesn’t work, click this link: <br>
+    <a href="http://localhost:3000/login">Explore more</a>
+  </p>
+</div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      © 2026 UniConnect | All Rights Reserved
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect Events</title>
+<script src="/js/i18n.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+
+<style>
+:root {
+  --primary:      #1f276f;
+  --primary-dark: #040c30;
+  --accent:       #4f7cff;
+  --bg:           #e9f3fc;
+  --card:         #ffffff;
+  --soft:         #f0f4ff;
+  --text:         #1f2937;
+  --muted:        #6b7280;
+  --border:       #e5e7eb;
+  --success:      #22c55e;
+  --danger:       #ef4444;
+  --amber:        #f59e0b;
+  --shadow:       0 10px 30px rgba(0,0,0,0.08);
+  --ease:         cubic-bezier(.4,0,.2,1);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+/* TOPBAR */
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 50px; height: 100px;
+  background: #fff; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 16px rgba(4,12,48,.05);
+}
+.logo img { width: 100px; }
+.top-actions { display: flex; gap: 8px; align-items: center; }
+.top-actions a {
+  text-decoration: none; padding: 9px 18px; border-radius: 10px;
+  font-weight: 600; font-size: 13px; color: var(--primary); background: var(--soft);
+  transition: .2s var(--ease); display: inline-flex; align-items: center; gap: 7px;
+}
+.top-actions a:hover { background: var(--primary); color: white; }
+.top-actions a.feedback-link {
+  background: linear-gradient(135deg, #b4098c, #e507fa); color: #fff; border: none;
+}
+.top-actions a.feedback-link:hover { opacity: .92; }
+
+/* LANGUAGE PICKER */
+.lang-picker {
+  padding: 8px 14px; border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--soft); color: var(--primary);
+  font-weight: 600; font-size: 13px;
+  cursor: pointer; outline: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: .2s var(--ease);
+}
+.lang-picker:hover { border-color: var(--accent); background: #fff; }
+
+/* MAIN LAYOUT */
+.main-layout { display: flex; align-items: flex-start; min-height: calc(100vh - 100px); }
+
+/* SIDEBAR */
+.sidebar {
+  width: 320px; flex-shrink: 0;
+  position: sticky; top: 100px;
+  height: calc(100vh - 100px); overflow-y: auto;
+  padding: 40px 28px 40px 36px;
+  background: #fff; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 22px;
+}
+.hero-badge {
+  display: inline-flex; gap: 8px; align-items: center;
+  padding: 7px 16px; border-radius: 999px;
+  background: var(--soft); color: var(--primary);
+  font-size: 12px; font-weight: 700;
+  letter-spacing: .5px; text-transform: uppercase;
+  border: 1px solid #dce4ff; width: fit-content;
+}
+.sidebar h1 {
+  font-family: 'Sora', sans-serif; font-size: 32px; font-weight: 800;
+  color: var(--primary-dark); letter-spacing: -.5px; line-height: 1.2;
+}
+.sidebar p.hero-desc { color: var(--muted); line-height: 1.75; font-size: 14px; }
+.search-box { position: relative; }
+.search-box input {
+  width: 100%; padding: 13px 16px 13px 44px;
+  border-radius: 14px; border: 1.5px solid var(--border);
+  background: var(--soft); font-family: 'DM Sans', sans-serif;
+  font-size: 14px; color: var(--text);
+  box-shadow: var(--shadow); outline: none; transition: .2s var(--ease);
+}
+.search-box input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(79,124,255,.12); }
+.search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 15px; }
+.sidebar-stats { display: flex; flex-direction: column; gap: 10px; }
+.stat-pill {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: 12px;
+  background: var(--soft); border: 1px solid #dce4ff;
+}
+.stat-pill i { color: var(--accent); font-size: 14px; width: 16px; text-align: center; }
+.stat-pill span { font-size: 13px; font-weight: 600; color: var(--primary); }
+
+/* EVENTS PANEL */
+.events-panel { flex: 1; min-width: 0; padding: 36px 36px 60px; overflow-y: auto; }
+.events { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 22px; }
+
+/* EVENT CARD */
+.event-card {
+  background: #fff; border-radius: 20px; overflow: hidden;
+  box-shadow: var(--shadow); border: 1px solid var(--border);
+  transition: .25s var(--ease); position: relative;
+}
+.event-card:hover { transform: translateY(-6px); box-shadow: 0 18px 48px rgba(4,12,48,.13); }
+.event-image { width: 100%; height: 210px; object-fit: cover; display: block; }
+.card-content { padding: 18px; }
+.card-content h2 { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 7px; }
+.card-content p { color: var(--muted); font-size: 13px; line-height: 1.65; }
+.tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 13px 0; }
+.tag { padding: 5px 11px; font-size: 12px; border-radius: 999px; background: var(--soft); color: var(--primary); font-weight: 600; }
+.card-buttons { display: flex; gap: 9px; flex-wrap: wrap; }
+.card-buttons button {
+  flex: 1; min-width: 90px; padding: 10px; border: none; border-radius: 11px;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; cursor: pointer;
+  transition: .2s var(--ease); font-size: 12.5px;
+}
+.details-btn { background: #f3f4f6; color: var(--text); }
+.details-btn:hover { background: #e5e7eb; }
+.register-btn { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; }
+.register-btn:hover { opacity: .9; transform: translateY(-1px); }
+.vol-btn { background: linear-gradient(135deg, #b45309, var(--amber)); color: white; }
+.vol-btn:hover { opacity: .9; transform: translateY(-1px); }
+
+/* BADGE STACK */
+.badge-stack { position: absolute; top: 12px; left: 12px; display: flex; flex-direction: column; gap: 5px; }
+.card-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; font-size: 10.5px; border-radius: 999px;
+  font-weight: 700; white-space: nowrap; border: 1px solid;
+  backdrop-filter: blur(4px);
+}
+.badge-volunteer { background: rgba(245,158,11,.92); color: #431407; border-color: #fcd34d; }
+.badge-ticket    { background: rgba(209,250,229,.95); color: #065f46; border-color: #6ee7b7; }
+.badge-payment   { background: rgba(219,234,254,.95); color: #1e40af; border-color: #93c5fd; }
+
+/* MODAL BACKDROP */
+.modal {
+  position: fixed; inset: 0;
+  background: rgba(4,12,48,.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  display: none; justify-content: center; align-items: center;
+  padding: 20px; z-index: 999;
+}
+.modal.open { display: flex; }
+
+/* PARTICIPANT MODAL */
+.modal-box {
+  width: 100%; max-width: 960px; background: #fff; border-radius: 26px; overflow: hidden;
+  display: grid; grid-template-columns: 1fr 1fr;
+  box-shadow: 0 24px 64px rgba(4,12,48,.22); position: relative;
+  animation: modalIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes modalIn {
+  from { opacity:0; transform:translateY(22px) scale(.95); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.close-btn {
+  position: absolute; top: 16px; right: 16px;
+  width: 34px; height: 34px; border-radius: 10px;
+  background: #f3f4f6; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: .2s; z-index: 10; font-size: 14px; color: #555;
+}
+.close-btn:hover { background: var(--primary); color: white; }
+.modal-left {
+  padding: 32px 28px; background: #f8faff; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.modal-left h2 { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; line-height: 1.3; color: var(--primary-dark); }
+.modal-left p { color: var(--muted); font-size: 14px; line-height: 1.65; }
+.event-meta { display: flex; flex-direction: column; gap: 9px; margin-top: 10px; }
+.event-meta .meta-row {
+  display: flex; align-items: center; gap: 10px;
+  background: #eef2ff; color: var(--primary);
+  font-size: 13px; font-weight: 600; padding: 9px 13px; border-radius: 11px;
+}
+.event-meta .meta-row i { width: 14px; text-align: center; color: var(--accent); }
+.modal-right {
+  padding: 28px; background: #fff;
+  display: flex; flex-direction: column; gap: 14px;
+  overflow-y: auto; max-height: 88vh;
+}
+.modal-image { width: 100%; height: 190px; object-fit: cover; border-radius: 14px; display: block; }
+
+/* FORM SHARED */
+.form-section-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--primary-dark); }
+.form-step { display: flex; flex-direction: column; gap: 11px; }
+.input-group { position: relative; display: flex; align-items: center; }
+.input-group > i { position: absolute; left: 14px; color: #94a3b8; font-size: 13px; pointer-events: none; z-index: 1; }
+.input-group.ta > i { top: 14px; }
+.register-form input, .register-form select, .register-form textarea,
+.vol-form input, .vol-form select, .vol-form textarea {
+  width: 100%; padding: 12px 14px 12px 40px;
+  border-radius: 11px; border: 1.5px solid var(--border);
+  background: #f9fafb; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; color: var(--text); outline: none;
+  transition: .2s var(--ease); appearance: none;
+}
+.register-form textarea, .vol-form textarea { padding-top: 12px; min-height: 82px; resize: vertical; }
+.register-form input:focus, .register-form select:focus, .register-form textarea:focus,
+.vol-form input:focus, .vol-form select:focus, .vol-form textarea:focus {
+  border-color: var(--accent); background: white; box-shadow: 0 0 0 3px rgba(79,124,255,.12);
+}
+.register-form input[readonly], .vol-form input[readonly] { background: #f0f4ff; color: #4b5563; cursor: default; }
+.input-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px;
+}
+.form-btn {
+  width: 100%; padding: 13px; border: none; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+  cursor: pointer; transition: .2s var(--ease);
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.form-btn:hover { transform: translateY(-2px); opacity: .9; }
+.form-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+.form-note {
+  padding: 13px; border-radius: 11px;
+  background: #eef2ff; border: 1px solid #dce4ff;
+  font-size: 12.5px; color: #475569; line-height: 1.65;
+}
+
+/* VOLUNTEER MODAL */
+.volunteer-modal-box {
+  width: 100%; max-width: 880px; background: #fff; border-radius: 26px; overflow: hidden;
+  display: grid; grid-template-columns: 1fr 1.1fr;
+  box-shadow: 0 24px 64px rgba(4,12,48,.22); position: relative;
+  animation: modalIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+.vol-left {
+  padding: 32px 28px; background: linear-gradient(160deg, #fdf3e3, #fff8ed);
+  border-right: 1px solid #f3e0b0; display: flex; flex-direction: column; gap: 18px;
+}
+.vol-event-img { width: 100%; height: 170px; object-fit: cover; border-radius: 14px; display: block; }
+.vol-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 14px; border-radius: 999px;
+  background: linear-gradient(135deg, #b45309, var(--amber));
+  color: white; font-size: 11px; font-weight: 800;
+  letter-spacing: .4px; text-transform: uppercase; width: fit-content;
+}
+.vol-left h2 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; line-height: 1.3; color: var(--primary-dark); }
+.vol-left p { font-size: 13.5px; color: var(--muted); line-height: 1.65; }
+.vol-meta-row { display: flex; align-items: center; gap: 9px; font-size: 13px; color: #6b7280; }
+.vol-meta-row i { color: var(--amber); width: 14px; text-align: center; }
+.vol-right {
+  padding: 30px 28px; background: #fff;
+  display: flex; flex-direction: column; gap: 16px;
+  overflow-y: auto; max-height: 88vh;
+}
+.vol-right-header { display: flex; flex-direction: column; gap: 5px; }
+.vol-right-header h3 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--primary-dark); }
+.vol-right-header p { font-size: 13px; color: var(--muted); }
+.vol-submit-btn {
+  width: 100%; padding: 13px; border: none; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 14px;
+  cursor: pointer; transition: .2s var(--ease);
+  background: linear-gradient(135deg, #b45309, var(--amber)); color: white;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  box-shadow: 0 6px 20px rgba(180,83,9,.22);
+}
+.vol-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(180,83,9,.28); }
+.vol-submit-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+.skill-chips { display: flex; gap: 7px; flex-wrap: wrap; }
+.skill-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 13px; border-radius: 999px; border: 1.5px solid var(--border);
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: .15s;
+  background: #f9fafb; color: var(--muted); user-select: none;
+}
+.skill-chip input { display: none; }
+.skill-chip.checked { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+.field-label { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 7px; }
+
+/* POPUP SYSTEM */
+.popup-overlay {
+  position: fixed; inset: 0; background: rgba(4,12,48,.55);
+  backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);
+  z-index: 9990; display: none;
+}
+.popup-overlay.open { display: block; }
+.popup-box {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 92%; max-width: 400px; background: #fff; border-radius: 24px;
+  overflow: hidden; z-index: 9999; display: none;
+  box-shadow: 0 24px 60px rgba(4,12,48,.22); border: 1px solid var(--border);
+  animation: popIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+.popup-box.open { display: block; }
+@keyframes popIn {
+  from { opacity:0; transform:translate(-50%,-50%) scale(.88); }
+  to   { opacity:1; transform:translate(-50%,-50%) scale(1); }
+}
+.popup-bar { height: 4px; background: linear-gradient(90deg, var(--primary-dark), var(--accent), #06b6d4); }
+.popup-bar.success { background: linear-gradient(90deg, #065f46, var(--success), #34d399); }
+.popup-bar.error   { background: linear-gradient(90deg, #7f1d1d, var(--danger), #f87171); }
+.popup-bar.warning { background: linear-gradient(90deg, #78350f, var(--amber), #fcd34d); }
+.popup-inner { padding: 30px 28px 24px; text-align: center; }
+.popup-icon-wrap {
+  width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 18px;
+  display: flex; align-items: center; justify-content: center; font-size: 24px;
+}
+.popup-icon-wrap.success { background: #dcfce7; color: #15803d; }
+.popup-icon-wrap.error   { background: #fee2e2; color: #dc2626; }
+.popup-icon-wrap.warning { background: #fef3c7; color: #b45309; }
+.popup-icon-wrap.info    { background: #dbeafe; color: #1d4ed8; }
+@keyframes checkDraw { from { stroke-dashoffset: 60; } to { stroke-dashoffset: 0; } }
+.popup-icon-wrap svg .draw {
+  stroke-dasharray: 60; stroke-dashoffset: 60;
+  animation: checkDraw .45s .15s ease forwards;
+}
+.popup-inner h2 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; color: var(--primary-dark); margin-bottom: 9px; }
+.popup-inner p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 22px; }
+.popup-btn-row { display: flex; gap: 10px; }
+.popup-btn {
+  flex: 1; padding: 12px; border: none; border-radius: 11px;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+  cursor: pointer; transition: .2s var(--ease);
+}
+.popup-btn.primary { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; box-shadow: 0 6px 16px rgba(4,12,48,.2); }
+.popup-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(4,12,48,.25); }
+.popup-btn.primary.success-btn { background: linear-gradient(135deg, #065f46, #16a34a); }
+.popup-btn.primary.amber-btn   { background: linear-gradient(135deg, #b45309, var(--amber)); }
+.popup-btn.primary.danger-btn  { background: linear-gradient(135deg, #7f1d1d, #dc2626); }
+.popup-btn.ghost { background: #f3f4f6; color: var(--text); border: 1.5px solid var(--border); }
+.popup-btn.ghost:hover { background: #e5e7eb; }
+.popup-close-x {
+  position: absolute; top: 14px; right: 14px;
+  width: 32px; height: 32px; border-radius: 9px;
+  background: #f3f4f6; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 13px; color: #6b7280; transition: .2s; z-index: 2;
+}
+.popup-close-x:hover { background: var(--primary); color: white; }
+
+/* RESPONSIVE */
+@media(max-width: 900px) {
+  .main-layout { flex-direction: column; }
+  .sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 28px 24px; }
+  .sidebar h1 { font-size: 28px; }
+  .events-panel { padding: 20px; }
+}
+@media(max-width:768px) {
+  .modal-box, .volunteer-modal-box { grid-template-columns: 1fr; max-height: 94vh; overflow-y: auto; }
+  .modal-left, .vol-left { border-right: none; border-bottom: 1px solid var(--border); }
+  .topbar { padding: 0 18px; }
+  .top-actions { gap: 5px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ═══════════════ TOPBAR ═══════════════ -->
+<div class="topbar">
+  <div class="logo"><img src="images/UClogo.png" alt="UniConnect"></div>
+  <div class="top-actions">
+
+    <!-- ✅ LANGUAGE PICKER — this was missing, causing translations not to work -->
+    <select id="language-picker" class="lang-picker" onchange="i18n.change(this.value)">
+      <option value="en">🌐 English</option>
+      <option value="ta">தமிழ்</option>
+      <option value="si">සිංහල</option>
+    </select>
+
+    <a href="HomePage.html"><i class="fa-solid fa-house"></i> <span data-i18n="nav.home">Home</span></a>
+    <a href="Reg.html"><i class="fa-solid fa-user-plus"></i> <span data-i18n="nav.sign_up">Sign Up</span></a>
+    <a href="index.html"><i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="nav.exit">Exit</span></a>
+    <a href="EventFeedback.html" class="feedback-link">
+      <i class="fa-solid fa-star-half-stroke"></i> <span data-i18n="nav.give_feedback">Give Feedback</span>
+    </a>
+  </div>
+</div>
+
+<!-- ═══════════════ MAIN LAYOUT ═══════════════ -->
+<div class="main-layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="hero-badge">
+      <i class="fa-solid fa-calendar-star"></i>
+      <span data-i18n="allevents.welcome_badge">Welcome to UniConnect</span>
+    </div>
+    <h1 data-i18n="allevents.find_event">Find Your Event</h1>
+    <p class="hero-desc" data-i18n="allevents.hero_desc">Discover workshops, competitions, networking sessions, sports meets, cultural festivals and more happening around you.</p>
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput"
+             data-i18n-placeholder="allevents.search_placeholder"
+             placeholder="Search by title, category, venue or event code…">
+    </div>
+    <div class="sidebar-stats">
+      <div class="stat-pill">
+        <i class="fa-solid fa-calendar-days"></i>
+        <span data-i18n="allevents.browse_all">Browse all upcoming events</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT PANEL -->
+  <div class="events-panel">
+    <div class="events" id="eventsContainer"></div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════ PARTICIPANT MODAL ═══════════════ -->
+<div class="modal" id="eventModal">
+  <div class="modal-box">
+    <div class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></div>
+
+    <div class="modal-left">
+      <h2 id="modalTitle">Event Title</h2>
+      <p id="modalDesc">Event description</p>
+      <div class="event-meta">
+        <div class="meta-row"><i class="fa-solid fa-calendar"></i><span id="modalDate">Date</span></div>
+        <div class="meta-row"><i class="fa-solid fa-location-dot"></i><span id="modalVenue">Venue</span></div>
+        <div class="meta-row"><i class="fa-solid fa-tag"></i><span id="modalCategory">Category</span></div>
+      </div>
+    </div>
+
+    <div class="modal-right">
+      <img id="modalImage" class="modal-image" src="" alt="">
+      <div>
+        <div class="form-section-title" data-i18n="modal.reg_title">Participant Registration</div>
+<p data-i18n="modal.reg_sub">Fill the form below to register for this event.</p>
+      </div>
+
+      <form class="register-form" onsubmit="event.preventDefault(); registerParticipant();">
+
+        <!-- STEP 1 -->
+        <div class="form-step" id="step1">
+          <div class="field-label" data-i18n="modal.step1_label">Step 1 — Verify Your Account</div>
+          <div class="input-group">
+            <i class="fa-solid fa-id-card"></i>
+            <input type="number" id="userIdInput"
+                   data-i18n-placeholder="modal.user_id_placeholder"
+                   placeholder="Enter your User ID" required>
+          </div>
+          <button type="button" class="form-btn" onclick="verifyUser()">
+            <i class="fa-solid fa-shield-check"></i>
+            <span data-i18n="modal.verify_user">Verify User</span>
+          </button>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="form-step" id="step2" style="display:none;">
+          <div class="field-label" data-i18n="modal.step2_label">Step 2 — Registration Details</div>
+          <div class="input-group">
+            <i class="fa-solid fa-users"></i>
+            <select id="participantType">
+              <option value="participant" data-i18n="modal.participant">Participant</option>
+              <option value="audience"    data-i18n="modal.audience">Audience</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <i class="fa-solid fa-building"></i>
+            <input type="text" id="faculty_name"
+                   data-i18n-placeholder="modal.faculty_placeholder"
+                   placeholder="Faculty / Department">
+          </div>
+          <div class="input-group">
+            <i class="fa-solid fa-school"></i>
+            <input type="text" id="university_name"
+                   data-i18n-placeholder="modal.university_placeholder"
+                   placeholder="University / Campus" readonly>
+          </div>
+          <div class="input-group">
+            <i class="fa-solid fa-phone"></i>
+            <input type="text" id="contact_no"
+                   data-i18n-placeholder="modal.phone_placeholder"
+                   placeholder="Phone Number">
+          </div>
+          <div class="input-group ta">
+            <i class="fa-solid fa-note-sticky"></i>
+            <textarea id="notes"
+                      data-i18n-placeholder="modal.notes_placeholder"
+                      placeholder="Additional Notes (optional)"></textarea>
+          </div>
+          <button type="submit" class="form-btn" id="participantRegisterBtn">
+            <i class="fa-solid fa-check"></i>
+            <span data-i18n="modal.complete_reg">Complete Registration</span>
+          </button>
+          <div class="form-note">
+            <b data-i18n="modal.form_note_bold">Check your details carefully.</b><br>
+            <span data-i18n="modal.form_note_body">Make sure your university, department and contact info are correct before submitting.</span>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ VOLUNTEER MODAL ═══════════════ -->
+<div class="modal" id="volunteerModal">
+  <div class="volunteer-modal-box">
+    <div class="close-btn" onclick="closeVolunteerModal()"><i class="fa-solid fa-xmark"></i></div>
+
+    <div class="vol-left">
+      <img id="volEventImage" class="vol-event-img" src="" alt="">
+      <div class="vol-badge">
+        <i class="fa-solid fa-hands-helping"></i>
+        <span data-i18n="volunteer.badge">Volunteer</span>
+      </div>
+      <h2 id="volEventTitle">Event Name</h2>
+      <div class="vol-meta-row"><i class="fa-solid fa-hashtag"></i> UCE<span id="volEventId">--</span></div>
+      <div class="vol-meta-row"><i class="fa-solid fa-calendar"></i> <span id="volEventDate">--</span></div>
+      <div class="vol-meta-row"><i class="fa-solid fa-location-dot"></i> <span id="volEventVenue">--</span></div>
+      <p style="margin-top:6px" data-i18n="volunteer.left_desc">Join as a volunteer, support the event team and gain real-world experience.</p>
+    </div>
+
+    <div class="vol-right">
+      <div class="vol-right-header">
+        <h3>
+          <i class="fa-solid fa-hands-helping" style="color:var(--amber)"></i>
+          <span data-i18n="volunteer.application_title">Volunteer Application</span>
+        </h3>
+        <p data-i18n="volunteer.application_sub">Complete the form below to apply as a volunteer for this event.</p>
+      </div>
+
+      <div class="vol-form">
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.your_user_id">Your User ID</div>
+          <div class="input-group">
+            <i class="fa-solid fa-id-card"></i>
+            <input type="number" id="volUserId"
+                   data-i18n-placeholder="modal.user_id_placeholder"
+                   placeholder="Enter your User ID">
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.email">Email Address</div>
+          <div class="input-group">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="volEmail"
+                   data-i18n-placeholder="volunteer.email_placeholder"
+                   placeholder="your@email.com">
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.phone">Phone Number</div>
+          <div class="input-group">
+            <i class="fa-solid fa-phone"></i>
+            <input type="text" id="volPhone"
+                   data-i18n-placeholder="volunteer.phone_placeholder"
+                   placeholder="+94 7XX XXX XXX">
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.preferred_role">Preferred Role</div>
+          <div class="input-group">
+            <i class="fa-solid fa-briefcase"></i>
+            <select id="volRole">
+              <option value="General Volunteer"     data-i18n="volunteer.role.general">General Volunteer</option>
+              <option value="Event Coordinator"     data-i18n="volunteer.role.coordinator">Event Coordinator</option>
+              <option value="Registration Desk"     data-i18n="volunteer.role.reg_desk">Registration Desk</option>
+              <option value="Stage Management"      data-i18n="volunteer.role.stage">Stage Management</option>
+              <option value="Technical Support"     data-i18n="volunteer.role.tech">Technical Support</option>
+              <option value="Logistics"             data-i18n="volunteer.role.logistics">Logistics</option>
+              <option value="Marketing & Promotion" data-i18n="volunteer.role.marketing">Marketing &amp; Promotion</option>
+              <option value="Security"              data-i18n="volunteer.role.security">Security</option>
+              <option value="Photography / Media"   data-i18n="volunteer.role.photo">Photography / Media</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.task_label">Task / What You Can Help With</div>
+          <div class="input-group ta">
+            <i class="fa-solid fa-list-check"></i>
+            <textarea id="volTask"
+                      data-i18n-placeholder="volunteer.task_placeholder"
+                      placeholder="Describe what you can help with at this event…"></textarea>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.skills_label">Relevant Skills</div>
+          <div class="skill-chips" id="skillChips">
+            <label class="skill-chip"><input type="checkbox" value="Communication"> <span data-i18n="volunteer.skill.communication">Communication</span></label>
+            <label class="skill-chip"><input type="checkbox" value="Leadership">    <span data-i18n="volunteer.skill.leadership">Leadership</span></label>
+            <label class="skill-chip"><input type="checkbox" value="Technical">     <span data-i18n="volunteer.skill.technical">Technical</span></label>
+            <label class="skill-chip"><input type="checkbox" value="Design">        <span data-i18n="volunteer.skill.design">Design</span></label>
+            <label class="skill-chip"><input type="checkbox" value="Photography">   <span data-i18n="volunteer.skill.photography">Photography</span></label>
+            <label class="skill-chip"><input type="checkbox" value="First Aid">     <span data-i18n="volunteer.skill.first_aid">First Aid</span></label>
+            <label class="skill-chip"><input type="checkbox" value="Driving">       <span data-i18n="volunteer.skill.driving">Driving</span></label>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.why_label">Why do you want to volunteer?</div>
+          <div class="input-group ta">
+            <i class="fa-solid fa-pen"></i>
+            <textarea id="volNotes"
+                      data-i18n-placeholder="volunteer.why_placeholder"
+                      placeholder="Tell us why you want to be part of this event…"></textarea>
+          </div>
+        </div>
+
+        <div class="form-note" data-i18n="volunteer.form_note">
+          Your application will be reviewed by the event organizer. You will be notified of the outcome via email.
+        </div>
+
+        <button class="vol-submit-btn" id="volSubmitBtn" onclick="submitVolunteer()">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span data-i18n="volunteer.submit">Submit Application</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ POPUP SYSTEM ═══════════════ -->
+<div class="popup-overlay" id="popupOverlay"></div>
+
+<div class="popup-box" id="mainPopup">
+  <button class="popup-close-x" onclick="closeMainPopup()"><i class="fas fa-times"></i></button>
+  <div class="popup-bar" id="mainPopupBar"></div>
+  <div class="popup-inner">
+    <div class="popup-icon-wrap" id="mainPopupIcon"></div>
+    <h2 id="mainPopupTitle" data-i18n="common.message">Title</h2>
+    <p id="mainPopupMsg">Message</p>
+    <div class="popup-btn-row" id="mainPopupBtns">
+      <button class="popup-btn primary" onclick="closeMainPopup()" data-i18n="common.ok">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup-box" id="volPromptPopup">
+  <div class="popup-bar success"></div>
+  <div class="popup-inner">
+    <div class="popup-icon-wrap success">
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+        <path class="draw" d="M7 18l7 7L27 9" stroke="#15803d" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2 data-i18n="modal.success_title">Registration Successful</h2>
+    <p>
+      <span data-i18n="allevents.vol_prompt_msg">You have been registered as a participant.</span><br><br>
+      <span data-i18n="allevents.vol_prompt_volunteer">This event also needs volunteers. Would you like to apply?</span>
+    </p>
+    <div class="popup-btn-row">
+      <button class="popup-btn ghost" onclick="closeVolPrompt()" data-i18n="allevents.maybe_later">Maybe Later</button>
+      <button class="popup-btn primary amber-btn" onclick="closeVolPromptAndOpenVol()">
+        <i class="fa-solid fa-hands-helping"></i>
+        <span data-i18n="allevents.yes_volunteer">Yes, Volunteer</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+<script>
+let allEvents      = [];
+let currentEventId = null;
+let volEventId     = null;
+
+document.querySelectorAll('.skill-chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('checked'));
+});
+
+const overlay        = document.getElementById('popupOverlay');
+const mainPopup      = document.getElementById('mainPopup');
+const volPromptPopup = document.getElementById('volPromptPopup');
+
+overlay.addEventListener('click', () => { closeMainPopup(); closeVolPrompt(); });
+
+function openMainPopup(type, title, msg, btns) {
+  const bar  = document.getElementById('mainPopupBar');
+  const icon = document.getElementById('mainPopupIcon');
+  const t    = document.getElementById('mainPopupTitle');
+  const m    = document.getElementById('mainPopupMsg');
+  const bRow = document.getElementById('mainPopupBtns');
+  bar.className = `popup-bar ${type}`;
+  t.textContent = title;
+  m.innerHTML   = msg;
+  const icons = {
+    success: { cls:'success', svg:`<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path class="draw" d="M6 17l7 7L26 8" stroke="#15803d" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+    error:   { cls:'error',   svg:`<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path class="draw" d="M8 8l16 16M24 8L8 24" stroke="#dc2626" stroke-width="2.8" stroke-linecap="round"/></svg>` },
+    warning: { cls:'warning', html:'<i class="fa-solid fa-triangle-exclamation"></i>' },
+    info:    { cls:'info',    html:'<i class="fa-solid fa-circle-info"></i>' },
+  };
+  const cfg = icons[type] || icons.info;
+  icon.className = `popup-icon-wrap ${cfg.cls}`;
+  icon.innerHTML = cfg.svg || cfg.html || '';
+  icon.querySelectorAll('.draw').forEach(p => { p.style.animation='none'; void p.offsetWidth; p.style.animation=''; });
+  bRow.innerHTML = btns || `<button class="popup-btn primary" onclick="closeMainPopup()" data-i18n="common.ok">OK</button>`;
+  overlay.classList.add('open');
+  mainPopup.classList.add('open');
+}
+
+function closeMainPopup() {
+  mainPopup.classList.remove('open');
+  if (!volPromptPopup.classList.contains('open')) overlay.classList.remove('open');
+}
+function closeVolPrompt() { volPromptPopup.classList.remove('open'); overlay.classList.remove('open'); }
+function closeVolPromptAndOpenVol() { closeVolPrompt(); if (currentEventId) openVolunteerModal(currentEventId); }
+
+function openVolPromptPopup() {
+  volPromptPopup.querySelectorAll('.draw').forEach(p => { p.style.animation='none'; void p.offsetWidth; p.style.animation=''; });
+  overlay.classList.add('open');
+  volPromptPopup.classList.add('open');
+}
+
+function getImageUrl(path) {
+  if (!path) return 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&q=80';
+  if (path.startsWith('http')) return path;
+  return `http://localhost:3000${path}`;
+}
+function formatDate(d) { if (!d) return '—'; return String(d).split('T')[0]; }
+
+async function loadEvents() {
+  try {
+    const res  = await fetch('http://localhost:3000/api/events');
+    const data = await res.json();
+    if (data.success) { allEvents = data.data; renderEvents(allEvents); }
+  } catch (e) {
+    console.error(e);
+    openMainPopup('error', 'Server Error', 'Failed to load events. Please try again later.');
+  }
+}
+
+function renderEvents(events) {
+  const c = document.getElementById('eventsContainer');
+  c.innerHTML = '';
+  if (!events.length) {
+    c.innerHTML = `<div style="text-align:center;padding:60px 20px;font-size:16px;color:#888;grid-column:1/-1">No events found</div>`;
+    return;
+  }
+  events.forEach(ev => {
+    const isVol  = ev.needs_volunteers == 1 || ev.needs_volunteers === true;
+    const hasTkt = ev.allow_ticket_booking == 1 || ev.allow_ticket_booking === true;
+    const hasPay = ev.allow_payments == 1 || ev.allow_payments === true;
+    let badges = '<div class="badge-stack">';
+    if (isVol)  badges += `<span class="card-badge badge-volunteer"><i class="fa-solid fa-hands-helping"></i> VOLUNTEERS NEEDED</span>`;
+    if (hasTkt) badges += `<span class="card-badge badge-ticket"><i class="fa-solid fa-ticket"></i> TICKETS OPEN</span>`;
+    if (hasPay) badges += `<span class="card-badge badge-payment"><i class="fa-solid fa-credit-card"></i> PAYMENT REQ.</span>`;
+    badges += '</div>';
+    let btns = `
+      <button class="details-btn"  onclick="goToEventPage(${ev.event_id})">Event Details</button>
+      <button class="register-btn" onclick="openEvent(${ev.event_id})">Register</button>`;
+    if (isVol) btns += `<button class="vol-btn" onclick="openVolunteerModal(${ev.event_id})"><i class="fa-solid fa-hands-helping"></i> Volunteer</button>`;
+    const card = document.createElement('div');
+    card.className = 'event-card';
+    card.innerHTML = `
+      ${badges}
+      <img class="event-image" src="${getImageUrl(ev.image_url)}" alt="${ev.title||'Event'}"
+           onerror="this.src='https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&q=80'">
+      <div class="card-content">
+        <h2>${ev.title || 'Untitled Event'}</h2>
+        <p>${(ev.description||'No description available.').substring(0,120)}…</p>
+        <div class="tags">
+          <div class="tag">🆔 UCE${ev.event_id}</div>
+          <div class="tag">📅 ${formatDate(ev.event_date)}</div>
+          <div class="tag">📍 ${ev.venue||'—'}</div>
+          <div class="tag">${ev.category||'General'}</div>
+        </div>
+        <div class="card-buttons">${btns}</div>
+      </div>`;
+    c.appendChild(card);
+  });
+}
+
+function goToEventPage(id) { window.location.href = `Availableeventdetails.html?id=${id}`; }
+
+function openEvent(id) {
+  currentEventId = id;
+  const ev = allEvents.find(e => e.event_id === id);
+  if (!ev) { openMainPopup('error','Not Found','Event details not found.'); return; }
+  document.getElementById('modalTitle').textContent    = ev.title;
+  document.getElementById('modalDesc').textContent     = ev.description || '—';
+  document.getElementById('modalDate').textContent     = formatDate(ev.event_date);
+  document.getElementById('modalVenue').textContent    = ev.venue || '—';
+  document.getElementById('modalCategory').textContent = ev.category || 'General';
+  document.getElementById('modalImage').src            = getImageUrl(ev.image_url);
+  resetParticipantForm();
+  document.getElementById('eventModal').classList.add('open');
+}
+
+function resetParticipantForm() {
+  document.getElementById('step1').style.display = 'flex';
+  document.getElementById('step2').style.display = 'none';
+  ['userIdInput','contact_no','notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('participantType').value  = 'participant';
+  document.getElementById('faculty_name').value     = '';
+  document.getElementById('university_name').value  = '';
+}
+
+function closeModal() { document.getElementById('eventModal').classList.remove('open'); }
+
+async function verifyUser() {
+  const btn = document.querySelector('#step1 .form-btn');
+  const uid = document.getElementById('userIdInput').value.trim();
+  if (!uid) { openMainPopup('warning','Required','Please enter your User ID.'); return; }
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Verifying…`;
+  try {
+    const r = await fetch(`http://localhost:3000/api/events/user/${uid}`);
+    const d = await r.json();
+    if (!d.success) { openMainPopup('error','User Not Found','No account found for this User ID.'); return; }
+    const u = d.data;
+    document.getElementById('faculty_name').value    = u.department_name || '';
+    document.getElementById('university_name').value = u.university       || '';
+    document.getElementById('contact_no').value      = u.contact_no       || '';
+    const ev = allEvents.find(e => e.event_id === currentEventId);
+    if (!ev) { openMainPopup('error','Event Error','Event not found.'); return; }
+    const sameUni  = u.university?.trim().toLowerCase()      === ev.university?.trim().toLowerCase();
+    const sameDept = u.department_name?.trim().toLowerCase() === ev.department_name?.trim().toLowerCase();
+    if (!sameUni) { openMainPopup('error','Registration Blocked','This event is available only for participants from the organizing university.'); return; }
+    if (ev.allow_other_departments != 1 && !sameDept) { openMainPopup('error','Department Restricted','This event is only open to the hosting department.'); return; }
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = 'flex';
+  } catch(e) {
+    console.error(e);
+    openMainPopup('error','Server Error','Could not verify user. Please try again.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fa-solid fa-shield-check"></i> Verify User`;
+  }
+}
+
+async function registerParticipant() {
+  const uid   = document.getElementById('userIdInput').value.trim();
+  const pType = document.getElementById('participantType').value;
+  const fac   = document.getElementById('faculty_name').value.trim();
+  const phone = document.getElementById('contact_no').value.trim();
+  const notes = document.getElementById('notes').value.trim();
+  const uni   = document.getElementById('university_name').value.trim();
+  if (!pType || !fac || !phone) { openMainPopup('warning','Incomplete','Please fill all required fields.'); return; }
+  const btn = document.getElementById('participantRegisterBtn');
+  btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Registering…`;
+  try {
+    const r = await fetch(`http://localhost:3000/api/events/${currentEventId}/register`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ user_id:uid, participant_type:pType, faculty_name:fac, contact_no:phone, notes, university_name:uni })
+    });
+    const d = await r.json();
+    if (d.success) {
+      closeModal();
+      const ev = allEvents.find(e => e.event_id === currentEventId);
+      if (ev && (ev.needs_volunteers == 1 || ev.needs_volunteers === true)) { openVolPromptPopup(); }
+      else { openMainPopup('success','All Done!','You have successfully registered for this event. See you there!'); }
+    } else { openMainPopup('error','Failed', d.message || 'Registration failed.'); }
+  } catch(e) {
+    console.error(e); openMainPopup('error','Server Error','Could not complete registration.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fa-solid fa-check"></i> Complete Registration`;
+  }
+}
+
+function openVolunteerModal(id) {
+  volEventId = id;
+  const ev = allEvents.find(e => e.event_id === id);
+  document.getElementById('volEventTitle').textContent = ev?.title || 'Event';
+  document.getElementById('volEventImage').src         = getImageUrl(ev?.image_url);
+  document.getElementById('volEventId').textContent    = ev?.event_id || '—';
+  document.getElementById('volEventDate').textContent  = formatDate(ev?.event_date);
+  document.getElementById('volEventVenue').textContent = ev?.venue || '—';
+  ['volUserId','volEmail','volPhone','volTask','volNotes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('volRole').value = 'General Volunteer';
+  document.querySelectorAll('.skill-chip').forEach(c => c.classList.remove('checked'));
+    document.getElementById('volunteerModal').classList.add('open');
+  applyVolLabels();
+}
+
+function closeVolunteerModal() {
+  document.getElementById('volunteerModal').classList.remove('open');
+  ['volUserId','volEmail','volPhone','volTask','volNotes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('volRole').value = 'General Volunteer';
+  document.querySelectorAll('.skill-chip').forEach(c => c.classList.remove('checked'));
+  volEventId = null;
+}
+
+async function submitVolunteer() {
+  const user_id = document.getElementById('volUserId').value.trim();
+  const email   = document.getElementById('volEmail').value.trim();
+  const phone   = document.getElementById('volPhone').value.trim();
+  const role    = document.getElementById('volRole').value;
+  const task    = document.getElementById('volTask').value.trim();
+  const notes   = document.getElementById('volNotes').value.trim();
+  const skills  = [...document.querySelectorAll('.skill-chip.checked input')].map(c => c.value).join(', ');
+  if (!user_id || !task) { openMainPopup('warning','Missing Info','Please fill in your User ID and the task/help description.'); return; }
+  const eventIdToSubmit = volEventId;
+  if (!eventIdToSubmit) { openMainPopup('error','Error','No event selected.'); return; }
+  const btn = document.getElementById('volSubmitBtn');
+  btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting…`;
+  try {
+    const r = await fetch(`http://localhost:3000/api/volunteers`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ user_id:parseInt(user_id), event_id:eventIdToSubmit, role, assigned_task:task, task:notes, skills, status:'pending' })
+    });
+    const d = await r.json();
+    if (d.success) {
+      closeVolunteerModal();
+      openMainPopup('success','Application Submitted','Your volunteer application has been submitted and is pending review.',
+        `<button class="popup-btn primary success-btn" onclick="closeMainPopup()"><i class="fa-solid fa-check"></i> Great, Thanks!</button>`);
+    } else { openMainPopup('error','Failed', d.message || 'Volunteer application failed.'); }
+  } catch(e) {
+    console.error(e); openMainPopup('error','Server Error','Could not submit your application.');
+  } finally {
+    btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Application`;
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  renderEvents(allEvents.filter(ev =>
+    `uce${ev.event_id}`.includes(q) ||
+    (ev.title||'').toLowerCase().includes(q) ||
+    (ev.description||'').toLowerCase().includes(q) ||
+    (ev.category||'').toLowerCase().includes(q) ||
+    (ev.venue||'').toLowerCase().includes(q)
+  ));
+});
+
+window.onclick = e => {
+  if (e.target === document.getElementById('eventModal'))     closeModal();
+  if (e.target === document.getElementById('volunteerModal')) closeVolunteerModal();
+};
+
+loadEvents();
+
+// Re-apply translations when language changes (keeps dynamic event data intact)
+const _originalChange = i18n.change.bind(i18n);
+i18n.change = function(locale) {
+  _originalChange(locale);
+
+  // If participant modal is open, re-render its static labels
+  if (document.getElementById('eventModal').classList.contains('open')) {
+    applyModalLabels();
+  }
+  // If volunteer modal is open, re-render its static labels
+  if (document.getElementById('volunteerModal').classList.contains('open')) {
+    applyVolLabels();
+  }
+
+  // Re-render event cards (only badges/buttons, not event data)
+  renderEvents(allEvents);
+};
+
+function applyModalLabels() {
+  // Step labels
+  document.querySelector('#step1 .field-label').innerText      = i18n.t('modal.step1_label');
+  document.querySelector('#step2 .field-label').innerText      = i18n.t('modal.step2_label');
+
+  // Verify button
+  document.querySelector('#step1 .form-btn span').innerText    = i18n.t('modal.verify_user');
+
+  // Select options
+  const pType = document.getElementById('participantType');
+  pType.options[0].text = i18n.t('modal.participant');
+  pType.options[1].text = i18n.t('modal.audience');
+
+  // Placeholders
+  document.getElementById('faculty_name').placeholder     = i18n.t('modal.faculty_placeholder');
+  document.getElementById('university_name').placeholder  = i18n.t('modal.university_placeholder');
+  document.getElementById('contact_no').placeholder       = i18n.t('modal.phone_placeholder');
+  document.getElementById('notes').placeholder            = i18n.t('modal.notes_placeholder');
+  document.getElementById('userIdInput').placeholder      = i18n.t('modal.user_id_placeholder');
+
+  // Complete registration button
+  document.querySelector('#participantRegisterBtn span').innerText = i18n.t('modal.complete_reg');
+
+  // Form note
+  const noteEl = document.querySelector('.register-form .form-note');
+  noteEl.innerHTML = `<b>${i18n.t('modal.form_note_bold')}</b><br><span>${i18n.t('modal.form_note_body')}</span>`;
+}
+
+function applyVolLabels() {
+  // Role select options
+  const roleSelect = document.getElementById('volRole');
+  const roleKeys = ['general','coordinator','reg_desk','stage','tech','logistics','marketing','security','photo'];
+  roleKeys.forEach((key, i) => {
+    if (roleSelect.options[i]) roleSelect.options[i].text = i18n.t(`volunteer.role.${key}`);
+  });
+
+  // Placeholders
+  document.getElementById('volUserId').placeholder  = i18n.t('modal.user_id_placeholder');
+  document.getElementById('volEmail').placeholder   = i18n.t('volunteer.email_placeholder');
+  document.getElementById('volPhone').placeholder   = i18n.t('volunteer.phone_placeholder');
+  document.getElementById('volTask').placeholder    = i18n.t('volunteer.task_placeholder');
+  document.getElementById('volNotes').placeholder   = i18n.t('volunteer.why_placeholder');
+
+  // Skill chip labels
+  const skillKeys = ['communication','leadership','technical','design','photography','first_aid','driving'];
+  document.querySelectorAll('#skillChips .skill-chip span').forEach((span, i) => {
+    if (skillKeys[i]) span.innerText = i18n.t(`volunteer.skill.${skillKeys[i]}`);
+  });
+}
+</script>
+</body>
+</html>

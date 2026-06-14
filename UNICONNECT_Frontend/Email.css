@@ -1,0 +1,136 @@
+:root {
+    --primary-green: #1b4332;
+    --secondary-green: #2d6a4f;
+    --soft-green: #e8f5e9;
+
+    --text-dark: #111827;
+    --text-gray: #6b7280;
+    --border-light: #e5e7eb;
+
+    --card-bg: #ffffff;
+    --page-bg: #f6faf8;
+}
+
+/*  BODY  */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: var(--page-bg);
+}
+
+/*  WRAPPER  */
+.email-wrapper {
+    width: 100%;
+    padding: 20px;
+}
+
+/*  COVER IMAGE  */
+.cover img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+/*  CARD  */
+.card {
+    max-width: 600px;
+    margin: auto;
+    background: var(--card-bg);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+/*  HEADER  */
+.header {
+    background: var(--primary-green);
+    text-align: center;
+    padding: 25px;
+    color: white;
+}
+
+.header .logo {
+    width: 80px;
+    margin-bottom: 10px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.header p {
+    margin: 5px 0 0;
+    font-size: 13px;
+    color: #d1fae5;
+}
+
+/* BODY */
+.body {
+    padding: 25px;
+}
+
+.body h2 {
+    color: var(--primary-green);
+    margin-bottom: 10px;
+}
+
+.text {
+    color: var(--text-gray);
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+/* INFO BOX  */
+.info-box {
+    background: var(--soft-green);
+    border-left: 5px solid var(--primary-green);
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 8px;
+}
+
+.info-box p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+/*  BUTTON  */
+.btn {
+    display: inline-block;
+    background: var(--primary-green);
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-top: 15px;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: var(--secondary-green);
+}
+
+/*  SMALL TEXT  */
+.small {
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-top: 15px;
+}
+
+.small span {
+    color: var(--primary-green);
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    padding: 15px;
+    font-size: 12px;
+    color: var(--text-gray);
+    background: #f0fdf4;
+}

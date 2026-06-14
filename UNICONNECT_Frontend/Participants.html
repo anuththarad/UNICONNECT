@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect – Participant Management</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --primary:      #1f276f;
+  --primary-dark: #040c30;
+  --primary-light:#2d3894;
+  --accent:       #4f7cff;
+  --accent-teal:  #0ea5e9;
+  --bg:           #f0f4ff;
+  --card:         #ffffff;
+  --soft:         #f0f4ff;
+  --text:         #1e293b;
+  --muted:        #64748b;
+  --border:       #e2e8f0;
+  --success:      #10b981;
+  --success-bg:   #d1fae5;
+  --danger:       #ef4444;
+  --danger-bg:    #fee2e2;
+  --warning:      #f59e0b;
+  --warning-bg:   #fef3c7;
+  --info:         #3b82f6;
+  --info-bg:      #dbeafe;
+  --shadow:       0 4px 24px rgba(4,12,48,.07);
+  --shadow-lg:    0 10px 40px rgba(4,12,48,.12);
+  --ease:         cubic-bezier(.4,0,.2,1);
+  --radius:       16px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 40px; height: 100px;
+  background: #fff; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 12px rgba(4,12,48,.04);
+}
+.topbar-left { display: flex; align-items: center; gap: 16px; }
+.topbar-left img { height: 100px; }
+.topbar-divider { width: 1px; height: 28px; background: var(--border); }
+.topbar-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--primary-dark); }
+.topbar-subtitle { font-size: 12px; color: var(--muted); }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.topbar-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 16px; border-radius: 10px;
+  font-weight: 600; font-size: 13px; cursor: pointer;
+  transition: .2s var(--ease); border: none; text-decoration: none;
+}
+.topbar-btn.ghost { background: var(--soft); color: var(--primary); }
+.topbar-btn.ghost:hover { background: #dce4ff; }
+.topbar-btn.primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(31,39,111,.2); }
+.topbar-btn.primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+/* ── LAYOUT ── */
+.page { padding: 32px 40px; max-width: 1600px; margin: 0 auto; }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 28px; flex-wrap: wrap; gap: 16px;
+}
+.page-header-left h1 {
+  font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 800;
+  color: var(--primary-dark); letter-spacing: -.4px;
+}
+.page-header-left p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.page-header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ── STEP INDICATOR ── */
+.step-indicator {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 28px; background: #fff;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 24px; box-shadow: var(--shadow); overflow: hidden;
+}
+.step-item {
+  display: flex; align-items: center; gap: 10px; flex: 1;
+  padding: 8px 16px; border-radius: 10px; transition: .2s;
+}
+.step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 12px; flex-shrink: 0;
+  background: var(--border); color: var(--muted); transition: .2s;
+}
+.step-item.active .step-num { background: var(--primary); color: #fff; }
+.step-item.done .step-num { background: var(--success); color: #fff; }
+.step-label { font-size: 13px; font-weight: 600; color: var(--muted); transition: .2s; }
+.step-item.active .step-label { color: var(--primary-dark); }
+.step-item.done .step-label { color: var(--success); }
+.step-arrow { color: var(--border); font-size: 11px; flex-shrink: 0; padding: 0 4px; }
+
+/* ── ORGANIZER SEARCH BAR ── */
+.organizer-search-bar {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px 28px;
+  margin-bottom: 20px; box-shadow: var(--shadow);
+}
+.osb-label {
+  font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--primary-dark); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.osb-label i { color: var(--accent); }
+.osb-label .step-badge {
+  background: var(--primary); color: #fff;
+  font-size: 11px; padding: 2px 10px; border-radius: 999px; font-weight: 800;
+}
+.osb-input-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.osb-input-wrap { flex: 1; min-width: 200px; max-width: 420px; position: relative; display: flex; align-items: center; }
+.osb-input-wrap i { position: absolute; left: 14px; color: #94a3b8; font-size: 13px; }
+.osb-input-wrap input {
+  width: 100%; padding: 12px 14px 12px 42px;
+  border-radius: 11px; border: 1.5px solid var(--border);
+  background: var(--bg); font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 600; color: var(--text); outline: none; transition: .2s;
+}
+.osb-input-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,124,255,.12); }
+.osb-input-wrap input::placeholder { font-weight: 400; color: #94a3b8; }
+.osb-search-btn {
+  padding: 12px 24px; border-radius: 11px; border: none;
+  background: var(--primary); color: #fff; font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 13px; cursor: pointer; transition: .2s;
+  display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(31,39,111,.2);
+}
+.osb-search-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.osb-search-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+.osb-organizer-info {
+  display: none; margin-top: 16px; padding: 14px 18px;
+  background: var(--info-bg); border-radius: 12px; border: 1px solid #bfdbfe;
+  align-items: center; gap: 14px;
+}
+.osb-organizer-info.show { display: flex; }
+.osb-org-avatar {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 15px; flex-shrink: 0;
+}
+.osb-org-details { flex: 1; }
+.osb-org-name { font-weight: 700; font-size: 14px; color: var(--primary-dark); }
+.osb-org-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.osb-org-badge {
+  padding: 5px 14px; border-radius: 999px; font-size: 11px; font-weight: 700;
+  background: var(--primary); color: #fff;
+}
+
+/* ── EVENTS GRID (STEP 2) ── */
+.events-section {
+  display: none; margin-bottom: 28px;
+}
+.events-section.show { display: block; }
+.events-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+}
+.events-section-header h2 {
+  font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800;
+  color: var(--primary-dark); display: flex; align-items: center; gap: 10px;
+}
+.events-section-header h2 .step-badge {
+  background: var(--primary); color: #fff;
+  font-size: 11px; padding: 3px 10px; border-radius: 999px; font-weight: 800;
+}
+.events-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+.event-card {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow); transition: .22s var(--ease);
+  cursor: pointer;
+}
+.event-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+.event-card.selected { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(31,39,111,.1), var(--shadow-lg); }
+.event-card-img { width: 100%; height: 150px; object-fit: cover; display: block; }
+.event-card-img-placeholder {
+  width: 100%; height: 150px; background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; color: rgba(255,255,255,.4);
+}
+.event-card-body { padding: 16px 18px; }
+.event-card-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 14px; color: var(--primary-dark); margin-bottom: 6px; }
+.event-card-meta { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+.event-card-row { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+.event-card-row i { color: var(--accent); font-size: 11px; width: 12px; }
+.event-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); gap: 8px; }
+.ec-id-badge { padding: 4px 10px; border-radius: 999px; background: var(--soft); color: var(--primary); font-size: 11px; font-weight: 700; }
+.ec-view-btn {
+  padding: 8px 16px; border-radius: 9px; border: none;
+  background: var(--primary); color: #fff;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 12px;
+  cursor: pointer; transition: .18s; display: flex; align-items: center; gap: 6px;
+}
+.ec-view-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.ec-reg-count { font-size: 11px; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.ec-reg-count i { color: var(--success); font-size: 10px; }
+
+/* ── PARTICIPANTS PANEL (STEP 3) ── */
+.participants-panel {
+  display: none;
+}
+.participants-panel.show { display: block; }
+
+/* Selected event banner */
+.selected-event-banner {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+  border-radius: var(--radius); padding: 18px 24px;
+  margin-bottom: 20px; display: flex; align-items: center; gap: 16px;
+  color: #fff; flex-wrap: wrap; gap: 14px;
+}
+.seb-icon { font-size: 24px; opacity: .8; }
+.seb-info { flex: 1; }
+.seb-title { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 800; }
+.seb-meta { font-size: 12px; opacity: .75; margin-top: 3px; }
+.seb-back-btn {
+  padding: 8px 16px; border-radius: 9px;
+  border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.12);
+  color: #fff; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 12px;
+  cursor: pointer; transition: .18s; display: flex; align-items: center; gap: 6px;
+}
+.seb-back-btn:hover { background: rgba(255,255,255,.22); }
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px; margin-bottom: 24px;
+}
+.stat-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 18px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: var(--shadow); transition: .22s var(--ease);
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.stat-icon {
+  width: 42px; height: 42px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.stat-icon.blue   { background: var(--info-bg);    color: var(--info); }
+.stat-icon.green  { background: var(--success-bg); color: var(--success); }
+.stat-icon.amber  { background: var(--warning-bg); color: var(--warning); }
+.stat-icon.red    { background: var(--danger-bg);  color: var(--danger); }
+.stat-icon.navy   { background: #e0e4ff; color: var(--primary); }
+.stat-info h3 { font-size: 24px; font-weight: 800; color: var(--primary-dark); line-height: 1; }
+.stat-info p  { font-size: 12px; color: var(--muted); margin-top: 3px; font-weight: 500; }
+
+/* ── TOOLBAR ── */
+.toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+.search-wrap { flex: 1; min-width: 220px; max-width: 360px; position: relative; display: flex; align-items: center; }
+.search-wrap i { position: absolute; left: 14px; color: #94a3b8; font-size: 13px; }
+.search-wrap input {
+  width: 100%; padding: 10px 14px 10px 40px;
+  border-radius: 11px; border: 1.5px solid var(--border);
+  background: #fff; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; color: var(--text); outline: none; transition: .2s;
+}
+.search-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,124,255,.12); }
+.filter-tabs { display: flex; gap: 6px; }
+.filter-tab {
+  padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--border);
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: .18s; background: #fff; color: var(--muted);
+  display: flex; align-items: center; gap: 5px;
+}
+.filter-tab.active { background: var(--primary); color: #fff; border-color: transparent; }
+.tab-count {
+  background: rgba(255,255,255,.25); font-size: 10px;
+  padding: 1px 6px; border-radius: 99px; min-width: 18px; text-align: center;
+}
+.filter-tab:not(.active) .tab-count { background: var(--soft); color: var(--primary); }
+.toolbar-right { display: flex; gap: 8px; margin-left: auto; }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 10px; border: 1.5px solid var(--border);
+  background: #fff; color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; cursor: pointer; transition: .18s;
+}
+.icon-btn:hover { background: var(--soft); color: var(--primary); border-color: var(--accent); }
+.icon-btn.active { background: var(--primary); color: #fff; border-color: transparent; }
+
+/* ── EXPORT DROPDOWN ── */
+.dropdown-wrap { position: relative; }
+.dropdown-menu {
+  position: absolute; right: 0; top: calc(100% + 8px);
+  background: #fff; border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: var(--shadow-lg); min-width: 180px; z-index: 100;
+  display: none; overflow: hidden;
+}
+.dropdown-menu.open { display: block; }
+.dropdown-item {
+  padding: 11px 16px; font-size: 13.5px; font-weight: 600; color: var(--text);
+  cursor: pointer; transition: .12s; display: flex; align-items: center; gap: 10px;
+}
+.dropdown-item:hover { background: var(--soft); color: var(--primary); }
+.dropdown-item i { width: 16px; text-align: center; color: var(--muted); }
+.dropdown-item:hover i { color: var(--accent); }
+
+/* ── BULK BAR ── */
+.bulk-bar {
+  display: none; align-items: center; gap: 12px;
+  background: var(--primary-dark); color: #fff; padding: 12px 20px;
+  border-radius: 12px; margin-bottom: 16px;
+  animation: slideDown .25s ease;
+}
+.bulk-bar.show { display: flex; }
+@keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.bulk-bar p { font-size: 14px; font-weight: 600; }
+.bulk-btn {
+  padding: 7px 14px; border-radius: 9px; border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.12); color: #fff;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 12px;
+  cursor: pointer; transition: .15s; display: flex; align-items: center; gap: 6px;
+}
+.bulk-btn:hover { background: rgba(255,255,255,.22); }
+.bulk-btn.danger  { background: rgba(239,68,68,.3); border-color: rgba(239,68,68,.5); }
+.bulk-btn.success { background: rgba(16,185,129,.3); border-color: rgba(16,185,129,.5); }
+.bulk-cancel { margin-left: auto; background: none; border: none; color: rgba(255,255,255,.6); cursor: pointer; font-size: 16px; }
+
+/* ── TABLE ── */
+.table-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead { background: #f8faff; border-bottom: 1px solid var(--border); }
+thead th {
+  padding: 13px 16px; text-align: left;
+  font-size: 11px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .8px; color: var(--muted); white-space: nowrap;
+}
+thead th input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--primary); }
+tbody tr { border-bottom: 1px solid #f1f5f9; transition: .15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #fafbff; }
+tbody td { padding: 13px 16px; vertical-align: middle; }
+
+.participant-cell { display: flex; align-items: center; gap: 12px; }
+.p-avatar {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 13px; flex-shrink: 0;
+}
+.p-name { font-weight: 700; color: var(--primary-dark); font-size: 14px; }
+.p-email { font-size: 12px; color: var(--muted); }
+
+.p-type-badge { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-block; }
+.p-type-badge.participant { background: var(--info-bg); color: var(--info); }
+.p-type-badge.audience    { background: #ede9fe; color: #6d28d9; }
+
+.status-badge { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-block; }
+.status-badge.confirmed  { background: var(--success-bg); color: #065f46; }
+.status-badge.pending    { background: var(--warning-bg); color: #92400e; }
+.status-badge.cancelled  { background: var(--danger-bg);  color: #991b1b; }
+.status-badge.waitlisted { background: #e0e4ff; color: var(--primary); }
+
+.action-btns { display: flex; gap: 6px; align-items: center; }
+.act-btn {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
+  background: #fff; color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; cursor: pointer; transition: .15s;
+}
+.act-btn:hover { transform: translateY(-1px); }
+.act-btn.view:hover    { background: var(--info-bg);    color: var(--info);    border-color: var(--info); }
+.act-btn.confirm:hover { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+.act-btn.cancel:hover  { background: var(--danger-bg);  color: var(--danger);  border-color: var(--danger); }
+.act-btn.msg:hover     { background: var(--soft);       color: var(--primary); border-color: var(--accent); }
+
+/* ── GRID VIEW ── */
+.grid-view { display: none; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+.grid-view.active { display: grid; }
+.table-view.hidden { display: none; }
+
+.p-grid-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow); transition: .22s var(--ease); cursor: pointer;
+}
+.p-grid-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+.p-gc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.p-gc-avatar {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 17px;
+}
+.p-gc-info { flex: 1; padding-left: 12px; }
+.p-gc-name { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 15px; color: var(--primary-dark); }
+.p-gc-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.p-gc-meta { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+.p-gc-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
+.p-gc-row i { width: 14px; color: var(--accent); font-size: 11px; }
+.p-gc-actions { display: flex; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+.p-gc-btn {
+  flex: 1; padding: 8px; border-radius: 9px; border: none;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 12px;
+  cursor: pointer; transition: .15s;
+}
+.p-gc-btn.profile { background: var(--soft); color: var(--primary); }
+.p-gc-btn.profile:hover { background: #dce4ff; }
+.p-gc-btn.confirm { background: var(--success-bg); color: #065f46; }
+.p-gc-btn.confirm:hover { background: #a7f3d0; }
+.p-gc-btn.cancel  { background: var(--danger-bg); color: #991b1b; }
+.p-gc-btn.cancel:hover  { background: #fecaca; }
+
+/* ── TABLE FOOTER ── */
+.table-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 20px; border-top: 1px solid var(--border);
+  background: #f8faff; flex-wrap: wrap; gap: 10px;
+}
+.table-footer p { font-size: 13px; color: var(--muted); font-weight: 500; }
+.pagination { display: flex; gap: 5px; }
+.page-btn {
+  width: 34px; height: 34px; border-radius: 9px; border: 1.5px solid var(--border);
+  background: #fff; font-size: 13px; font-weight: 700; color: var(--muted);
+  cursor: pointer; transition: .15s; display: flex; align-items: center; justify-content: center;
+}
+.page-btn:hover, .page-btn.active { background: var(--primary); color: #fff; border-color: transparent; }
+.page-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── EMPTY / LOADING ── */
+.empty-state { padding: 64px 20px; text-align: center; color: var(--muted); }
+.empty-state i { font-size: 40px; display: block; margin-bottom: 16px; color: #d1d5db; }
+.empty-state h3 { font-family: 'Sora', sans-serif; font-size: 18px; color: var(--primary-dark); margin-bottom: 8px; }
+.empty-state p { font-size: 14px; max-width: 320px; margin: 0 auto; }
+.spinner {
+  display: block; width: 28px; height: 28px;
+  border: 3px solid #e0e4ff; border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── PROFILE MODAL ── */
+.modal {
+  position: fixed; inset: 0; background: rgba(4,12,48,.55);
+  backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center;
+  padding: 20px; z-index: 999;
+}
+.modal.open { display: flex; }
+.profile-modal-box {
+  width: 100%; max-width: 700px; background: #fff; border-radius: 24px;
+  overflow: hidden; box-shadow: 0 24px 64px rgba(4,12,48,.22);
+  animation: modalIn .3s cubic-bezier(.34,1.56,.64,1); position: relative;
+}
+@keyframes modalIn {
+  from { opacity:0; transform:translateY(22px) scale(.95); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.profile-modal-header {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+  padding: 28px 30px 24px; display: flex; align-items: flex-start; gap: 20px; position: relative;
+}
+.profile-modal-avatar {
+  width: 72px; height: 72px; border-radius: 18px;
+  background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.3);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 26px; flex-shrink: 0;
+}
+.profile-modal-info { color: #fff; }
+.profile-modal-info h2 { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; }
+.profile-modal-info p { font-size: 14px; color: rgba(255,255,255,.75); margin-top: 4px; }
+.profile-modal-badges { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.pm-badge {
+  padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 700;
+  background: rgba(255,255,255,.18); color: #fff; border: 1px solid rgba(255,255,255,.25);
+}
+.pm-badge.confirmed { background: rgba(16,185,129,.35); border-color: #6ee7b7; }
+.pm-badge.pending   { background: rgba(245,158,11,.35);  border-color: #fcd34d; }
+.pm-badge.cancelled { background: rgba(239,68,68,.35);   border-color: #fca5a5; }
+.profile-modal-close {
+  position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 10px;
+  background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: .2s; font-size: 14px; color: #fff;
+}
+.profile-modal-close:hover { background: rgba(255,255,255,.3); }
+.profile-modal-body {
+  padding: 24px 30px; display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px; max-height: 70vh; overflow-y: auto;
+}
+.profile-section h4 {
+  font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+  margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.profile-field { margin-bottom: 12px; }
+.profile-field label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .6px; color: var(--muted); display: block; margin-bottom: 3px;
+}
+.profile-field p { font-size: 14px; font-weight: 600; color: var(--text); background: var(--bg); border-radius: 9px; padding: 9px 13px; }
+.profile-field p.empty { color: var(--muted); font-weight: 400; font-style: italic; }
+.profile-modal-footer {
+  padding: 16px 30px; border-top: 1px solid var(--border);
+  background: #f8faff; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;
+}
+.pm-action-btn {
+  padding: 9px 20px; border-radius: 10px; border: none;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 13px;
+  cursor: pointer; transition: .2s var(--ease); display: flex; align-items: center; gap: 7px;
+}
+.pm-action-btn.confirm { background: var(--success); color: #fff; }
+.pm-action-btn.confirm:hover { background: #059669; transform: translateY(-1px); }
+.pm-action-btn.cancel  { background: var(--danger-bg); color: var(--danger); border: 1px solid #fecaca; }
+.pm-action-btn.cancel:hover  { background: #fecaca; }
+.pm-action-btn.waitlist { background: var(--soft); color: var(--primary); border: 1px solid #dce4ff; }
+.pm-action-btn.waitlist:hover { background: #dce4ff; }
+.pm-action-btn.msg { background: var(--primary); color: #fff; }
+.pm-action-btn.msg:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+/* ── CONFIRM MODAL ── */
+.confirm-modal-box {
+  width: 100%; max-width: 380px; background: #fff; border-radius: 20px;
+  padding: 28px; box-shadow: 0 24px 64px rgba(4,12,48,.22);
+  animation: modalIn .3s cubic-bezier(.34,1.56,.64,1); text-align: center;
+}
+.confirm-modal-box .ci-icon {
+  width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.confirm-modal-box h3 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px; }
+.confirm-modal-box p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
+.confirm-btns { display: flex; gap: 10px; }
+.confirm-btn {
+  flex: 1; padding: 11px; border-radius: 11px; border: none;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: .2s;
+}
+.confirm-btn.ghost { background: #f3f4f6; color: var(--text); }
+.confirm-btn.ghost:hover { background: #e5e7eb; }
+.confirm-btn.danger { background: var(--danger); color: #fff; }
+.confirm-btn.danger:hover { background: #dc2626; transform: translateY(-1px); }
+.confirm-btn.success { background: var(--success); color: #fff; }
+.confirm-btn.success:hover { background: #059669; transform: translateY(-1px); }
+
+/* ── MESSAGE MODAL ── */
+.msg-modal-box {
+  width: 100%; max-width: 480px; background: #fff; border-radius: 20px;
+  padding: 28px; box-shadow: 0 24px 64px rgba(4,12,48,.22);
+  animation: modalIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+.msg-modal-box h3 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--primary-dark); margin-bottom: 6px; }
+.msg-modal-box p { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+.msg-modal-box textarea {
+  width: 100%; padding: 13px; border-radius: 11px; border: 1.5px solid var(--border);
+  background: var(--bg); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text);
+  min-height: 110px; resize: vertical; outline: none; transition: .2s;
+}
+.msg-modal-box textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,124,255,.12); }
+.msg-btns { display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; }
+.msg-btn {
+  padding: 10px 20px; border-radius: 10px; border: none;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; transition: .2s;
+}
+.msg-btn.ghost { background: #f3f4f6; color: var(--text); }
+.msg-btn.primary { background: var(--primary); color: #fff; }
+.msg-btn.primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+/* ── TOAST ── */
+.toast-stack { position: fixed; bottom: 28px; right: 28px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.toast {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--primary-dark); color: #fff; padding: 13px 18px;
+  border-radius: 13px; box-shadow: 0 8px 24px rgba(4,12,48,.25);
+  font-size: 14px; font-weight: 500; min-width: 280px;
+  animation: toastIn .3s ease; pointer-events: all;
+}
+.toast.success { background: #065f46; }
+.toast.error   { background: #991b1b; }
+.toast.warning { background: #92400e; }
+@keyframes toastIn { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+
+@media(max-width: 768px) {
+  .topbar { padding: 0 16px; }
+  .page { padding: 16px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .profile-modal-body { grid-template-columns: 1fr; }
+  .page-header { flex-direction: column; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .search-wrap { max-width: 100%; }
+  .events-grid { grid-template-columns: 1fr; }
+  .step-indicator { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <img src="images/UClogo.png" alt="UniConnect" onerror="this.style.display='none'">
+    <div class="topbar-divider"></div>
+    <div>
+      <div class="topbar-title">Participant Management</div>
+      <div class="topbar-subtitle">Organizer Dashboard</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <a href="OrganizerDash.html" class="topbar-btn ghost"><i class="fa-solid fa-house"></i> Dashboard</a>
+    <a href="Allevents.html" class="topbar-btn ghost"><i class="fa-solid fa-calendar-days"></i> Events</a>
+    <button class="topbar-btn primary" onclick="window.location.href='Login.html'">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </button>
+  </div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>Participant Management</h1>
+      <p>Enter your organizer ID to see your events, then view and manage registered participants</p>
+    </div>
+    <div class="page-header-actions">
+      <div class="dropdown-wrap" id="exportDropWrap" style="display:none">
+        <button class="topbar-btn ghost" onclick="toggleExportMenu()">
+          <i class="fa-solid fa-download"></i> Export
+          <i class="fa-solid fa-chevron-down" style="font-size:10px"></i>
+        </button>
+        <div class="dropdown-menu" id="exportMenu">
+          <div class="dropdown-item" onclick="exportCSV()"><i class="fa-solid fa-file-csv"></i> Export as CSV</div>
+          <div class="dropdown-item" onclick="exportJSON()"><i class="fa-solid fa-file-code"></i> Export as JSON</div>
+          <div class="dropdown-item" onclick="printList()"><i class="fa-solid fa-print"></i> Print List</div>
+        </div>
+      </div>
+      <button class="topbar-btn primary" id="msgAllBtn" style="display:none" onclick="openBulkMessage()">
+        <i class="fa-solid fa-envelope"></i> Message All
+      </button>
+    </div>
+  </div>
+
+  <!-- Step Indicator -->
+  <div class="step-indicator">
+    <div class="step-item active" id="si1">
+      <div class="step-num">1</div>
+      <div class="step-label">Enter Organizer ID</div>
+    </div>
+    <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="step-item" id="si2">
+      <div class="step-num">2</div>
+      <div class="step-label">Select Event</div>
+    </div>
+    <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="step-item" id="si3">
+      <div class="step-num">3</div>
+      <div class="step-label">Manage Participants</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 1: ORGANIZER ID SEARCH ── -->
+  <div class="organizer-search-bar">
+    <div class="osb-label">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <span class="step-badge">STEP 1</span>
+      Enter your Organizer User ID to load your events
+    </div>
+    <div class="osb-input-row">
+      <div class="osb-input-wrap">
+        <i class="fa-solid fa-id-badge"></i>
+        <input type="text" id="organizerIdInput" placeholder="e.g. 42 or UC-0042"
+               onkeydown="if(event.key==='Enter') searchOrganizer()">
+      </div>
+      <button class="osb-search-btn" id="searchOrgBtn" onclick="searchOrganizer()">
+        <i class="fa-solid fa-search"></i> Search Organizer
+      </button>
+    </div>
+    <div class="osb-organizer-info" id="organizerInfo">
+      <div class="osb-org-avatar" id="orgAvatar">—</div>
+      <div class="osb-org-details">
+        <div class="osb-org-name" id="orgName">—</div>
+        <div class="osb-org-meta" id="orgMeta">—</div>
+      </div>
+      <span class="osb-org-badge" id="orgEventCount">0 Events</span>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: EVENTS GRID ── -->
+  <div class="events-section" id="eventsSection">
+    <div class="events-section-header">
+      <h2>
+        <span class="step-badge">STEP 2</span>
+        Select an Event to View Participants
+      </h2>
+      <span style="font-size:13px;color:var(--muted)" id="eventsCountLabel"></span>
+    </div>
+    <div class="events-grid" id="eventsGrid"></div>
+  </div>
+
+  <!-- ── STEP 3: PARTICIPANTS PANEL ── -->
+  <div class="participants-panel" id="participantsPanel">
+
+    <!-- Selected Event Banner -->
+    <div class="selected-event-banner" id="selectedEventBanner">
+      <div class="seb-icon"><i class="fa-solid fa-calendar-check"></i></div>
+      <div class="seb-info">
+        <div class="seb-title" id="sebTitle">Event Name</div>
+        <div class="seb-meta" id="sebMeta">Date · Venue</div>
+      </div>
+      <button class="seb-back-btn" onclick="backToEvents()">
+        <i class="fa-solid fa-arrow-left"></i> Back to Events
+      </button>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
+        <div class="stat-info"><h3 id="statTotal">0</h3><p>Total Participants</p></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="stat-info"><h3 id="statConfirmed">0</h3><p>Confirmed</p></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon amber"><i class="fa-solid fa-clock"></i></div>
+        <div class="stat-info"><h3 id="statPending">0</h3><p>Pending</p></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red"><i class="fa-solid fa-circle-xmark"></i></div>
+        <div class="stat-info"><h3 id="statCancelled">0</h3><p>Cancelled</p></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon navy"><i class="fa-solid fa-building"></i></div>
+        <div class="stat-info"><h3 id="statDepts">0</h3><p>Departments</p></div>
+      </div>
+    </div>
+
+    <!-- Bulk Bar -->
+    <div class="bulk-bar" id="bulkBar">
+      <p id="bulkCount">0 selected</p>
+      <button class="bulk-btn success" onclick="bulkAction('confirmed')"><i class="fa-solid fa-check"></i> Confirm Selected</button>
+      <button class="bulk-btn" onclick="bulkAction('waitlisted')"><i class="fa-solid fa-hourglass"></i> Waitlist</button>
+      <button class="bulk-btn danger" onclick="bulkAction('cancelled')"><i class="fa-solid fa-ban"></i> Cancel Selected</button>
+      <button class="bulk-btn" onclick="openBulkMessage()"><i class="fa-solid fa-envelope"></i> Message Selected</button>
+      <button class="bulk-cancel" onclick="clearSelection()"><i class="fa-solid fa-times"></i></button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <i class="fa-solid fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search by name, email, department…" oninput="filterParticipants()">
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all" onclick="setFilter('all')">All <span class="tab-count" id="tab-all">0</span></button>
+        <button class="filter-tab" data-filter="confirmed" onclick="setFilter('confirmed')">Confirmed <span class="tab-count" id="tab-confirmed">0</span></button>
+        <button class="filter-tab" data-filter="pending" onclick="setFilter('pending')">Pending <span class="tab-count" id="tab-pending">0</span></button>
+        <button class="filter-tab" data-filter="cancelled" onclick="setFilter('cancelled')">Cancelled <span class="tab-count" id="tab-cancelled">0</span></button>
+        <button class="filter-tab" data-filter="audience" onclick="setFilter('audience')">Audience <span class="tab-count" id="tab-audience">0</span></button>
+      </div>
+      <div class="toolbar-right">
+        <button class="icon-btn active" id="tableViewBtn" onclick="setView('table')" title="Table View"><i class="fa-solid fa-table-list"></i></button>
+        <button class="icon-btn" id="gridViewBtn" onclick="setView('grid')" title="Grid View"><i class="fa-solid fa-grip"></i></button>
+      </div>
+    </div>
+
+    <!-- Table View -->
+    <div class="table-view" id="tableView">
+      <div class="table-card">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                <th>Participant</th>
+                <th>Type</th>
+                <th>Department</th>
+                <th>Phone</th>
+                <th>Registered</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="participantTableBody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <p id="tableFooterText">No participants loaded</p>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid View -->
+    <div class="grid-view" id="gridView"></div>
+
+  </div><!-- /participants-panel -->
+
+</div><!-- /page -->
+
+
+<!-- PROFILE MODAL -->
+<div class="modal" id="profileModal">
+  <div class="profile-modal-box">
+    <div class="profile-modal-header">
+      <div class="profile-modal-avatar" id="pmAvatar">—</div>
+      <div class="profile-modal-info">
+        <h2 id="pmName">Participant Name</h2>
+        <p id="pmEmail">email@example.com</p>
+        <div class="profile-modal-badges">
+          <span class="pm-badge" id="pmTypeBadge">Participant</span>
+          <span class="pm-badge" id="pmStatusBadge">—</span>
+        </div>
+      </div>
+      <div class="profile-modal-close" onclick="closeProfileModal()"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div class="profile-modal-body">
+      <div class="profile-section">
+        <h4><i class="fa-solid fa-id-card"></i> &nbsp;Personal Info</h4>
+        <div class="profile-field"><label>Full Name</label><p id="pmFullName">—</p></div>
+        <div class="profile-field"><label>Phone</label><p id="pmPhone">—</p></div>
+        <div class="profile-field"><label>User ID</label><p id="pmUserId">—</p></div>
+      </div>
+      <div class="profile-section">
+        <h4><i class="fa-solid fa-building"></i> &nbsp;Academic Info</h4>
+        <div class="profile-field"><label>University</label><p id="pmUniversity">—</p></div>
+        <div class="profile-field"><label>Department / Faculty</label><p id="pmDepartment">—</p></div>
+        <div class="profile-field"><label>Participant Type</label><p id="pmType">—</p></div>
+      </div>
+      <div class="profile-section">
+        <h4><i class="fa-solid fa-calendar"></i> &nbsp;Registration Info</h4>
+        <div class="profile-field"><label>Registered On</label><p id="pmRegDate">—</p></div>
+        <div class="profile-field"><label>Status</label><p id="pmStatus">—</p></div>
+        <div class="profile-field"><label>Registration ID</label><p id="pmRegId">—</p></div>
+      </div>
+      <div class="profile-section">
+        <h4><i class="fa-solid fa-note-sticky"></i> &nbsp;Notes</h4>
+        <div class="profile-field"><p id="pmNotes" class="empty">No notes provided</p></div>
+      </div>
+    </div>
+    <div class="profile-modal-footer">
+      <button class="pm-action-btn cancel"   onclick="changeStatus(currentParticipant,'cancelled')"><i class="fa-solid fa-ban"></i> Cancel</button>
+      <button class="pm-action-btn waitlist" onclick="changeStatus(currentParticipant,'waitlisted')"><i class="fa-solid fa-hourglass"></i> Waitlist</button>
+      <button class="pm-action-btn msg"      onclick="openMessageModal(currentParticipant)"><i class="fa-solid fa-envelope"></i> Message</button>
+      <button class="pm-action-btn confirm"  onclick="changeStatus(currentParticipant,'confirmed')"><i class="fa-solid fa-check"></i> Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal" id="confirmModal">
+  <div class="confirm-modal-box">
+    <div class="ci-icon" id="ciIcon"></div>
+    <h3 id="ciTitle">Are you sure?</h3>
+    <p id="ciMsg">This action cannot be undone.</p>
+    <div class="confirm-btns">
+      <button class="confirm-btn ghost" onclick="closeConfirmModal()">Cancel</button>
+      <button class="confirm-btn danger" id="ciConfirmBtn" onclick="confirmAction()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- MESSAGE MODAL -->
+<div class="modal" id="messageModal">
+  <div class="msg-modal-box">
+    <div class="profile-modal-close" onclick="closeMessageModal()"
+         style="position:relative;top:auto;right:auto;float:right;margin-bottom:8px;background:#f3f4f6;border-color:#e5e7eb;color:#555">
+      <i class="fa-solid fa-xmark"></i>
+    </div>
+    <h3><i class="fa-solid fa-envelope" style="color:var(--accent)"></i> &nbsp;Send Message</h3>
+    <p id="msgRecipient">To: All participants</p>
+    <textarea id="messageText" placeholder="Type your message here…"></textarea>
+    <div class="msg-btns">
+      <button class="msg-btn ghost" onclick="closeMessageModal()">Cancel</button>
+      <button class="msg-btn primary" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i> Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST STACK -->
+<div class="toast-stack" id="toastStack"></div>
+
+
+<script>
+/* ── STATE ── */
+const token  = localStorage.getItem('token');
+const BASE   = 'http://localhost:3000';
+
+let allEvents          = [];
+let allParticipants    = [];
+let filteredParts      = [];
+let selectedIds        = new Set();
+let currentFilter      = 'all';
+let currentView        = 'table';
+let currentEventId     = null;
+let currentEventObj    = null;
+let currentParticipant = null;
+let pendingAction      = null;
+let currentPage        = 1;
+let currentOrgId       = null;
+const PAGE_SIZE        = 15;
+
+/* ── HELPERS ── */
+function fmt(d)  { return d ? String(d).split('T')[0] : '—'; }
+function initials(name) {
+  if (!name) return '?';
+  return name.trim().split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+}
+function setEl(id, val) { const e=document.getElementById(id); if(e) e.textContent=val; }
+function cap(s)  { return s ? s.charAt(0).toUpperCase()+s.slice(1) : '—'; }
+
+/* ── TOAST ── */
+function toast(msg, type='success') {
+  const icons = { success:'fa-check-circle', error:'fa-circle-xmark', warning:'fa-triangle-exclamation', info:'fa-circle-info' };
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<i class="fa-solid ${icons[type]||'fa-bell'}"></i><span>${msg}</span>`;
+  document.getElementById('toastStack').appendChild(t);
+  setTimeout(()=>t.remove(), 3800);
+}
+
+/* ── STEP INDICATOR ── */
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('si'+i);
+    el.classList.remove('active','done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  });
+}
+
+/* ── STEP 1: ORGANIZER SEARCH ── */
+async function searchOrganizer() {
+  const raw = document.getElementById('organizerIdInput').value.trim();
+  if (!raw) { toast('Please enter an organizer User ID', 'warning'); return; }
+
+  const userId = parseInt(raw.replace(/[^0-9]/g, ''));
+  if (!userId || isNaN(userId)) { toast('Invalid User ID format', 'warning'); return; }
+
+  currentOrgId = userId;
+  const btn = document.getElementById('searchOrgBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Searching…';
+
+  try {
+    // 1. Fetch organizer profile
+    let orgName = `Organizer #${userId}`;
+    let orgEmail = '';
+    try {
+      const ur = await fetch(`${BASE}/api/users/${userId}`, { headers:{ Authorization:'Bearer '+token } });
+      if (ur.ok) {
+        const ud = await ur.json();
+        const u  = ud.user || ud.data || ud;
+        orgName  = u.full_name || u.name || orgName;
+        orgEmail = u.email || '';
+      }
+    } catch(_) {}
+
+    // 2. Fetch events created by this organizer
+    const er = await fetch(`${BASE}/api/events?organizer_id=${userId}`, {
+      headers:{ Authorization:'Bearer '+token }
+    });
+
+    // FIX: check HTTP status before parsing
+    if (!er.ok) {
+      throw new Error(`Server returned ${er.status}`);
+    }
+
+    const ed = await er.json();
+    allEvents = Array.isArray(ed) ? ed : (ed.events || ed.data || []);
+
+    if (allEvents.length === 0) {
+      toast(`No events found for organizer ID ${userId}`, 'warning');
+      document.getElementById('organizerInfo').classList.remove('show');
+      document.getElementById('eventsSection').classList.remove('show');
+    } else {
+      setEl('orgAvatar', initials(orgName));
+      setEl('orgName', orgName);
+      setEl('orgMeta', orgEmail || `User ID: ${userId}`);
+      setEl('orgEventCount', `${allEvents.length} Event${allEvents.length!==1?'s':''}`);
+      document.getElementById('organizerInfo').classList.add('show');
+
+      // Hide participants panel from previous search
+      document.getElementById('participantsPanel').classList.remove('show');
+      document.getElementById('exportDropWrap').style.display = 'none';
+      document.getElementById('msgAllBtn').style.display = 'none';
+
+      renderEventsGrid();
+      document.getElementById('eventsSection').classList.add('show');
+      setStep(2);
+      toast(`Found ${allEvents.length} event(s) for ${orgName}`, 'success');
+    }
+
+  } catch(e) {
+    console.error(e);
+    toast('Failed to fetch organizer data. Check your connection.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-search"></i> Search Organizer';
+  }
+}
+
+/* ── RENDER EVENTS GRID ── */
+function getImageUrl(path) {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  return `${BASE}${path}`;
+}
+
+function renderEventsGrid() {
+  const grid = document.getElementById('eventsGrid');
+  setEl('eventsCountLabel', `${allEvents.length} event${allEvents.length!==1?'s':''} found`);
+
+  grid.innerHTML = allEvents.map(ev => {
+    const imgUrl = getImageUrl(ev.image_url);
+    const imgHtml = imgUrl
+      ? `<img class="event-card-img" src="${imgUrl}" alt="${ev.title||'Event'}" onerror="this.parentElement.innerHTML='<div class=\\'event-card-img-placeholder\\'><i class=\\'fa-solid fa-calendar-days\\'></i></div>'">`
+      : `<div class="event-card-img-placeholder"><i class="fa-solid fa-calendar-days"></i></div>`;
+
+    const regCount = ev.registrant_count || ev.participant_count || 0;
+    const maxParts = ev.max_participants ? `/ ${ev.max_participants}` : '';
+
+    return `
+    <div class="event-card" id="ec-${ev.event_id}">
+      ${imgHtml}
+      <div class="event-card-body">
+        <div class="event-card-title">${ev.title || 'Untitled Event'}</div>
+        <div class="event-card-meta">
+          <div class="event-card-row"><i class="fa-solid fa-calendar"></i> ${fmt(ev.event_date)}</div>
+          <div class="event-card-row"><i class="fa-solid fa-location-dot"></i> ${ev.venue || '—'}</div>
+          <div class="event-card-row"><i class="fa-solid fa-tag"></i> ${ev.category || 'General'}</div>
+        </div>
+        <div class="event-card-footer">
+          <span class="ec-id-badge">UCE${ev.event_id}</span>
+          <span class="ec-reg-count"><i class="fa-solid fa-users"></i> ${regCount}${maxParts} registered</span>
+          <button class="ec-view-btn" onclick="viewParticipants(${ev.event_id})">
+            <i class="fa-solid fa-users"></i> View Participants
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── VIEW PARTICIPANTS (STEP 3) ── */
+async function viewParticipants(eventId) {
+  currentEventId  = eventId;
+  currentEventObj = allEvents.find(e => e.event_id === eventId);
+
+  // Highlight selected card
+  document.querySelectorAll('.event-card').forEach(c => c.classList.remove('selected'));
+  const selectedCard = document.getElementById('ec-'+eventId);
+  if (selectedCard) selectedCard.classList.add('selected');
+
+  // Update banner
+  if (currentEventObj) {
+    setEl('sebTitle', `UCE${currentEventObj.event_id} — ${currentEventObj.title}`);
+    setEl('sebMeta', `${fmt(currentEventObj.event_date)} · ${currentEventObj.venue || '—'}`);
+  }
+
+  document.getElementById('participantsPanel').classList.add('show');
+  document.getElementById('exportDropWrap').style.display = '';
+  document.getElementById('msgAllBtn').style.display = '';
+  document.getElementById('participantsPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  setStep(3);
+  await loadParticipants(eventId);
+}
+
+function backToEvents() {
+  document.getElementById('participantsPanel').classList.remove('show');
+  document.getElementById('exportDropWrap').style.display = 'none';
+  document.getElementById('msgAllBtn').style.display = 'none';
+  document.querySelectorAll('.event-card').forEach(c => c.classList.remove('selected'));
+  setStep(2);
+  document.getElementById('eventsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ── LOAD PARTICIPANTS ── */
+// FIX: separated server errors from empty results so "Failed to load"
+//      never shows just because an event has zero participants
+async function loadParticipants(eventId) {
+  document.getElementById('participantTableBody').innerHTML = `
+    <tr><td colspan="8">
+      <div style="padding:48px 20px;text-align:center;color:var(--muted)">
+        <div class="spinner"></div>
+        Loading participants…
+      </div>
+    </td></tr>`;
+  document.getElementById('gridView').innerHTML = '';
+
+  try {
+    const r = await fetch(`${BASE}/api/events/${eventId}/participants`, {
+      headers:{ Authorization:'Bearer '+token }
+    });
+
+    // FIX: treat HTTP errors as thrown errors, not empty arrays
+    if (!r.ok) {
+      const errData = await r.json().catch(()=>({}));
+      throw new Error(errData.message || `Server error ${r.status}`);
+    }
+
+    const d = await r.json();
+
+    // FIX: safely extract participants array — never falls to catch on empty
+    allParticipants = Array.isArray(d)
+      ? d
+      : Array.isArray(d.participants)
+        ? d.participants
+        : Array.isArray(d.data)
+          ? d.data
+          : [];
+
+    allParticipants = allParticipants.map(p => ({
+      ...p,
+      status: (p.status || 'pending').toLowerCase()
+    }));
+
+    currentFilter = 'all';
+    document.querySelectorAll('.filter-tab').forEach(t =>
+      t.classList.toggle('active', t.dataset.filter === 'all'));
+    document.getElementById('searchInput').value = '';
+    selectedIds.clear();
+    updateStats();
+    updateTabCounts();
+    applyFilter(); // handles empty array → shows "No participants found"
+
+  } catch(e) {
+    // Only reaches here on real network / server failure
+    console.error('loadParticipants error:', e);
+    document.getElementById('participantTableBody').innerHTML = `
+      <tr><td colspan="8">
+        <div style="padding:48px 20px;text-align:center;color:var(--muted)">
+          <i class="fa-solid fa-triangle-exclamation" style="font-size:28px;color:#f59e0b;display:block;margin-bottom:12px"></i>
+          Server error: ${e.message}
+        </div>
+      </td></tr>`;
+    toast(`Server error: ${e.message}`, 'error');
+  }
+}
+
+/* ── STATS ── */
+function updateStats() {
+  const p = allParticipants;
+  setEl('statTotal',     p.length);
+  setEl('statConfirmed', p.filter(x=>x.status==='confirmed').length);
+  setEl('statPending',   p.filter(x=>x.status==='pending').length);
+  setEl('statCancelled', p.filter(x=>x.status==='cancelled').length);
+  const depts = new Set(p.map(x=>x.faculty_name||x.faculty||x.department_name).filter(Boolean));
+  setEl('statDepts', depts.size);
+}
+
+function updateTabCounts() {
+  const p = allParticipants;
+  setEl('tab-all',       p.length);
+  setEl('tab-confirmed', p.filter(x=>x.status==='confirmed').length);
+  setEl('tab-pending',   p.filter(x=>x.status==='pending').length);
+  setEl('tab-cancelled', p.filter(x=>x.status==='cancelled').length);
+  setEl('tab-audience',  p.filter(x=>(x.participant_type||'').toLowerCase()==='audience').length);
+}
+
+/* ── FILTER & SEARCH ── */
+function setFilter(f) {
+  currentFilter = f; currentPage = 1;
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.toggle('active',t.dataset.filter===f));
+  applyFilter();
+}
+
+function filterParticipants() { currentPage=1; applyFilter(); }
+
+function applyFilter() {
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  filteredParts = allParticipants.filter(p => {
+    const matchFilter =
+      currentFilter==='all'      ? true :
+      currentFilter==='audience' ? (p.participant_type||'').toLowerCase()==='audience' :
+      p.status===currentFilter;
+    const name  = (p.full_name||p.name||'').toLowerCase();
+    const email = (p.email||'').toLowerCase();
+    // FIX: check faculty_name (DB column) first, then fallbacks
+    const dept  = (p.faculty_name||p.faculty||p.department_name||'').toLowerCase();
+    const uni   = (p.university_name||p.university||'').toLowerCase();
+    const matchSearch = !q || name.includes(q) || email.includes(q) || dept.includes(q) || uni.includes(q);
+    return matchFilter && matchSearch;
+  });
+  renderView();
+  updateFooter();
+}
+
+/* ── RENDER ── */
+function renderView() {
+  if (currentView==='table') renderTable(); else renderGrid();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('participantTableBody');
+  const start = (currentPage-1)*PAGE_SIZE;
+  const page  = filteredParts.slice(start, start+PAGE_SIZE);
+
+  if (filteredParts.length===0) {
+    tbody.innerHTML = `<tr><td colspan="8">
+      <div class="empty-state">
+        <i class="fa-solid fa-users-slash"></i>
+        <h3>No participants found</h3>
+        <p>${allParticipants.length ? 'Try changing the filter or search term.' : 'No one has registered for this event yet.'}</p>
+      </div></td></tr>`;
+    renderPagination(); return;
+  }
+
+  tbody.innerHTML = page.map(p => {
+    const checked = selectedIds.has(p.registration_id||p.id) ? 'checked' : '';
+    const name    = p.full_name || p.user_full_name || p.name || 'Unknown';
+    const email   = p.email||'—';
+    // FIX: faculty_name is the actual DB column returned by backend
+    const dept    = p.faculty_name||p.faculty||p.department_name||'—';
+    const phone   = p.phone||p.contact_no||'—';
+    const type    = (p.participant_type||'participant').toLowerCase();
+    const status  = p.status||'pending';
+    const regDate = fmt(p.registration_date||p.created_at);
+    const rid     = p.registration_id||p.id;
+    return `
+    <tr>
+      <td><input type="checkbox" ${checked} onchange="toggleRow(${rid})" style="accent-color:var(--primary);width:15px;height:15px;cursor:pointer"></td>
+      <td>
+        <div class="participant-cell">
+          <div class="p-avatar">${initials(name)}</div>
+          <div><div class="p-name">${name}</div><div class="p-email">${email}</div></div>
+        </div>
+      </td>
+      <td><span class="p-type-badge ${type}">${cap(type)}</span></td>
+      <td style="color:var(--muted);font-size:13px">${dept}</td>
+      <td style="color:var(--muted);font-size:13px">${phone}</td>
+      <td style="color:var(--muted);font-size:13px">${regDate}</td>
+      <td><span class="status-badge ${status}">${cap(status)}</span></td>
+      <td>
+        <div class="action-btns">
+          <button class="act-btn view"    onclick="openProfileModal(${rid})" title="View Profile"><i class="fa-solid fa-eye"></i></button>
+          <button class="act-btn confirm" onclick="quickStatus(${rid},'confirmed')" title="Confirm"><i class="fa-solid fa-check"></i></button>
+          <button class="act-btn cancel"  onclick="quickStatus(${rid},'cancelled')" title="Cancel"><i class="fa-solid fa-ban"></i></button>
+          <button class="act-btn msg"     onclick="openMessageModal(getParticipant(${rid}))" title="Send Message"><i class="fa-solid fa-envelope"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  renderPagination();
+}
+
+function renderGrid() {
+  const gv = document.getElementById('gridView');
+  if (filteredParts.length===0) {
+    gv.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <i class="fa-solid fa-users-slash"></i>
+      <h3>No participants found</h3>
+      <p>${allParticipants.length ? 'Try adjusting the filter.' : 'No one has registered for this event yet.'}</p>
+    </div>`; return;
+  }
+  const start = (currentPage-1)*PAGE_SIZE;
+  const page  = filteredParts.slice(start, start+PAGE_SIZE);
+  gv.innerHTML = page.map(p => {
+    const name   = p.full_name || p.user_full_name || p.name || 'Unknown';
+    // FIX: faculty_name is the actual DB column
+    const dept   = p.faculty_name||p.faculty||p.department_name||'—';
+    const uni    = p.university_name||p.university||'—';
+    const status = p.status||'pending';
+    const type   = (p.participant_type||'participant').toLowerCase();
+    const rid    = p.registration_id||p.id;
+    const phone  = p.phone||p.contact_no||'—';
+    return `
+    <div class="p-grid-card" onclick="openProfileModal(${rid})">
+      <div class="p-gc-top">
+        <div class="p-gc-avatar">${initials(name)}</div>
+        <div class="p-gc-info"><div class="p-gc-name">${name}</div><div class="p-gc-role">${cap(type)}</div></div>
+        <span class="status-badge ${status}" style="align-self:flex-start">${cap(status)}</span>
+      </div>
+      <div class="p-gc-meta">
+        <div class="p-gc-row"><i class="fa-solid fa-building"></i> ${dept}</div>
+        <div class="p-gc-row"><i class="fa-solid fa-university"></i> ${uni}</div>
+        <div class="p-gc-row"><i class="fa-solid fa-phone"></i> ${phone}</div>
+      </div>
+      <div class="p-gc-actions" onclick="event.stopPropagation()">
+        <button class="p-gc-btn profile" onclick="openProfileModal(${rid})"><i class="fa-solid fa-eye"></i> Profile</button>
+        <button class="p-gc-btn confirm" onclick="quickStatus(${rid},'confirmed')"><i class="fa-solid fa-check"></i> Confirm</button>
+        <button class="p-gc-btn cancel"  onclick="quickStatus(${rid},'cancelled')"><i class="fa-solid fa-ban"></i> Cancel</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderPagination() {
+  const total = filteredParts.length;
+  const pages = Math.ceil(total/PAGE_SIZE);
+  const pg = document.getElementById('pagination');
+  if (!pg) return;
+  if (pages<=1) { pg.innerHTML=''; return; }
+  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="fa-solid fa-chevron-left" style="font-size:11px"></i></button>`;
+  for (let i=1;i<=pages;i++) {
+    if (i===1||i===pages||Math.abs(i-currentPage)<=1) {
+      html+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    } else if (Math.abs(i-currentPage)===2) {
+      html+=`<button class="page-btn" disabled>…</button>`;
+    }
+  }
+  html+=`<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="fa-solid fa-chevron-right" style="font-size:11px"></i></button>`;
+  pg.innerHTML=html;
+}
+
+function goPage(p) {
+  const pages=Math.ceil(filteredParts.length/PAGE_SIZE);
+  if (p<1||p>pages) return;
+  currentPage=p; renderView();
+}
+
+function updateFooter() {
+  const start=(currentPage-1)*PAGE_SIZE+1;
+  const end=Math.min(currentPage*PAGE_SIZE,filteredParts.length);
+  const total=filteredParts.length;
+  const el=document.getElementById('tableFooterText');
+  if (el) el.textContent = total===0 ? 'No participants' : `Showing ${start}–${end} of ${total} participant${total!==1?'s':''}`;
+}
+
+/* ── VIEW TOGGLE ── */
+function setView(v) {
+  currentView=v;
+  const tv=document.getElementById('tableView');
+  const gv=document.getElementById('gridView');
+  const tb=document.getElementById('tableViewBtn');
+  const gb=document.getElementById('gridViewBtn');
+  if (v==='table') {
+    tv.classList.remove('hidden'); gv.classList.remove('active');
+    tb.classList.add('active'); gb.classList.remove('active'); renderTable();
+  } else {
+    tv.classList.add('hidden'); gv.classList.add('active');
+    gb.classList.add('active'); tb.classList.remove('active'); renderGrid();
+  }
+}
+
+/* ── SELECTION ── */
+function toggleRow(rid) {
+  if (selectedIds.has(rid)) selectedIds.delete(rid); else selectedIds.add(rid);
+  updateBulkBar();
+}
+function toggleSelectAll() {
+  const all=document.getElementById('selectAll').checked;
+  const page=filteredParts.slice((currentPage-1)*PAGE_SIZE,currentPage*PAGE_SIZE);
+  page.forEach(p=>{ const rid=p.registration_id||p.id; if(all) selectedIds.add(rid); else selectedIds.delete(rid); });
+  renderTable(); updateBulkBar();
+}
+function clearSelection() {
+  selectedIds.clear();
+  const sa=document.getElementById('selectAll'); if(sa) sa.checked=false;
+  renderTable(); updateBulkBar();
+}
+function updateBulkBar() {
+  const bar=document.getElementById('bulkBar');
+  if (selectedIds.size>0) {
+    bar.classList.add('show');
+    setEl('bulkCount',`${selectedIds.size} participant${selectedIds.size>1?'s':''} selected`);
+  } else { bar.classList.remove('show'); }
+}
+
+/* ── STATUS CHANGE ── */
+function getParticipant(rid) { return allParticipants.find(p=>(p.registration_id||p.id)===rid); }
+
+function quickStatus(rid, status) {
+  const p=getParticipant(rid); if(!p) return;
+  const labels    = { confirmed:'Confirm', cancelled:'Cancel', waitlisted:'Waitlist' };
+  const btnCls    = { confirmed:'success', cancelled:'danger', waitlisted:'ghost' };
+  const bgCol     = { confirmed:'#d1fae5', cancelled:'#fee2e2', waitlisted:'#e0e4ff' };
+  const iconMap   = { confirmed:'fa-check-circle', cancelled:'fa-ban', waitlisted:'fa-hourglass-half' };
+  const colorMap  = { confirmed:'#10b981', cancelled:'#ef4444', waitlisted:'#1f276f' };
+  pendingAction   = { type:'status', rid, status };
+  const name      = p.full_name||p.name||'this participant';
+  document.getElementById('ciIcon').innerHTML=`<i class="fa-solid ${iconMap[status]}" style="font-size:24px;color:${colorMap[status]}"></i>`;
+  document.getElementById('ciIcon').style.background=bgCol[status]||'#f3f4f6';
+  setEl('ciTitle',`${labels[status]} Registration?`);
+  document.getElementById('ciMsg').innerHTML=`Are you sure you want to mark <b>${name}</b> as <b>${status}</b>?`;
+  const cb=document.getElementById('ciConfirmBtn');
+  cb.className=`confirm-btn ${btnCls[status]||'success'}`;
+  cb.textContent=labels[status];
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+function changeStatus(p,status) { if(!p) return; quickStatus(p.registration_id||p.id,status); }
+
+async function confirmAction() {
+  if (!pendingAction) return;
+  closeConfirmModal();
+
+  if (pendingAction.type==='status') {
+    const { rid, status } = pendingAction;
+    try {
+      // FIX: correct status update URL — was /api/events/registrations/:id/status (wrong)
+      const r = await fetch(`${BASE}/api/registrations/${rid}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type':'application/json', Authorization:'Bearer '+token },
+        body: JSON.stringify({ status })
+      });
+      const d = await r.json();
+      if (d.success || r.ok) {
+        const p = allParticipants.find(p=>(p.registration_id||p.id)===rid);
+        if (p) p.status = status;
+        updateStats(); updateTabCounts(); applyFilter();
+        toast(`Registration ${status} successfully`, 'success');
+        if (document.getElementById('profileModal').classList.contains('open')) openProfileModal(rid);
+      } else {
+        toast(d.message||'Status update failed', 'error');
+      }
+    } catch(e) {
+      toast('Server error', 'error');
+    }
+  }
+
+  if (pendingAction.type==='bulk') {
+    const { ids, status } = pendingAction;
+    let ok = 0;
+    for (const rid of ids) {
+      try {
+        // FIX: correct status update URL
+        const r = await fetch(`${BASE}/api/registrations/${rid}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type':'application/json', Authorization:'Bearer '+token },
+          body: JSON.stringify({ status })
+        });
+        if (r.ok) {
+          const p = allParticipants.find(p=>(p.registration_id||p.id)===rid);
+          if (p) p.status = status;
+          ok++;
+        }
+      } catch{}
+    }
+    updateStats(); updateTabCounts(); applyFilter(); clearSelection();
+    toast(`${ok} participants updated to "${status}"`, 'success');
+  }
+
+  pendingAction = null;
+}
+
+function bulkAction(status) {
+  if (selectedIds.size===0){ toast('Select participants first','warning'); return; }
+  const ids=[...selectedIds];
+  pendingAction={type:'bulk',ids,status};
+  document.getElementById('ciIcon').innerHTML=`<i class="fa-solid fa-users" style="font-size:22px;color:var(--primary)"></i>`;
+  document.getElementById('ciIcon').style.background='#e0e4ff';
+  setEl('ciTitle',`Bulk ${cap(status)}?`);
+  document.getElementById('ciMsg').innerHTML=`Mark <b>${ids.length} selected participants</b> as <b>${status}</b>?`;
+  const cb=document.getElementById('ciConfirmBtn');
+  cb.className=`confirm-btn ${status==='cancelled'?'danger':'success'}`;
+  cb.textContent=cap(status)+' All';
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+/* ── PROFILE MODAL ── */
+function openProfileModal(rid) {
+  const p=getParticipant(rid); if(!p) return;
+  currentParticipant=p;
+  const name   = p.full_name || p.user_full_name || p.name || 'Unknown';
+  const status = p.status||'pending';
+  const type   = (p.participant_type||'participant').toLowerCase();
+  // FIX: faculty_name is the actual DB column
+  const dept   = p.faculty_name||p.faculty||p.department_name||'—';
+  setEl('pmAvatar',initials(name));
+  setEl('pmName',name);
+  setEl('pmEmail',p.email||'—');
+  const tb=document.getElementById('pmTypeBadge');
+  tb.textContent=cap(type);
+  tb.style.background=type==='audience'?'rgba(109,40,217,.3)':'rgba(59,130,246,.3)';
+  const sb=document.getElementById('pmStatusBadge');
+  sb.textContent=cap(status); sb.className=`pm-badge ${status}`;
+  setEl('pmFullName',name);
+  setEl('pmPhone',p.phone||p.contact_no||'—');
+  setEl('pmUserId',p.user_id||'—');
+  setEl('pmUniversity',p.university_name||p.university||'—');
+  setEl('pmDepartment',dept);
+  setEl('pmType',cap(type));
+  setEl('pmRegDate',fmt(p.registration_date||p.created_at));
+  setEl('pmStatus',cap(status));
+  setEl('pmRegId',p.registration_id||p.id||'—');
+  const notesEl=document.getElementById('pmNotes');
+  if(notesEl){ notesEl.textContent=p.notes||'No notes provided.'; notesEl.className=p.notes?'':'empty'; }
+  document.getElementById('profileModal').classList.add('open');
+}
+function closeProfileModal(){ document.getElementById('profileModal').classList.remove('open'); }
+
+/* ── MODALS ── */
+function closeConfirmModal(){ document.getElementById('confirmModal').classList.remove('open'); pendingAction=null; }
+
+function openMessageModal(p) {
+  const el=document.getElementById('msgRecipient');
+  if(p){ el.textContent=`To: ${p.full_name||p.name||'Participant'} (${p.email||'—'})`; }
+  else { el.textContent=`To: ${selectedIds.size>0?selectedIds.size+' selected participants':'All participants'}`; }
+  document.getElementById('messageText').value='';
+  document.getElementById('messageModal').classList.add('open');
+}
+function openBulkMessage(){ openMessageModal(null); }
+function closeMessageModal(){ document.getElementById('messageModal').classList.remove('open'); }
+
+async function sendMessage() {
+  const msg=document.getElementById('messageText').value.trim();
+  if(!msg){ toast('Please type a message first','warning'); return; }
+  closeMessageModal();
+  toast('Message sent successfully!','success');
+}
+
+/* ── EXPORT ── */
+function toggleExportMenu(){ document.getElementById('exportMenu').classList.toggle('open'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('.dropdown-wrap')) document.getElementById('exportMenu')?.classList.remove('open'); });
+
+function exportCSV() {
+  if(!filteredParts.length){ toast('No data to export','warning'); return; }
+  const headers=['ID','Name','Email','Type','Department','University','Phone','Status','Registered'];
+  const rows=filteredParts.map(p=>[
+    p.registration_id||p.id,
+    p.full_name||p.name||'',
+    p.email||'',
+    p.participant_type||'participant',
+    // FIX: faculty_name is the actual DB column
+    p.faculty_name||p.faculty||p.department_name||'',
+    p.university_name||p.university||'',
+    p.phone||p.contact_no||'',
+    p.status||'pending',
+    fmt(p.registration_date||p.created_at)
+  ]);
+  const csv=[headers,...rows].map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=`participants_event${currentEventId||'all'}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exported','success');
+}
+
+function exportJSON() {
+  if(!filteredParts.length){ toast('No data to export','warning'); return; }
+  const blob=new Blob([JSON.stringify(filteredParts,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=`participants_event${currentEventId||'all'}.json`; a.click();
+  URL.revokeObjectURL(url);
+  toast('JSON exported','success');
+}
+
+function printList(){ window.print(); }
+
+/* ── OUTSIDE CLICK CLOSE ── */
+window.addEventListener('click',e=>{
+  if(e.target===document.getElementById('profileModal')) closeProfileModal();
+  if(e.target===document.getElementById('confirmModal')) closeConfirmModal();
+  if(e.target===document.getElementById('messageModal')) closeMessageModal();
+});
+</script>
+</body>
+</html>

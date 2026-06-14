@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UniConnect Admin Login</title>
+    <link rel="stylesheet" href="Adminlogin.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LEFT SECTION -->
+    <div class="left">
+
+        <div class="logo">
+            <img src="images/UClogo.png" alt="UniConnect Logo" class="logo-img">
+        </div>
+
+        <!--<div class="content">
+            <h1>Admin Control Panel</h1>
+            <p>
+                Manage users, events, reports, and system operations securely from one centralized dashboard.
+            </p>
+        </div>-->
+
+        <div class="illustration">
+            <img src="images/Admincover.png" alt="Admin System">
+        </div>
+
+    </div>
+
+<!-- RIGHT SECTION -->
+    <div class="right">
+        <div class="login-box">
+
+            <h2>Admin Login</h2>
+            <p class="subtitle">Access UniConnect administration panel</p>
+
+            <form>
+
+                <label>Admin Email</label>
+                <input type="email" placeholder="Enter admin email">
+
+                <label>Password</label>
+                <div class="password-box">
+                    <input type="password" placeholder="Enter password">
+                    <span class="eye">👁</span>
+                </div>
+
+                <div class="options">
+                    <label><input type="checkbox" checked> Remember me</label>
+                    <a href="#">Forgot Password?</a>
+                </div>
+
+                <button class="login-btn">Login as Admin</button>
+
+                <div class="divider">or continue with</div>
+
+                <div class="social">
+
+                    <button class="google">
+                        <img src="images/google.jpg" alt="Google">
+                        Continue with Google
+                    </button>
+
+                    <button class="microsoft">
+                        <img src="images/m.png" alt="Microsoft">
+                        Microsoft
+                    </button>
+
+                </div>
+
+                <p class="register">
+                    Not an admin? <a href="#">Go to User Login</a>
+                </p>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

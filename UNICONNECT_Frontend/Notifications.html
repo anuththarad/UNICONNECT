@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect - Organizer Notifications</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:       #0a0820;
+  --ink-mid:   #1a1740;
+  --ink-light: #2d2a6e;
+  --blue:      #4f6ef7;
+  --blue-glow: rgba(79,110,247,.18);
+  --teal:      #06b6d4;
+  --emerald:   #10b981;
+  --amber:     #f59e0b;
+  --rose:      #f43f5e;
+  --purple:    #8b5cf6;
+  --bg:        #f0f2ff;
+  --surface:   #ffffff;
+  --surface2:  #f7f8ff;
+  --border:    #e4e7f5;
+  --txt:       #0f172a;
+  --muted:     #64748b;
+  --light:     #94a3b8;
+  --sh-sm:     0 1px 3px rgba(10,8,32,.06);
+  --sh-md:     0 4px 16px rgba(10,8,32,.09);
+  --sh-lg:     0 12px 40px rgba(10,8,32,.13);
+  --sh-xl:     0 24px 64px rgba(10,8,32,.18);
+  --r-sm:      10px;
+  --r-md:      16px;
+  --r-lg:      22px;
+  --ease:      cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;overflow-x:hidden;}
+.container{display:flex;width:100%;min-height:100vh;}
+
+/* ── SIDEBAR (same as OrganizerDash) ── */
+.sidebar{width:272px;background:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;z-index:100;overflow-y:auto;overflow-x:hidden;border-right:1px solid #e5e7eb;box-shadow:0 0 30px rgba(15,23,42,.04);}
+.logo-area{height:95px;display:flex;align-items:center;justify-content:center;padding:16px 20px;background:#fff;border-bottom:1px solid #edf1f7;overflow:hidden;flex-shrink:0;}
+.logo-area img{width:160px;max-width:100%;height:auto;object-fit:contain;display:block;}
+.logo-text{font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:#0f172a;}
+.logo-text span{color:#1e3a8a;}
+.sb-profile{display:flex;align-items:center;gap:14px;margin:20px 16px 18px;padding:15px;background:linear-gradient(135deg,#0f172a,#1e3a8a);border-radius:18px;box-shadow:0 10px 25px rgba(15,23,42,.18);transition:.25s ease;position:relative;z-index:1;}
+.sb-profile:hover{transform:translateY(-2px);}
+.sb-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#60a5fa,#38bdf8);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;flex-shrink:0;}
+.sb-info .sb-name{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
+.sb-info .sb-role{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#bfdbfe;margin-top:3px;}
+.nav-section{padding:0 14px;position:relative;z-index:1;}
+.nav-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;padding:18px 12px 8px;}
+.nav-item{display:flex;align-items:center;gap:14px;padding:13px 15px;border-radius:14px;cursor:pointer;color:#334155;font-weight:600;font-size:15px;transition:.2s ease;position:relative;margin-bottom:6px;text-decoration:none;}
+.nav-item i{width:20px;font-size:16px;text-align:center;color:#475569;transition:.2s ease;}
+.nav-item:hover{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;transform:translateX(3px);}
+.nav-item:hover i{color:#fff;}
+.nav-item.active{background:linear-gradient(135deg,#0f172a,#1e40af);color:#fff;box-shadow:0 8px 20px rgba(30,58,138,.20);}
+.nav-item.active i{color:#fff;}
+.nav-badge{margin-left:auto;background:#ef4444;color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 5px;}
+.sb-footer{margin-top:auto;padding:18px 16px;border-top:1px solid #edf1f7;position:relative;z-index:1;}
+.sb-logout{display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:14px;cursor:pointer;color:#475569;font-size:15px;font-weight:700;transition:.2s ease;}
+.sb-logout:hover{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;}
+
+/* ── MAIN ── */
+.main{flex:1;padding:32px 36px;overflow-y:auto;}
+
+/* ── PAGE HEADER ── */
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;}
+.page-header-left h2{font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:var(--ink);letter-spacing:-.5px;}
+.page-header-left p{font-size:14px;color:var(--muted);margin-top:3px;}
+.header-actions{display:flex;gap:10px;align-items:center;}
+
+/* ── FILTER TABS ── */
+.tabs-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.tab-btn{padding:9px 16px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:.2s var(--ease);display:flex;align-items:center;gap:7px;font-family:'DM Sans',sans-serif;}
+.tab-btn:hover{border-color:var(--blue);color:var(--ink);}
+.tab-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.tab-count{padding:1px 7px;border-radius:99px;font-size:11px;}
+.tab-btn.active .tab-count{background:rgba(255,255,255,.2);}
+.tab-btn:not(.active) .tab-count{background:var(--blue-glow);color:var(--blue);}
+
+/* ── ACTION ROW ── */
+.actions-row{display:flex;gap:10px;align-items:center;margin-bottom:24px;flex-wrap:wrap;}
+.action-btn{display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:.2s var(--ease);font-family:'DM Sans',sans-serif;}
+.action-btn:hover{border-color:var(--blue);color:var(--ink);}
+.action-btn.primary{background:var(--ink);color:#fff;border-color:var(--ink);}
+.action-btn.primary:hover{background:var(--ink-mid);}
+.action-btn.danger:hover{border-color:var(--rose);color:var(--rose);background:#fff0f3;}
+.spacer{flex:1;}
+
+/* ── NOTIFICATION CARD ── */
+#notificationFeed{display:flex;flex-direction:column;gap:10px;}
+.notif-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;display:flex;gap:16px;align-items:flex-start;transition:.25s var(--ease);cursor:pointer;position:relative;overflow:hidden;}
+.notif-card:hover{border-color:var(--blue);box-shadow:var(--sh-md);transform:translateY(-1px);}
+.notif-card.unread{border-left:4px solid var(--blue);background:#fafcff;}
+.notif-card.unread::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--teal));}
+
+.notif-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.notif-icon.blue  {background:#eff6ff;color:var(--blue);}
+.notif-icon.green {background:#d1fae5;color:var(--emerald);}
+.notif-icon.amber {background:#fef3c7;color:var(--amber);}
+.notif-icon.purple{background:#ede9fe;color:var(--purple);}
+.notif-icon.red   {background:#fee2e2;color:var(--rose);}
+.notif-icon.teal  {background:#ccfbf1;color:#0d9488;}
+
+.notif-body{flex:1;min-width:0;}
+.notif-title-row{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;}
+.notif-title{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:var(--ink);}
+.notif-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 9px;border-radius:99px;}
+.notif-badge.new{background:#dbeafe;color:var(--blue);}
+.notif-msg{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:8px;}
+.notif-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.notif-time{font-size:12px;color:var(--light);display:flex;align-items:center;gap:5px;}
+.notif-type-tag{font-size:11px;font-weight:600;padding:2px 9px;border-radius:6px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+
+.notif-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.notif-act-btn{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s var(--ease);}
+.notif-act-btn:hover{border-color:var(--rose);color:var(--rose);background:#fff0f3;}
+.notif-act-btn.read-btn:hover{border-color:var(--emerald);color:var(--emerald);background:#d1fae5;}
+
+/* ── EVENT LINK ── */
+.notif-event-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--blue);text-decoration:none;margin-top:4px;}
+.notif-event-link:hover{text-decoration:underline;}
+
+/* ── EMPTY ── */
+.empty-box{padding:60px 20px;text-align:center;color:var(--muted);font-size:13.5px;background:var(--surface2);border-radius:var(--r-lg);border:1px dashed var(--border);}
+.empty-box i{font-size:36px;display:block;margin-bottom:14px;color:var(--light);}
+.empty-box h3{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:#fff;padding:14px 20px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:var(--sh-xl);display:flex;align-items:center;gap:10px;transform:translateY(80px);opacity:0;transition:transform .35s var(--ease),opacity .35s;pointer-events:none;z-index:9999;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success i{color:#4ade80;}
+.toast.error i{color:#f87171;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1060px){
+  .sidebar{width:72px;}
+  .sb-info,.nav-item span,.sb-logout span,.nav-label{display:none;}
+  .sb-profile{justify-content:center;padding:10px;}
+  .nav-item{justify-content:center;padding:12px;}
+  .logo-area{justify-content:center;}
+  .sb-logout{justify-content:center;padding:12px;}
+}
+@media(max-width:768px){
+  .main{padding:20px 16px;}
+  .page-header{flex-direction:column;align-items:flex-start;gap:14px;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <img src="images/UClogo.png" alt="UniConnect" onerror="this.style.display='none';document.getElementById('ltx').style.display='block'">
+    <span class="logo-text" id="ltx" style="display:none">Uni<span>Connect</span></span>
+  </div>
+  <div class="sb-profile">
+    <div class="sb-avatar" id="sidebarAvatar">--</div>
+    <div class="sb-info">
+      <div class="sb-name" id="sidebarName">Loading…</div>
+      <div class="sb-role">Organizer</div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Main</div>
+    <a class="nav-item" href="OrganizerDash.html"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a class="nav-item" href="UserOprofile.html"><i class="fa-solid fa-user"></i><span>My Profile</span></a>
+    <a class="nav-item" href="MyEvents.html"><i class="fa-solid fa-calendar-days"></i><span>My Events</span></a>
+    <a class="nav-item" href="Allevents.html"><i class="fa-solid fa-calendar-days"></i><span>Explore Events</span></a>
+    <a class="nav-item" href="Event.html"><i class="fa-solid fa-circle-plus"></i><span>Create Event</span></a>
+    <div class="nav-label" style="margin-top:10px">Manage</div>
+    <a class="nav-item" href="Viewfeedbacks.html"><i class="fa-solid fa-star"></i><span>Feedbacks</span></a>
+    <a class="nav-item" href="Myregistrations_organizers.html"><i class="fa-solid fa-users"></i><span>My Registrations</span></a>
+    <a class="nav-item" href="Budget.html"><i class="fa-solid fa-wallet"></i><span>Budget</span></a>
+    <a class="nav-item" href="Volunteer.html"><i class="fa-solid fa-hands-helping"></i><span>Volunteers</span></a>
+    <div class="nav-label" style="margin-top:10px">Account</div>
+    <a class="nav-item active" href="OrganizerNotifications.html">
+      <i class="fa-solid fa-bell"></i><span>Notifications</span>
+      <span class="nav-badge" id="sidebarUnread" style="display:none">0</span>
+    </a>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-logout" onclick="logout()">
+      <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <div class="page-header-left">
+      <h2><i class="fa-solid fa-bell" style="font-size:20px;margin-right:10px;color:var(--blue)"></i>Notifications</h2>
+      <p id="subText">All activity linked to your events and account</p>
+    </div>
+    <div class="header-actions">
+      <a href="OrganizerDash.html" class="action-btn" style="text-decoration:none">
+        <i class="fa-solid fa-arrow-left"></i> Dashboard
+      </a>
+    </div>
+  </header>
+
+  <!-- FILTER TABS -->
+  <div class="tabs-row">
+    <button class="tab-btn active" onclick="switchTab(this,'all')">
+      <i class="fa-solid fa-list"></i> All <span class="tab-count" id="tabAll">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(this,'registration')">
+      <i class="fa-solid fa-ticket"></i> Registrations <span class="tab-count" id="tabReg">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(this,'volunteer')">
+      <i class="fa-solid fa-hands-helping"></i> Volunteers <span class="tab-count" id="tabVol">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(this,'payment')">
+      <i class="fa-solid fa-credit-card"></i> Payments <span class="tab-count" id="tabPay">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(this,'feedback')">
+      <i class="fa-solid fa-star"></i> Feedback <span class="tab-count" id="tabFb">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab(this,'general')">
+      <i class="fa-solid fa-bell"></i> General <span class="tab-count" id="tabGen">0</span>
+    </button>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions-row">
+    <button class="action-btn" onclick="toggleUnreadOnly()">
+      <i class="fa-solid fa-filter" id="filterIcon"></i>
+      <span id="filterLabel">Unread Only</span>
+    </button>
+    <button class="action-btn primary" onclick="markAllRead()">
+      <i class="fa-solid fa-check-double"></i> Mark All Read
+    </button>
+    <div class="spacer"></div>
+    <span id="countLabel" style="font-size:13px;color:var(--muted);font-weight:500"></span>
+  </div>
+
+  <!-- FEED -->
+  <div id="notificationFeed">
+    <div class="empty-box">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <h3>Loading…</h3>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toastMsg"></span></div>
+
+<script>
+/* ── AUTH ── */
+const token  = sessionStorage.getItem("token");
+const userId = sessionStorage.getItem("user_id");
+if (!token || !userId) window.location.href = "Login.html";
+
+const API = "http://localhost:3000";
+
+/* ── STATE ── */
+let allNotifications = [];
+let currentTab       = 'all';
+let unreadOnly       = false;
+
+/* ── SIDEBAR ── */
+(function() {
+  const name = localStorage.getItem("username") || "Organizer";
+  const ini  = name.trim().split(" ").map(w=>w[0]).join("").substring(0,2).toUpperCase();
+  document.getElementById("sidebarName").textContent = name;
+  document.getElementById("sidebarAvatar").textContent = ini;
+})();
+
+function logout() { localStorage.clear(); sessionStorage.clear(); window.location.href = "Login.html"; }
+
+/* ── TYPE META ── */
+const TYPE_META = {
+  registration_confirmed:  { icon:'fa-user-check',       color:'green',  label:'Registration'   },
+  registration_cancelled:  { icon:'fa-user-xmark',       color:'red',    label:'Cancelled'      },
+  registration_pending:    { icon:'fa-user-clock',       color:'amber',  label:'Pending'        },
+  volunteer_applied:       { icon:'fa-hand-raised',      color:'purple', label:'Volunteer'      },
+  volunteer_approved:      { icon:'fa-hands-helping',    color:'green',  label:'Volunteer ✓'   },
+  volunteer_rejected:      { icon:'fa-hands',            color:'red',    label:'Volunteer'      },
+  volunteer_task_updated:  { icon:'fa-list-check',       color:'amber',  label:'Task Updated'   },
+  payment_confirmed:       { icon:'fa-circle-check',     color:'green',  label:'Payment'        },
+  payment_failed:          { icon:'fa-circle-xmark',     color:'red',    label:'Payment'        },
+  payment_pending:         { icon:'fa-clock',            color:'amber',  label:'Payment'        },
+  feedback_received:       { icon:'fa-star',             color:'amber',  label:'Feedback'       },
+  event_reminder:          { icon:'fa-calendar-check',   color:'blue',   label:'Reminder'       },
+  event_cancelled:         { icon:'fa-calendar-xmark',   color:'red',    label:'Cancelled'      },
+  general:                 { icon:'fa-bell',             color:'blue',   label:'General'        },
+};
+
+function getMeta(type) {
+  return TYPE_META[type] || TYPE_META['general'];
+}
+
+/* ── TAB MAP — which types belong to which tab ── */
+const TAB_TYPES = {
+  registration: ['registration_confirmed','registration_cancelled','registration_pending'],
+  volunteer:    ['volunteer_applied','volunteer_approved','volunteer_rejected','volunteer_task_updated'],
+  payment:      ['payment_confirmed','payment_failed','payment_pending'],
+  feedback:     ['feedback_received'],
+  general:      ['general','event_reminder','event_cancelled'],
+};
+
+/* ── HELPERS ── */
+function toast(msg, type='success') {
+  const el = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  el.className = `toast show ${type}`;
+  setTimeout(() => el.className = 'toast', 3000);
+}
+
+function timeAgo(d) {
+  if (!d) return '';
+  const diff = Math.floor((new Date() - new Date(d)) / 1000);
+  if (diff < 60)    return 'Just now';
+  if (diff < 3600)  return `${Math.floor(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+  if (diff < 604800)return `${Math.floor(diff/86400)}d ago`;
+  return new Date(d).toLocaleDateString();
+}
+
+/* ── FETCH ── */
+async function fetchNotifications() {
+  try {
+    const r = await fetch(`${API}/api/notifications/user/${userId}`, {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    const data = await r.json();
+    allNotifications = Array.isArray(data) ? data : (data.notifications || []);
+    updateCounts();
+    renderFeed();
+    updateSidebarBadge();
+  } catch(e) {
+    document.getElementById('notificationFeed').innerHTML = `
+      <div class="empty-box">
+        <i class="fa-solid fa-wifi" style="color:var(--rose)"></i>
+        <h3>Could not load notifications</h3>
+        <p>Check your connection and try again.</p>
+      </div>`;
+  }
+}
+
+function updateCounts() {
+  const all = allNotifications.length;
+  document.getElementById('tabAll').textContent = all;
+  document.getElementById('tabReg').textContent = allNotifications.filter(n => TAB_TYPES.registration.includes(n.type)).length;
+  document.getElementById('tabVol').textContent = allNotifications.filter(n => TAB_TYPES.volunteer.includes(n.type)).length;
+  document.getElementById('tabPay').textContent = allNotifications.filter(n => TAB_TYPES.payment.includes(n.type)).length;
+  document.getElementById('tabFb').textContent  = allNotifications.filter(n => TAB_TYPES.feedback.includes(n.type)).length;
+  document.getElementById('tabGen').textContent = allNotifications.filter(n => TAB_TYPES.general.includes(n.type) || !Object.values(TAB_TYPES).flat().includes(n.type)).length;
+}
+
+function updateSidebarBadge() {
+  const unread = allNotifications.filter(n => !n.is_read).length;
+  const badge  = document.getElementById('sidebarUnread');
+  if (unread > 0) { badge.style.display = 'flex'; badge.textContent = unread > 99 ? '99+' : unread; }
+  else badge.style.display = 'none';
+  document.getElementById('subText').textContent =
+    unread > 0 ? `You have ${unread} unread notification${unread>1?'s':''}` : 'You\'re all caught up!';
+}
+
+/* ── RENDER ── */
+function renderFeed() {
+  let list = [...allNotifications];
+
+  if (currentTab !== 'all') {
+    const types = TAB_TYPES[currentTab];
+    if (types) {
+      list = list.filter(n => types.includes(n.type));
+    }
+  }
+
+  if (unreadOnly) list = list.filter(n => !n.is_read);
+
+  document.getElementById('countLabel').textContent =
+    `Showing ${list.length} notification${list.length !== 1 ? 's' : ''}`;
+
+  const feed = document.getElementById('notificationFeed');
+
+  if (!list.length) {
+    feed.innerHTML = `
+      <div class="empty-box">
+        <i class="fa-solid fa-bell-slash"></i>
+        <h3>No notifications here</h3>
+        <p>${unreadOnly ? 'No unread notifications.' : 'Nothing to show in this category.'}</p>
+      </div>`;
+    return;
+  }
+
+  feed.innerHTML = list.map(n => {
+    const m       = getMeta(n.type);
+    const isUnread = !n.is_read;
+    const eventLink = n.event_id
+      ? `<a class="notif-event-link" href="Eventpage.html?id=${n.event_id}" onclick="event.stopPropagation()">
+           <i class="fa-solid fa-calendar-days"></i>
+           ${n.event_title || 'View Event'}
+         </a>`
+      : '';
+
+    return `
+    <div class="notif-card ${isUnread ? 'unread' : ''}" id="nc-${n.notification_id}"
+         onclick="handleCardClick(${n.notification_id}, ${n.event_id || 'null'})">
+      <div class="notif-icon ${m.color}"><i class="fa-solid ${m.icon}"></i></div>
+      <div class="notif-body">
+        <div class="notif-title-row">
+          <span class="notif-title">${buildTitle(n)}</span>
+          ${isUnread ? '<span class="notif-badge new">New</span>' : ''}
+        </div>
+        <p class="notif-msg">${n.message}</p>
+        ${eventLink}
+        <div class="notif-meta" style="margin-top:6px">
+          <span class="notif-time"><i class="fa-regular fa-clock"></i>${timeAgo(n.created_at)}</span>
+          <span class="notif-type-tag">${m.label}</span>
+        </div>
+      </div>
+      <div class="notif-actions" onclick="event.stopPropagation()">
+        ${isUnread ? `<button class="notif-act-btn read-btn" title="Mark as read" onclick="markRead(${n.notification_id})"><i class="fa-solid fa-check"></i></button>` : ''}
+        <button class="notif-act-btn" title="Delete" onclick="deleteNotif(${n.notification_id})"><i class="fa-solid fa-trash-can"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildTitle(n) {
+  const map = {
+    registration_confirmed: 'New Registration',
+    registration_cancelled: 'Registration Cancelled',
+    registration_pending:   'Registration Pending',
+    volunteer_applied:      'Volunteer Application',
+    volunteer_approved:     'Volunteer Approved',
+    volunteer_rejected:     'Volunteer Rejected',
+    volunteer_task_updated: 'Task Updated',
+    payment_confirmed:      'Payment Confirmed',
+    payment_failed:         'Payment Failed',
+    payment_pending:        'Payment Pending',
+    feedback_received:      'New Feedback',
+    event_reminder:         'Event Reminder',
+    event_cancelled:        'Event Cancelled',
+    general:                'Notification',
+  };
+  return map[n.type] || 'Notification';
+}
+
+/* ── TABS ── */
+function switchTab(el, type) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentTab = type;
+  renderFeed();
+}
+
+function toggleUnreadOnly() {
+  unreadOnly = !unreadOnly;
+  document.getElementById('filterLabel').textContent = unreadOnly ? 'Show All' : 'Unread Only';
+  document.getElementById('filterIcon').className    = unreadOnly ? 'fa-solid fa-filter-circle-xmark' : 'fa-solid fa-filter';
+  renderFeed();
+}
+
+/* ── ACTIONS ── */
+async function markRead(id) {
+  try {
+    await fetch(`${API}/api/notifications/${id}/read`, {
+      method: 'PATCH',
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    const n = allNotifications.find(x => x.notification_id === id);
+    if (n) n.is_read = 1;
+    renderFeed();
+    updateCounts();
+    updateSidebarBadge();
+    toast('Marked as read');
+  } catch { toast('Failed', 'error'); }
+}
+
+async function markAllRead() {
+  try {
+    await fetch(`${API}/api/notifications/read-all`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ user_id: parseInt(userId) })
+    });
+    allNotifications.forEach(n => n.is_read = 1);
+    renderFeed();
+    updateCounts();
+    updateSidebarBadge();
+    toast('All marked as read ✓');
+  } catch { toast('Failed', 'error'); }
+}
+
+async function deleteNotif(id) {
+  try {
+    await fetch(`${API}/api/notifications/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    allNotifications = allNotifications.filter(n => n.notification_id !== id);
+    renderFeed();
+    updateCounts();
+    updateSidebarBadge();
+    toast('Notification deleted');
+  } catch { toast('Failed', 'error'); }
+}
+
+function handleCardClick(id, eventId) {
+  markRead(id);
+  if (eventId) window.location.href = `Eventpage.html?id=${eventId}`;
+}
+
+/* ── INIT ── */
+fetchNotifications();
+setInterval(() => fetchNotifications(), 30000);
+</script>
+</body>
+</html>

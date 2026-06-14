@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect – My Activities</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── VARIABLES ────────────────────────────────── */
+:root {
+  --navy-deep:   #0d0934;
+  --navy-mid:    #1e1b4b;
+  --navy-light:  #312e81;
+  --accent-blue: #3b82f6;
+  --accent-teal: #0ea5e9;
+  --bg-body:     #f3f4f6;
+  --surface:     #ffffff;
+  --surface-alt: #f8fafc;
+  --text-main:   #1e293b;
+  --text-muted:  #64748b;
+  --text-light:  #94a3b8;
+  --success:     #10b981; --success-bg: #d1fae5;
+  --warning:     #f59e0b; --warning-bg: #fef3c7;
+  --danger:      #ef4444; --danger-bg:  #fee2e2;
+  --info:        #3b82f6; --info-bg:    #dbeafe;
+  --purple:      #8b5cf6; --purple-bg:  #ede9fe;
+  --amber:       #f59e0b; --amber-bg:   #fef3c7;
+  --teal:        #0ea5e9; --teal-bg:    #e0f2fe;
+  --border:      #e2e8f0;
+  --shadow-sm:   0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:   0 4px 6px -1px rgba(0,0,0,.1);
+  --shadow-lg:   0 10px 15px -3px rgba(0,0,0,.1);
+  --trans:       0.2s ease;
+  --trans-s:     0.3s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg-body);color:var(--text-main);min-height:100vh;display:flex;overflow-x:hidden}
+.container{display:flex;width:100%;min-height:100vh}
+
+/* === SIDEBAR === */
+.sidebar{width:260px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;z-index:50;box-shadow:4px 0 24px rgba(0,0,0,.02)}
+.logo-area{height:72px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);padding:0 20px;background:#fff}
+.logo-area img{max-width:130px;height:auto;object-fit:contain}
+.logo-text{font-size:19px;font-weight:800;color:var(--navy-deep);letter-spacing:-.03em}
+.logo-text span{color:var(--accent-blue)}
+.sidebar-user{display:flex;align-items:center;gap:10px;margin:18px 16px 8px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:12px;transition:var(--trans-fast)}
+.sidebar-user:hover{border-color:var(--accent-blue);box-shadow:var(--shadow-sm)}
+.sidebar-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--navy-deep),var(--accent-blue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;overflow:hidden}
+.sidebar-avatar img{width:100%;height:100%;object-fit:cover}
+.sidebar-user-info{line-height:1.4;overflow:hidden}
+.sidebar-user-info .sname{font-weight:600;color:var(--text-main);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user-info .srole{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:var(--info-bg);color:var(--accent-blue);padding:2px 7px;border-radius:99px;display:inline-block;margin-top:2px}
+.nav-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-light);padding:0 24px;margin:10px 0 3px}
+.menu{list-style:none;display:flex;flex-direction:column;gap:2px;padding:0 12px}
+.menu li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:var(--trans-fast);color:#050d33;font-weight:500;font-size:14px;position:relative}
+.menu li i{width:18px;font-size:14px;text-align:center;transition:var(--trans-fast)}
+.menu li:hover{background:var(--surface-alt);color:var(--navy-deep)}
+.menu li.active{background:var(--navy-deep);color:#fff;box-shadow:0 4px 12px rgba(13,9,52,.3)}
+.menu li.active i{color:#fff}
+.menu-badge{position:absolute;right:10px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:99px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+
+/* === LANGUAGE PICKER === */
+.sidebar-lang{padding:10px 16px;margin:4px 0}
+.sidebar-lang label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;padding-left:2px}
+.lang-select-wrap{position:relative;display:flex;align-items:center}
+.lang-select-wrap i{position:absolute;left:11px;color:var(--accent-blue);font-size:14px;pointer-events:none;z-index:1}
+.sidebar-lang select{width:100%;padding:10px 12px 10px 34px;border-radius:10px;border:1.5px solid var(--border);background:#f8fafc;color:var(--text-main);font-size:13px;font-weight:600;cursor:pointer;outline:none;font-family:inherit;transition:var(--trans-fast);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.sidebar-lang select:hover{border-color:var(--accent-blue);background:#fff}
+.sidebar-lang select:focus{border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(59,130,246,.15);background:#fff}
+
+.sidebar-logout{display:flex;align-items:center;gap:10px;margin:8px 16px 20px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--danger);font-weight:500;font-size:13px;transition:var(--trans-fast);background:transparent;border:1px solid transparent}
+.sidebar-logout:hover{background:var(--danger-bg);border-color:#fecaca}
+
+
+/* ── MAIN ─────────────────────────────────────── */
+.main{flex:1;padding:32px;overflow-y:auto}
+
+/* ── TOPBAR ───────────────────────────────────── */
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.greeting-area h2{font-size:28px;font-weight:800;color:var(--navy-deep);margin-bottom:4px;letter-spacing:-.02em}
+.greeting-area p{color:var(--text-muted);font-size:15px}
+.topbar-user{display:flex;align-items:center;gap:14px;background:var(--surface);padding:8px 12px 8px 8px;border-radius:50px;border:1px solid var(--border);box-shadow:var(--shadow-sm);transition:var(--trans)}
+.topbar-user:hover{box-shadow:var(--shadow-md)}
+.topbar-avatar{width:40px;height:40px;border-radius:50%;background:var(--navy-light);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;overflow:hidden}
+.topbar-user-info{display:flex;flex-direction:column;line-height:1.2;padding-right:8px}
+.tname{font-weight:700;color:var(--text-main);font-size:14px}
+.tmeta{font-size:12px;color:var(--text-muted)}
+
+/* ── STATS ────────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:36px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm);transition:var(--trans-s)}
+.stat-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--accent-blue)}
+.stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.stat-icon.blue{background:var(--info-bg);color:var(--info)}
+.stat-icon.green{background:var(--success-bg);color:var(--success)}
+.stat-icon.amber{background:var(--amber-bg);color:var(--amber)}
+.stat-icon.purple{background:var(--purple-bg);color:var(--purple)}
+.stat-icon.teal{background:var(--teal-bg);color:var(--teal)}
+.stat-icon.red{background:var(--danger-bg);color:var(--danger)}
+.stat-info h3{font-size:22px;font-weight:800;color:var(--navy-deep);line-height:1.1;margin-bottom:2px}
+.stat-info p{font-size:12px;color:var(--text-muted);font-weight:500}
+
+/* ── TAB BAR ──────────────────────────────────── */
+.tab-bar{display:flex;gap:6px;margin-bottom:28px;background:var(--surface);padding:6px;border-radius:14px;border:1px solid var(--border);width:fit-content;flex-wrap:wrap}
+.tab-btn{padding:8px 18px;border-radius:10px;border:none;background:transparent;color:var(--text-muted);font-weight:600;font-size:13px;cursor:pointer;transition:var(--trans);display:flex;align-items:center;gap:7px}
+.tab-btn:hover{background:var(--surface-alt);color:var(--navy-deep)}
+.tab-btn.active{background:var(--navy-deep);color:#fff;box-shadow:0 4px 12px rgba(13,9,52,.2)}
+.tab-count{padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(255,255,255,.25)}
+.tab-btn:not(.active) .tab-count{background:var(--info-bg);color:var(--info)}
+
+/* ── SECTION ──────────────────────────────────── */
+.section{margin-bottom:44px}
+.section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px}
+.section-header h3{font-size:19px;font-weight:700;color:var(--navy-deep)}
+.section-header p{font-size:13px;color:var(--text-muted);margin-top:3px}
+.section-count{font-size:13px;color:var(--text-muted)}
+.event-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
+
+/* ── CARD BASE ────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:var(--trans-s);box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
+.card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+
+/* registrations */
+.card:hover.reg-card{border-color:var(--accent-blue)}
+/* volunteer */
+.card:hover.vol-card{border-color:var(--purple)}
+/* ticket */
+.card:hover.ticket-card{border-color:var(--teal)}
+/* attendance */
+.card:hover.att-card{border-color:var(--success)}
+
+.card-img-box{position:relative;height:170px;overflow:hidden}
+.card-img-box img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.card:hover .card-img-box img{transform:scale(1.05)}
+
+/* status pill */
+.status-pill{position:absolute;top:10px;left:10px;padding:4px 11px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.s-confirmed,.s-approved,.s-present,.s-booked{background:linear-gradient(135deg,#10b981,#059669)}
+.s-pending{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.s-cancelled,.s-rejected,.s-absent{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.s-paid{background:linear-gradient(135deg,#0ea5e9,#0284c7)}
+
+/* type pill */
+.type-pill{position:absolute;top:10px;right:10px;padding:4px 9px;border-radius:8px;font-size:10px;font-weight:700;text-transform:uppercase;backdrop-filter:blur(6px);display:flex;align-items:center;gap:4px;color:#fff}
+.tp-participant{background:rgba(59,130,246,.9)}
+.tp-audience{background:rgba(139,92,246,.9)}
+.tp-volunteer{background:rgba(245,158,11,.9)}
+.tp-ticket{background:rgba(14,165,233,.9)}
+.tp-attendance{background:rgba(16,185,129,.9)}
+
+.card-body{padding:18px;flex:1;display:flex;flex-direction:column}
+.card-tags{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.card-tags span{padding:3px 9px;border-radius:6px;background:var(--surface-alt);border:1px solid var(--border);color:var(--text-muted);font-size:11px;font-weight:600}
+.tag-past{background:var(--danger-bg)!important;color:var(--danger)!important}
+.tag-upcoming{background:var(--success-bg)!important;color:var(--success)!important}
+
+.card-body h3{font-size:16px;font-weight:700;color:var(--navy-deep);margin-bottom:6px;line-height:1.35}
+.card-desc{color:var(--text-muted);font-size:12px;line-height:1.6;margin-bottom:14px;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-meta{display:flex;flex-direction:column;gap:7px;margin-bottom:13px;padding-top:12px;border-top:1px solid var(--surface-alt)}
+.card-meta div{display:flex;align-items:center;gap:9px;color:var(--text-main);font-size:12px;font-weight:500}
+.card-meta i{color:var(--accent-blue);width:15px}
+
+.detail-row{background:var(--surface-alt);border-radius:9px;padding:9px 13px;margin-bottom:12px;border:1px solid var(--border);display:flex;align-items:center;gap:9px;font-size:11px;color:var(--text-muted)}
+.detail-row i{color:var(--accent-blue);width:13px}
+.detail-row strong{color:var(--text-main)}
+
+/* ticket extras */
+.ticket-price-row{display:flex;justify-content:space-between;align-items:center;background:var(--teal-bg);border-radius:9px;padding:9px 13px;margin-bottom:12px;font-size:12px;font-weight:600;color:var(--teal)}
+.ticket-price-row span{color:var(--text-muted);font-weight:500}
+
+/* action buttons */
+.card-actions{display:flex;gap:8px}
+.action-btn{flex:1;padding:9px;border-radius:10px;font-weight:600;cursor:pointer;transition:var(--trans);font-size:12px;text-align:center;border:none;display:flex;align-items:center;justify-content:center;gap:5px}
+.btn-view{background:var(--surface-alt);color:var(--navy-deep)}
+.btn-view:hover{background:#e2e8f0}
+.btn-cancel{background:var(--danger-bg);color:var(--danger);border:1px solid #fecaca}
+.btn-cancel:hover{background:var(--danger);color:#fff}
+.btn-disabled{background:var(--surface-alt);color:var(--text-light);cursor:not-allowed;opacity:.65}
+
+/* ── EMPTY ────────────────────────────────────── */
+.empty-box{padding:50px 20px;text-align:center;color:var(--text-muted);background:var(--surface);border-radius:20px;border:1px dashed var(--border);grid-column:1/-1}
+.empty-box i{font-size:36px;display:block;margin-bottom:14px;color:var(--text-light)}
+.empty-box h4{font-size:16px;font-weight:700;color:var(--text-main);margin-bottom:6px}
+.empty-box p{max-width:300px;margin:0 auto 16px;line-height:1.6;font-size:13px}
+.browse-btn{background:var(--navy-deep);color:#fff;border:none;padding:9px 22px;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer;transition:var(--trans)}
+.browse-btn:hover{background:var(--navy-mid)}
+
+/* ── MODAL ────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);display:none;justify-content:center;align-items:center;padding:20px;z-index:999}
+.confirm-box{background:#fff;border-radius:20px;padding:30px;max-width:400px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.confirm-box .icon-circle{width:56px;height:56px;border-radius:50%;background:var(--danger-bg);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--danger);margin:0 auto 14px}
+.confirm-box h3{font-size:19px;font-weight:800;color:var(--text-main);margin-bottom:8px}
+.confirm-box p{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:22px}
+.confirm-actions{display:flex;gap:10px}
+.confirm-actions button{flex:1;padding:11px;border-radius:12px;border:none;font-weight:700;font-size:13px;cursor:pointer;transition:var(--trans)}
+.btn-keep{background:var(--surface-alt);color:var(--navy-deep)}
+.btn-keep:hover{background:#e2e8f0}
+.btn-confirm-cancel{background:var(--danger);color:#fff}
+.btn-confirm-cancel:hover{background:#dc2626}
+
+/* ── TOAST ────────────────────────────────────── */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--navy-deep);color:#fff;padding:14px 22px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);display:none;align-items:center;gap:10px;z-index:9999;max-width:340px}
+.toast.show{display:flex;animation:slideUp .3s ease}
+.toast.success{background:#059669}
+.toast.error{background:var(--danger)}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── SCROLLBAR ────────────────────────────────── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+/* ── RESPONSIVE ───────────────────────────────── */
+@media(max-width:1100px){
+  .sidebar{width:80px}
+  .sidebar-user-info,.logo-area img,.menu li span,.sidebar-logout span,.nav-label{display:none}
+  .sidebar-user{justify-content:center;padding:10px}
+  .menu li{justify-content:center;padding:14px}
+  .logo-area{justify-content:center;padding:0}
+  .logo-text{display:none}
+  .logo-area::before{content:'\f19d';font-family:'Font Awesome 6 Free';font-weight:900;font-size:24px;color:var(--navy-deep)}
+  .sidebar-logout{justify-content:center;padding:14px}
+}
+@media(max-width:900px){
+  .container{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;padding:10px 20px;border-bottom:1px solid var(--border);border-right:none;overflow-x:auto;flex-shrink:0}
+  .logo-area,.sidebar-user{display:none}
+  .menu{flex-direction:row;width:100%;justify-content:flex-start}
+  .sidebar-logout{display:none}
+  .menu li{padding:8px 12px}
+  .main{padding:20px}
+}
+@media(max-width:600px){
+  .main{padding:14px}
+  .topbar{flex-direction:column;align-items:flex-start;gap:14px}
+  .stats{grid-template-columns:1fr 1fr}
+  .event-grid{grid-template-columns:1fr}
+  .tab-bar{width:100%;overflow-x:auto}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <img src="images/UClogo.png" alt="UniConnect" onerror="this.style.display='none';document.getElementById('logoText').style.display='block'">
+    <span class="logo-text" id="logoText" style="display:none">Uni<span>Connect</span></span>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebarAvatar">--</div>
+    <div class="sidebar-user-info">
+      <div class="sname" id="sidebarName">Loading…</div>
+      <div class="srole">Student</div>
+    </div>
+  </div>
+  <span class="nav-label">Main Menu</span>
+  <ul class="menu" id="mainMenu">
+   <li onclick="window.location.href='Userdashboard.html'"><i class="fa-solid fa-user"></i><span>Dashboard</span></li>
+     <li class="active"><i class="fa-solid fa-house"></i><span>My Profile</span></li>
+    
+    <li onclick="window.location.href='Allevents.html'"><i class="fa-solid fa-calendar-days"></i><span>Browse Events</span></li>
+    <li onclick="window.location.href='Myactivities.html'">
+      <i class="fa-solid fa-ticket"></i><span>Activity Log</span>
+      <span class="menu-badge" id="regBadge" style="display:none">0</span>
+    </li>
+  </ul>
+  <span class="nav-label" style="margin-top:6px">Account</span>
+  <ul class="menu">
+    <li onclick="window.location.href='NotificationsPart.html'">
+      <i class="fa-solid fa-bell"></i><span>Notifications</span>
+      <span class="menu-badge" id="notificationCount" style="display:none">0</span>
+    </li>
+    <li><i class="fa-solid fa-gear"></i><span>Settings</span></li>
+  </ul>
+  <div class="sidebar-lang">
+    <label for="langSelect">🌐 Language</label>
+    <div class="lang-select-wrap">
+      <i class="fa-solid fa-globe"></i>
+      <select id="langSelect" onchange="doGoogleTranslate(this.value)">
+        <option value="en">English</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+        <option value="si">සිංහල (Sinhala)</option>
+      </select>
+    </div>
+  </div>
+  <div class="sidebar-logout" onclick="logout()">
+    <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+  </div>
+</aside>
+
+<!-- ── MAIN ───────────────────────────────────── -->
+<main class="main">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="greeting-area">
+      <h2>My Activities</h2>
+      <p>All your event registrations, volunteer roles, tickets &amp; attendance</p>
+    </div>
+    <div class="topbar-user">
+      <div class="topbar-avatar" id="topbarAvatar">--</div>
+      <div class="topbar-user-info">
+        <div class="tname" id="topbarName">Loading…</div>
+        <div class="tmeta" id="topbarMeta">Student Portal</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="stat-card"><div class="stat-icon blue"><i class="fa-solid fa-bolt"></i></div><div class="stat-info"><h3 id="sTotalAct">0</h3><p>Total Activities</p></div></div>
+    <div class="stat-card"><div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div><div class="stat-info"><h3 id="sConfirmed">0</h3><p>Confirmed</p></div></div>
+    <div class="stat-card"><div class="stat-icon amber"><i class="fa-solid fa-clock"></i></div><div class="stat-info"><h3 id="sPending">0</h3><p>Pending</p></div></div>
+    <div class="stat-card"><div class="stat-icon purple"><i class="fa-solid fa-hands-helping"></i></div><div class="stat-info"><h3 id="sVolunteer">0</h3><p>Volunteer Roles</p></div></div>
+    <div class="stat-card"><div class="stat-icon teal"><i class="fa-solid fa-ticket"></i></div><div class="stat-info"><h3 id="sTickets">0</h3><p>Tickets Booked</p></div></div>
+    <div class="stat-card"><div class="stat-icon green"><i class="fa-solid fa-user-check"></i></div><div class="stat-info"><h3 id="sAttended">0</h3><p>Events Attended</p></div></div>
+  </section>
+
+  <!-- TABS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tabAll"          onclick="switchTab('all')">         <i class="fa-solid fa-grid-2"></i>          All              <span class="tab-count" id="cAll">0</span></button>
+    <button class="tab-btn"        id="tabRegistration" onclick="switchTab('registration')"><i class="fa-solid fa-users"></i>            Registrations    <span class="tab-count" id="cReg">0</span></button>
+    <button class="tab-btn"        id="tabVolunteer"    onclick="switchTab('volunteer')">   <i class="fa-solid fa-hands-helping"></i>   Volunteer        <span class="tab-count" id="cVol">0</span></button>
+    <button class="tab-btn"        id="tabTicket"       onclick="switchTab('ticket')">      <i class="fa-solid fa-ticket"></i>          Tickets          <span class="tab-count" id="cTkt">0</span></button>
+    <button class="tab-btn"        id="tabAttendance"   onclick="switchTab('attendance')">  <i class="fa-solid fa-user-check"></i>      Attendance       <span class="tab-count" id="cAtt">0</span></button>
+  </div>
+
+  <!-- REGISTRATIONS SECTION -->
+  <section class="section" id="secRegistration">
+    <div class="section-header">
+      <div><h3>Event Registrations</h3><p>Events you've signed up for as participant or audience</p></div>
+      <span class="section-count" id="regCountTxt">0 events</span>
+    </div>
+    <div class="event-grid" id="regGrid"><div class="empty-box"><i class="fa-solid fa-spinner fa-spin"></i><h4>Loading…</h4></div></div>
+  </section>
+
+  <!-- VOLUNTEER SECTION -->
+  <section class="section" id="secVolunteer">
+    <div class="section-header">
+      <div><h3>Volunteer Activities</h3><p>Events you've applied to help organise</p></div>
+      <span class="section-count" id="volCountTxt">0 activities</span>
+    </div>
+    <div class="event-grid" id="volGrid"><div class="empty-box"><i class="fa-solid fa-spinner fa-spin"></i><h4>Loading…</h4></div></div>
+  </section>
+
+  <!-- TICKETS SECTION -->
+  <section class="section" id="secTicket">
+    <div class="section-header">
+      <div><h3>Ticket Bookings</h3><p>Events where you've booked tickets</p></div>
+      <span class="section-count" id="tktCountTxt">0 tickets</span>
+    </div>
+    <div class="event-grid" id="tktGrid"><div class="empty-box"><i class="fa-solid fa-spinner fa-spin"></i><h4>Loading…</h4></div></div>
+  </section>
+
+  <!-- ATTENDANCE SECTION -->
+  <section class="section" id="secAttendance">
+    <div class="section-header">
+      <div><h3>Attendance Records</h3><p>Your presence at past events</p></div>
+      <span class="section-count" id="attCountTxt">0 records</span>
+    </div>
+    <div class="event-grid" id="attGrid"><div class="empty-box"><i class="fa-solid fa-spinner fa-spin"></i><h4>Loading…</h4></div></div>
+  </section>
+</main>
+</div>
+
+<!-- ── CANCEL MODAL ───────────────────────────── -->
+<div class="modal-overlay" id="cancelModal">
+  <div class="confirm-box">
+    <div class="icon-circle"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <h3>Confirm Cancellation</h3>
+    <p id="cancelMsg">Are you sure? This cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn-keep" onclick="closeModal()">Keep It</button>
+      <button class="btn-confirm-cancel" id="doCancel" onclick="confirmCancel()">Yes, Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ──────────────────────────────────── -->
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i><span id="toastMsg"></span></div>
+
+<!-- ── SCRIPT ─────────────────────────────────── -->
+<script>
+/* ─── CONFIG ─────────────────────────────────── */
+const BASE = "http://localhost:3000";
+
+/* ─── AUTH ───────────────────────────────────── */
+const token  = sessionStorage.getItem("token");
+const userId = sessionStorage.getItem("user_id");
+const role   = (sessionStorage.getItem("user_role") || "").toLowerCase();
+
+if (!token || !userId) location.href = "Login.html";
+if (role === "organizer" || role === "admin") location.href = "OrganizerDash.html";
+
+/* ─── UTILS ──────────────────────────────────── */
+const $  = id => document.getElementById(id);
+const set = (id, v) => { const e=$( id); if(e) e.innerText=v; };
+const cap = s => s ? s.charAt(0).toUpperCase()+s.slice(1).toLowerCase() : "";
+const fmtDate = d => d ? String(d).split("T")[0] : "—";
+const initials = n => n ? n.trim().split(" ").map(w=>w[0]).join("").substring(0,2).toUpperCase() : "--";
+const goto = p => location.href = p;
+const logout = () => { sessionStorage.clear(); location.href="Login.html"; };
+const getImg = (path, seed) => {
+  if (!path) return `https://picsum.photos/seed/${seed}/400/250`;
+  if (path.startsWith("http")) return path;
+  return `${BASE}${path}`;
+};
+
+/* ─── TOAST ──────────────────────────────────── */
+let toastTimer;
+function showToast(msg, type="success") {
+  clearTimeout(toastTimer);
+  const t = $("toast");
+  $("toastMsg").innerText = msg;
+  t.className = `toast show ${type}`;
+  toastTimer = setTimeout(() => t.className="toast", 3500);
+}
+
+/* ─── QUICK INIT FROM CACHE ──────────────────── */
+(function(){
+  const name = sessionStorage.getItem("username") || "";
+  const uni  = sessionStorage.getItem("uni_name")  || "";
+  if (!name) return;
+  set("sidebarName", name); set("topbarName", name);
+  $("sidebarAvatar").innerText = initials(name);
+  $("topbarAvatar").innerText  = initials(name);
+  set("topbarMeta", uni ? `Student · ${uni}` : "Student Portal");
+})();
+
+/* ─── DATA STORE ─────────────────────────────── */
+let DATA = { registrations:[], volunteers:[], tickets:[], attendance:[], feedback:[] };
+let currentTab = "all";
+
+/* ─── TAB SWITCHING ──────────────────────────── */
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  const map = { all:"tabAll", registration:"tabRegistration", volunteer:"tabVolunteer", ticket:"tabTicket", attendance:"tabAttendance" };
+  $(map[tab]).classList.add("active");
+  renderAll();
+}
+
+function renderAll() {
+  const show = id => $(id).style.display = "block";
+  const hide = id => $(id).style.display = "none";
+  const all = ["secRegistration","secVolunteer","secTicket","secAttendance"];
+
+  if (currentTab === "all") {
+    all.forEach(show);
+    renderRegGrid(DATA.registrations);
+    renderVolGrid(DATA.volunteers);
+    renderTktGrid(DATA.tickets);
+    renderAttGrid(DATA.attendance);
+  } else if (currentTab === "registration") {
+    all.forEach(hide); show("secRegistration");
+    renderRegGrid(DATA.registrations);
+  } else if (currentTab === "volunteer") {
+    all.forEach(hide); show("secVolunteer");
+    renderVolGrid(DATA.volunteers);
+  } else if (currentTab === "ticket") {
+    all.forEach(hide); show("secTicket");
+    renderTktGrid(DATA.tickets);
+  } else if (currentTab === "attendance") {
+    all.forEach(hide); show("secAttendance");
+    renderAttGrid(DATA.attendance);
+  }
+}
+
+/* ─── SORT helper ────────────────────────────── */
+function sortByDate(arr, key="event_date") {
+  const today = new Date().toISOString().split("T")[0];
+  return [...arr].sort((a,b) => {
+    const da = fmtDate(a[key]), db = fmtDate(b[key]);
+    if (da >= today && db < today) return -1;
+    if (da < today && db >= today) return 1;
+    return da < db ? -1 : 1;
+  });
+}
+
+/* ─── EMPTY BOX ──────────────────────────────── */
+function emptyBox(icon, title, msg, btnLabel, btnHref) {
+  return `<div class="empty-box">
+    <i class="fa-solid fa-${icon}"></i>
+    <h4>${title}</h4>
+    <p>${msg}</p>
+    <button class="browse-btn" onclick="goto('${btnHref}')">
+      <i class="fa-solid fa-compass"></i> ${btnLabel}
+    </button>
+  </div>`;
+}
+
+/* ════════════════════════════════════════════════
+   REGISTRATION CARDS
+════════════════════════════════════════════════ */
+function regCardHTML(r) {
+  const status  = (r.status || "pending").toLowerCase();
+  const pType   = (r.participant_type || "participant").toLowerCase();
+  const evDate  = fmtDate(r.event_date);
+  const today   = new Date().toISOString().split("T")[0];
+  const isPast  = evDate !== "—" && evDate < today;
+  const imgSrc  = getImg(r.image_url, `reg${r.event_id}`);
+  const regId   = r.registration_id;
+  const evName  = r.event_title || "Event";
+  const canCancel = !isPast && !["cancelled","rejected"].includes(status);
+
+  return `
+  <div class="card reg-card">
+    <div class="card-img-box">
+      <img src="${imgSrc}" alt="${evName}"
+           onerror="this.src='https://picsum.photos/seed/reg${r.event_id}/400/250'">
+      <div class="status-pill s-${status}">
+        <i class="fa-solid fa-${status==='confirmed'||status==='approved'?'check':status==='cancelled'||status==='rejected'?'xmark':'clock'}"></i>
+        ${cap(status)}
+      </div>
+      <div class="type-pill tp-${pType}">
+        <i class="fa-solid fa-${pType==='audience'?'eye':'users'}"></i>
+        ${cap(pType)}
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-tags">
+        <span>${r.category || "General"}</span>
+        <span class="${isPast?'tag-past':'tag-upcoming'}">${isPast?'Ended':'Upcoming'}</span>
+      </div>
+      <h3>${evName}</h3>
+      <p class="card-desc">${(r.description||"No description available.").substring(0,90)}…</p>
+      <div class="card-meta">
+        <div><i class="fa-solid fa-location-dot"></i>${r.venue||"—"}</div>
+        <div><i class="fa-solid fa-calendar"></i>${evDate}${r.start_time?' · '+r.start_time:''}</div>
+        ${r.department_name?`<div><i class="fa-solid fa-building"></i>${r.department_name}</div>`:''}
+      </div>
+      <div class="detail-row">
+        <i class="fa-solid fa-id-card"></i>
+        Registered: <strong>${fmtDate(r.registration_date)}</strong>
+      </div>
+      <div class="card-actions">
+        <button class="action-btn btn-view" onclick="goto('Availableeventdetails.html?id=${r.event_id}')">
+          <i class="fa-solid fa-eye"></i> View
+        </button>
+        ${canCancel
+          ? `<button class="action-btn btn-cancel" onclick="openModal(${regId},'registration','${evName.replace(/'/g,"\\'")}')">
+               <i class="fa-solid fa-xmark"></i> Cancel
+             </button>`
+          : `<button class="action-btn btn-disabled" disabled>
+               <i class="fa-solid fa-ban"></i> ${isPast?'Past':cap(status)}
+             </button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderRegGrid(arr) {
+  const box = $("regGrid");
+  set("regCountTxt", `${arr.length} event${arr.length!==1?'s':''}`);
+  if (!arr.length) { box.innerHTML = emptyBox("ticket-slash","No registrations","Browse and register for events at your university!","Browse Events","Allevents.html"); return; }
+  box.innerHTML = sortByDate(arr).map(regCardHTML).join("");
+}
+
+/* ════════════════════════════════════════════════
+   VOLUNTEER CARDS
+════════════════════════════════════════════════ */
+function volCardHTML(v) {
+  const status  = (v.status || "pending").toLowerCase();
+  const evDate  = fmtDate(v.event_date);
+  const today   = new Date().toISOString().split("T")[0];
+  const isPast  = evDate !== "—" && evDate < today;
+  const canCancel = !isPast && status !== "rejected";
+  const imgSrc  = getImg(v.image_url, `vol${v.event_id}`);
+  const volId   = v.volunteer_id;
+  const evName  = v.event_title || "Event";
+
+  return `
+  <div class="card vol-card">
+    <div class="card-img-box">
+      <img src="${imgSrc}" alt="${evName}"
+           onerror="this.src='https://picsum.photos/seed/vol${v.event_id}/400/250'">
+      <div class="status-pill s-${status}">
+        <i class="fa-solid fa-${status==='approved'?'check':status==='rejected'?'xmark':'clock'}"></i>
+        ${cap(status)}
+      </div>
+      <div class="type-pill tp-volunteer">
+        <i class="fa-solid fa-hands-helping"></i> Volunteer
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-tags">
+        <span>${v.category||"General"}</span>
+        <span class="${isPast?'tag-past':'tag-upcoming'}">${isPast?'Ended':'Upcoming'}</span>
+      </div>
+      <h3>${evName}</h3>
+      <div style="display:inline-flex;align-items:center;gap:6px;background:var(--purple-bg);color:var(--purple);padding:4px 11px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:12px;border:1px solid #ddd6fe">
+        <i class="fa-solid fa-star"></i>${v.volunteer_role||"Volunteer"}
+      </div>
+      <div class="card-meta">
+        <div><i class="fa-solid fa-location-dot"></i>${v.venue||"—"}</div>
+        <div><i class="fa-solid fa-calendar"></i>${evDate}${v.start_time?' · '+v.start_time:''}</div>
+        ${v.department_name?`<div><i class="fa-solid fa-building"></i>${v.department_name}</div>`:''}
+        ${v.responsibilities?`<div><i class="fa-solid fa-list-check"></i>${String(v.responsibilities).substring(0,60)}…</div>`:''}
+      </div>
+      <div class="detail-row">
+        <i class="fa-solid fa-id-card"></i>
+        Applied: <strong>${fmtDate(v.applied_at)}</strong>
+      </div>
+      <div class="card-actions">
+        <button class="action-btn btn-view" onclick="goto('Availableeventdetails.html?id=${v.event_id}')">
+          <i class="fa-solid fa-eye"></i> View
+        </button>
+        ${canCancel
+          ? `<button class="action-btn btn-cancel" onclick="openModal(${volId},'volunteer','${evName.replace(/'/g,"\\'")}')">
+               <i class="fa-solid fa-xmark"></i> Withdraw
+             </button>`
+          : `<button class="action-btn btn-disabled" disabled>
+               <i class="fa-solid fa-ban"></i> ${isPast?'Past':cap(status)}
+             </button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderVolGrid(arr) {
+  const box = $("volGrid");
+  set("volCountTxt", `${arr.length} activit${arr.length!==1?'ies':'y'}`);
+  if (!arr.length) { box.innerHTML = emptyBox("hands-helping","No volunteer activities","Apply as a volunteer for upcoming events!","Explore Opportunities","Volunteer.html"); return; }
+  box.innerHTML = sortByDate(arr).map(volCardHTML).join("");
+}
+
+/* ════════════════════════════════════════════════
+   TICKET CARDS
+════════════════════════════════════════════════ */
+function tktCardHTML(t) {
+  const bStatus = (t.booking_status || "booked").toLowerCase();
+  const pStatus = (t.payment_status || "pending").toLowerCase();
+  const evDate  = fmtDate(t.event_date);
+  const today   = new Date().toISOString().split("T")[0];
+  const isPast  = evDate !== "—" && evDate < today;
+  const imgSrc  = getImg(t.image_url, `tkt${t.event_id}`);
+  const evName  = t.event_title || "Event";
+
+  const displayStatus = pStatus === "completed" || pStatus === "paid" ? "paid"
+                      : bStatus === "booked" ? "confirmed"
+                      : bStatus;
+
+  return `
+  <div class="card ticket-card">
+    <div class="card-img-box">
+      <img src="${imgSrc}" alt="${evName}"
+           onerror="this.src='https://picsum.photos/seed/tkt${t.event_id}/400/250'">
+      <div class="status-pill s-${displayStatus}">
+        <i class="fa-solid fa-ticket"></i> ${cap(displayStatus)}
+      </div>
+      <div class="type-pill tp-ticket">
+        <i class="fa-solid fa-ticket"></i> Ticket
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-tags">
+        <span>${t.category||"General"}</span>
+        <span class="${isPast?'tag-past':'tag-upcoming'}">${isPast?'Ended':'Upcoming'}</span>
+      </div>
+      <h3>${evName}</h3>
+      <div class="card-meta">
+        <div><i class="fa-solid fa-location-dot"></i>${t.venue||"—"}</div>
+        <div><i class="fa-solid fa-calendar"></i>${evDate}${t.start_time?' · '+t.start_time:''}</div>
+      </div>
+      <div class="ticket-price-row">
+        <span>Qty: ${t.quantity||1} × LKR ${parseFloat(t.ticket_price||0).toFixed(2)}</span>
+        <strong>LKR ${parseFloat(t.total_amount||0).toFixed(2)}</strong>
+      </div>
+      <div class="detail-row">
+        <i class="fa-solid fa-credit-card"></i>
+        Payment: <strong>${cap(pStatus)}</strong>
+        ${t.transaction_id?` · <span style="color:var(--text-light)">#${t.transaction_id}</span>`:''}
+      </div>
+      <div class="card-actions">
+        <button class="action-btn btn-view" onclick="goto('Availableeventdetails.html?id=${t.event_id}')">
+          <i class="fa-solid fa-eye"></i> View Event
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderTktGrid(arr) {
+  const box = $("tktGrid");
+  set("tktCountTxt", `${arr.length} ticket${arr.length!==1?'s':''}`);
+  if (!arr.length) { box.innerHTML = emptyBox("ticket","No tickets booked","Book tickets for paid events at your university!","Browse Events","Allevents.html"); return; }
+  box.innerHTML = sortByDate(arr).map(tktCardHTML).join("");
+}
+
+/* ════════════════════════════════════════════════
+   ATTENDANCE CARDS
+════════════════════════════════════════════════ */
+function attCardHTML(a) {
+  const status = (a.attendance_status || "absent").toLowerCase();
+  const imgSrc = getImg(a.image_url, `att${a.event_id}`);
+  const evName = a.event_title || "Event";
+
+  return `
+  <div class="card att-card">
+    <div class="card-img-box">
+      <img src="${imgSrc}" alt="${evName}"
+           onerror="this.src='https://picsum.photos/seed/att${a.event_id}/400/250'">
+      <div class="status-pill s-${status}">
+        <i class="fa-solid fa-${status==='present'?'check':'xmark'}"></i>
+        ${cap(status)}
+      </div>
+      <div class="type-pill tp-attendance">
+        <i class="fa-solid fa-user-check"></i> Attended
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-tags">
+        <span>${a.category||"General"}</span>
+        <span class="tag-past">Past Event</span>
+      </div>
+      <h3>${evName}</h3>
+      <div class="card-meta">
+        <div><i class="fa-solid fa-location-dot"></i>${a.venue||"—"}</div>
+        <div><i class="fa-solid fa-calendar"></i>${fmtDate(a.event_date)}${a.start_time?' · '+a.start_time:''}</div>
+        ${a.department_name?`<div><i class="fa-solid fa-building"></i>${a.department_name}</div>`:''}
+      </div>
+      <div class="card-actions">
+        <button class="action-btn btn-view" onclick="goto('Availableeventdetails.html?id=${a.event_id}')">
+          <i class="fa-solid fa-eye"></i> View Event
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAttGrid(arr) {
+  const box = $("attGrid");
+  set("attCountTxt", `${arr.length} record${arr.length!==1?'s':''}`);
+  if (!arr.length) { box.innerHTML = emptyBox("user-check","No attendance records","Attend events to see your history here.","Browse Events","Allevents.html"); return; }
+  box.innerHTML = sortByDate(arr).map(attCardHTML).join("");
+}
+
+/* ─── STATS UPDATE ───────────────────────────── */
+function updateStats(s) {
+  const total = DATA.registrations.length + DATA.volunteers.length + DATA.tickets.length + DATA.attendance.length;
+  set("sTotalAct",  total);
+  set("sConfirmed", s.confirmed_events||0);
+  set("sPending",   s.pending_registrations||0);
+  set("sVolunteer", s.volunteer_roles||0);
+  set("sTickets",   s.tickets_booked||0);
+  set("sAttended",  s.attended_events||0);
+
+  // Tab counts
+  set("cAll",  total);
+  set("cReg",  DATA.registrations.length);
+  set("cVol",  DATA.volunteers.length);
+  set("cTkt",  DATA.tickets.length);
+  set("cAtt",  DATA.attendance.length);
+
+  // Pending badge
+  const b = $("pendingBadge");
+  if (b) {
+    const p = s.pending_registrations || 0;
+    b.style.display = p > 0 ? "flex" : "none";
+    b.innerText = p;
+  }
+}
+
+/* ─── CANCEL MODAL ───────────────────────────── */
+let _cancelId=null, _cancelType=null;
+
+function openModal(id, type, name) {
+  _cancelId=id; _cancelType=type;
+  $("cancelMsg").innerText = `Are you sure you want to cancel your ${type==='volunteer'?'volunteer application':'registration'} for "${name}"? This cannot be undone.`;
+  $("cancelModal").style.display="flex";
+}
+function closeModal() {
+  $("cancelModal").style.display="none";
+  _cancelId=null; _cancelType=null;
+}
+async function confirmCancel() {
+  if (!_cancelId) return;
+  const btn=$("doCancel");
+  btn.disabled=true; btn.innerText="Cancelling…";
+
+  const url = _cancelType==="volunteer"
+    ? `${BASE}/api/activities/volunteer/${_cancelId}`
+    : `${BASE}/api/activities/registration/${_cancelId}`;
+
+  try {
+    const res  = await fetch(url, { method:"DELETE", headers:{ Authorization:"Bearer "+token } });
+    const data = await res.json();
+    closeModal();
+    if (res.ok || data.success) {
+      showToast("Cancelled successfully!", "success");
+      loadData();
+    } else {
+      showToast(data.message || "Could not cancel. Try again.", "error");
+    }
+  } catch(e) {
+    closeModal();
+    showToast("Network error. Please try again.", "error");
+  } finally {
+    btn.disabled=false; btn.innerText="Yes, Cancel";
+  }
+}
+
+/* ─── LOAD USER PROFILE ──────────────────────── */
+async function loadProfile() {
+  try {
+    const res  = await fetch(`${BASE}/api/users/${userId}`, { headers:{ Authorization:"Bearer "+token } });
+    if (!res.ok) throw new Error(res.status);
+    const d    = await res.json();
+    const user = d.data || d.user || d;
+    const name = user.full_name || user.username || sessionStorage.getItem("username") || "Student";
+    const uni  = user.university_name || user.university || sessionStorage.getItem("uni_name") || "";
+    set("sidebarName", name); set("topbarName", name);
+    $("sidebarAvatar").innerText = initials(name);
+    $("topbarAvatar").innerText  = initials(name);
+    set("topbarMeta", uni ? `Student · ${uni}` : "Student Portal");
+    sessionStorage.setItem("username", name);
+    if (uni) sessionStorage.setItem("uni_name", uni);
+  } catch(e) {
+    console.warn("Profile load failed:", e);
+  }
+}
+
+/* ─── MAIN DATA LOAD ─────────────────────────── */
+async function loadData() {
+  // Show spinners
+  ["regGrid","volGrid","tktGrid","attGrid"].forEach(id => {
+    $(id).innerHTML = `<div class="empty-box"><i class="fa-solid fa-spinner fa-spin"></i><h4>Loading…</h4></div>`;
+  });
+
+  try {
+    const res  = await fetch(`${BASE}/api/activities/student/${userId}`, {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    if (res.status === 401) { logout(); return; }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const json = await res.json();
+
+    if (!json.success) throw new Error(json.message || "Failed to load");
+
+    DATA.registrations = json.registrations || [];
+    DATA.volunteers    = json.volunteers    || [];
+    DATA.tickets       = json.tickets       || [];
+    DATA.attendance    = json.attendance    || [];
+    DATA.feedback      = json.feedback      || [];
+
+    updateStats(json.stats || {});
+    renderAll();
+
+  } catch(err) {
+    console.error("[loadData]", err);
+    ["regGrid","volGrid","tktGrid","attGrid"].forEach(id => {
+      $(id).innerHTML = `<div class="empty-box">
+        <i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i>
+        <h4>Could not load activities</h4>
+        <p>Check your connection or try refreshing the page.</p>
+        <button class="browse-btn" onclick="loadData()"><i class="fa-solid fa-rotate-right"></i> Retry</button>
+      </div>`;
+    });
+    showToast("Failed to load activities. " + err.message, "error");
+  }
+}
+
+/* ─── INIT ───────────────────────────────────── */
+loadProfile();
+loadData();
+</script>
+</body>
+</html>

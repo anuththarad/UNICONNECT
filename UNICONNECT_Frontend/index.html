@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect - One Platform. Endless Opportunities.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+
+/* ── DESIGN TOKENS ── */
+:root {
+  --navy:      #0A1628;
+  --navy-mid:  #1B3A6B;
+  --navy-soft: #041934;
+  --blue:      #05113d;
+  --blue-lt:   #3B82F6;
+  --cyan:      #040f43;
+  --violet:    #140872;
+  --blue-glow: rgba(41,82,227,.18);
+  --surface:   #F4F7FF;
+  --surface-2: #EBF0FB;
+  --line:      #DDE6F7;
+  --line-dk:   #C3D0E8;
+  --white:     #FFFFFF;
+  --text-1:    #0A1628;
+  --text-2:    #3B4F6B;
+  --text-3:    #7A90B0;
+  --ease:      cubic-bezier(.4,0,.2,1);
+  --spring:    cubic-bezier(.34,1.56,.64,1);
+  --display:   'Sora', 'Plus Jakarta Sans', sans-serif;
+  --grad-aurora: linear-gradient(120deg, var(--blue) 0%, var(--violet) 50%, var(--cyan) 100%);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--surface);
+  color: var(--text-1);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+/* Ambient aurora mesh — sits behind hero + showcase, the page's signature atmosphere */
+body::before {
+  content: '';
+  position: absolute;
+  top: -120px; left: 0; right: 0;
+  height: 760px;
+  background:
+    radial-gradient(620px 420px at 18% 10%, rgba(41,82,227,.16), transparent 65%),
+    radial-gradient(560px 380px at 85% 0%, rgba(124,108,246,.14), transparent 60%),
+    radial-gradient(480px 360px at 50% 35%, rgba(34,211,238,.10), transparent 65%);
+  filter: blur(10px);
+  pointer-events: none;
+  z-index: 0;
+}
+header, .hero, .showcase { position: relative; z-index: 1; }
+
+/* ── HEADER ── */
+header {
+  position: sticky; top: 0; z-index: 200;
+  height: 68px;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 1px 0 rgba(10,22,40,.02), 0 8px 24px -16px rgba(10,22,40,.08);
+}
+.nav-inner {
+  max-width: 1280px; margin: 0 auto; height: 100%;
+  padding: 0 40px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* Logo: navy background that blends with the logo mark */
+.logo {
+  display: flex; align-items: center; gap: 82px;
+  text-decoration: none; cursor: pointer;
+}
+.logo-wrap {
+  width: 120px; height: 86px; border-radius: 9px;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 0 0 0 var(--blue-glow);
+  transition: box-shadow .3s var(--ease);
+}
+.logo:hover .logo-wrap {
+  box-shadow: 0 0 0 6px var(--blue-glow);
+}
+.logo-wrap img {
+  width: 108px; height: 68px; object-fit: contain;
+ 
+}
+.logo-wrap .logo-fallback-mark {
+  display: none;
+  width: 22px; height: 22px;
+}
+.logo-fallback-mark svg { width: 100%; height: 100%; }
+.logo-name {
+  font-family: var(--display);
+  font-size: 15px; font-weight: 700;
+  color: var(--navy); letter-spacing: -.3px;
+}
+
+nav { display: flex; align-items: center; gap: 2px; }
+nav a {
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px; font-weight: 500; color: var(--text-2);
+  text-decoration: none; padding: 7px 14px; border-radius: 8px;
+  transition: .15s var(--ease);
+}
+nav a:hover { background: var(--surface); color: var(--navy); }
+
+.nav-actions { display: flex; align-items: center; gap: 8px; }
+.btn-ghost {
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px; font-weight: 500; color: var(--text-2);
+  text-decoration: none; padding: 8px 18px; border-radius: 8px;
+  border: 1px solid var(--line); background: transparent;
+  cursor: pointer; transition: .15s var(--ease);
+}
+.btn-ghost:hover { border-color: var(--line-dk); background: var(--surface); color: var(--navy); }
+.btn-navy {
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px; font-weight: 600; color: var(--white);
+  text-decoration: none; padding: 9px 20px; border-radius: 8px;
+  border: none; background: var(--navy);
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 7px;
+  transition: .18s var(--ease);
+  box-shadow: 0 6px 18px -8px rgba(41,82,227,.45);
+}
+.btn-navy:hover { background: var(--navy-mid); transform: translateY(-1px); box-shadow: 0 10px 22px -8px rgba(41,82,227,.5); }
+
+/* ── HERO ── */
+.hero {
+  max-width: 920px; margin: 0 auto;
+  padding: 108px 40px 56px;
+  text-align: center;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11.5px; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--blue);
+  background: linear-gradient(#fff,#fff) padding-box,
+              var(--grad-aurora) border-box;
+  border: 1px solid transparent;
+  padding: 6px 16px; border-radius: 40px;
+  margin-bottom: 32px;
+}
+.hero-eyebrow::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--grad-aurora); flex-shrink: 0;
+}
+.hero-h1 {
+  font-family: var(--display);
+  font-size: clamp(40px, 6.5vw, 78px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -2.5px;
+  color: var(--navy);
+  margin-bottom: 22px;
+}
+.hero-h1 .accent {
+  background: var(--grad-aurora);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 16px; line-height: 1.78; color: var(--text-2);
+  max-width: 500px; margin: 0 auto 38px;
+  font-weight: 400;
+}
+.hero-cta-row {
+  display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+}
+.cta-blue {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 28px; border-radius: 10px;
+  background: var(--grad-aurora); color: var(--white);
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: .2s var(--ease);
+  box-shadow: 0 8px 24px -6px rgba(41,82,227,.45);
+  background-size: 160% 160%; background-position: 0% 50%;
+}
+.cta-blue:hover { background-position: 100% 50%; transform: translateY(-1px); box-shadow: 0 12px 28px -6px rgba(124,108,246,.4); }
+.cta-outline {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 28px; border-radius: 10px;
+  background: var(--white); color: var(--navy);
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+  text-decoration: none; border: 1px solid var(--line-dk); cursor: pointer;
+  transition: .18s var(--ease);
+}
+.cta-outline:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-1px); box-shadow: 0 6px 18px -10px rgba(41,82,227,.3); }
+
+/* ── SHOWCASE ── */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.showcase {
+  max-width: 1200px; margin: 0 auto;
+  padding: 8px 40px 96px;
+}
+.showcase-glow {
+  border-radius: 22px;
+  padding: 2px;
+  background: conic-gradient(from var(--angle), var(--blue), var(--violet), var(--cyan), var(--blue-lt), var(--blue));
+  animation: spinAngle 10s linear infinite;
+  box-shadow: 0 24px 80px -20px rgba(10,22,40,.28), 0 0 100px -30px rgba(124,108,246,.35);
+}
+@keyframes spinAngle { to { --angle: 360deg; } }
+.showcase-frame {
+  position: relative;
+  border-radius: 20px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.06);
+  background: var(--navy);
+}
+
+.showcase-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+}
+.b-dots { display: flex; gap: 6px; }
+.b-dot { width: 10px; height: 10px; border-radius: 50%; }
+.bd-r { background: #f87171; } .bd-y { background: #fbbf24; } .bd-g { background: #34d399; }
+.b-bar {
+  flex: 1; height: 28px; max-width: 300px; margin: 0 auto;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 7px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 11.5px; color: var(--text-3); font-weight: 500; font-family: 'Inter', sans-serif;
+}
+.b-bar i { color: #16a34a; font-size: 9px; }
+.showcase-bar-spacer { width: 56px; }
+
+.video-wrap {
+  width: 100%; aspect-ratio: 16/9;
+  background: var(--navy); position: relative;
+}
+.video-wrap video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.video-shimmer {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, #0A1628 25%, #1B3A6B 50%, #0A1628 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; color: var(--text-3); font-size: 13px; font-weight: 500;
+}
+.video-shimmer i { font-size: 28px; color: var(--navy-mid); }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+.video-controls {
+  position: absolute; bottom: 16px; right: 16px; z-index: 3;
+  display: flex; gap: 8px;
+}
+.vid-btn {
+  width: 38px; height: 38px; border-radius: 9px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(8px);
+  color: var(--white); font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: .18s var(--ease);
+}
+.vid-btn:hover { background: rgba(255,255,255,.2); }
+
+.float-badge {
+  position: absolute; z-index: 3;
+  background: rgba(255,255,255,.96);
+  border: 1px solid var(--line);
+  border-radius: 12px; padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 12px 36px rgba(10,22,40,.22);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px; font-weight: 600; color: var(--navy);
+  animation: floatY 5s ease-in-out infinite;
+}
+.float-badge .pulse { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; animation: blink 1.8s ease-in-out infinite; }
+.float-badge.tl { top: 22px; left: 22px; animation-delay: 0s; }
+.float-badge.bl { bottom: 60px; left: 22px; animation-delay: 1.8s; }
+@keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+/* ── PROOF STRIP ── */
+.proof {
+  background: var(--navy);
+  border-top: none; border-bottom: none;
+}
+.proof-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 40px;
+  display: flex; align-items: stretch; overflow-x: auto;
+}
+.proof-item {
+  flex: 1; min-width: 160px;
+  padding: 22px 0 22px 32px;
+  display: flex; align-items: center; gap: 10px;
+  border-right: 1px solid rgba(255,255,255,.08);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 500; color: rgba(255,255,255,.6);
+  transition: color .18s;
+}
+.proof-item:last-child { border-right: none; }
+.proof-item i { color: var(--blue-lt); font-size: 13px; flex-shrink: 0; }
+.proof-item:hover { color: rgba(255,255,255,.9); }
+
+/* ── FEATURES ── */
+.features-section {
+  max-width: 1200px; margin: 0 auto;
+  padding: 96px 40px;
+}
+.sec-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 18px;
+}
+.sec-label::before { content: ''; width: 20px; height: 2px; background: var(--blue); border-radius: 2px; }
+.sec-h2 {
+  font-family: var(--display);
+  font-size: clamp(26px, 3.2vw, 38px);
+  font-weight: 800; letter-spacing: -1.2px;
+  color: var(--navy); margin-bottom: 12px; line-height: 1.1;
+}
+.sec-h2 .accent {
+  background: var(--grad-aurora);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.sec-sub {
+  font-size: 15px; color: var(--text-3); max-width: 420px; line-height: 1.72;
+  margin-bottom: 52px;
+}
+
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+@media(max-width:1024px) { .feat-grid { grid-template-columns: repeat(3,1fr); } }
+@media(max-width:640px)  { .feat-grid { grid-template-columns: repeat(2,1fr); } }
+
+.feat {
+  background: var(--white);
+  padding: 28px 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  position: relative; overflow: hidden;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s var(--ease);
+}
+.feat:hover {
+  transform: translateY(-4px);
+  border-color: rgba(124,108,246,.25);
+  box-shadow: 0 16px 40px -20px rgba(41,82,227,.35);
+}
+.feat::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--grad-aurora);
+  transform: scaleX(0); transform-origin: left;
+  transition: .3s var(--ease);
+}
+.feat:hover::after { transform: scaleX(1); }
+.feat-ico {
+  width: 42px; height: 42px; border-radius: 11px;
+  background: var(--grad-aurora);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: var(--white);
+  margin-bottom: 18px;
+  box-shadow: 0 8px 18px -8px rgba(41,82,227,.5);
+}
+.feat h3 {
+  font-family: var(--display);
+  font-size: 13.5px; font-weight: 700; color: var(--navy);
+  margin-bottom: 7px; letter-spacing: -.15px;
+}
+.feat p { font-size: 12.5px; color: var(--text-3); line-height: 1.72; }
+
+/* ── HOW IT WORKS ── */
+.how {
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.how-inner {
+  max-width: 1200px; margin: 0 auto;
+  padding: 96px 40px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;
+}
+@media(max-width:768px) { .how-inner { grid-template-columns: 1fr; gap: 48px; } }
+
+.steps { display: flex; flex-direction: column; }
+.step {
+  display: flex; gap: 20px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+.step:last-child { border-bottom: none; }
+.step-n {
+  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+  background: var(--grad-aurora); color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+  box-shadow: 0 6px 14px -6px rgba(41,82,227,.5);
+}
+.step-body h3 {
+  font-family: var(--display);
+  font-size: 14.5px; font-weight: 700; color: var(--navy);
+  margin-bottom: 5px; letter-spacing: -.15px;
+}
+.step-body p { font-size: 13.5px; color: var(--text-2); line-height: 1.72; }
+
+.how-card {
+  background: var(--navy); border-radius: 20px;
+  padding: 44px 40px; color: var(--white);
+  position: sticky; top: 80px;
+  overflow: hidden;
+  border: 1px solid rgba(124,108,246,.15);
+}
+.how-card::before {
+  content: '';
+  position: absolute; right: -60px; top: -60px;
+  width: 220px; height: 220px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,108,246,.3), transparent 70%);
+  pointer-events: none;
+}
+.how-card::after {
+  content: '';
+  position: absolute; left: -80px; bottom: -80px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(34,211,238,.18), transparent 70%);
+  pointer-events: none;
+}
+.how-card h3 {
+  font-family: var(--display);
+  font-weight: 800; font-size: 28px; color: var(--white);
+  line-height: 1.2; margin-bottom: 18px; letter-spacing: -.5px; position: relative;
+}
+.how-card h3 .accent-text {
+  background: linear-gradient(135deg, var(--cyan), #93C5FD);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.how-card p { font-size: 13.5px; color: rgba(255,255,255,.55); line-height: 1.75; margin-bottom: 28px; position: relative; }
+.how-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: 9px;
+  background: var(--white); color: var(--navy);
+  font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: .18s var(--ease); position: relative;
+}
+.how-cta:hover { background: var(--cyan); color: var(--navy-soft); transform: translateY(-1px); }
+
+/* ── CTA BAND ── */
+.cta-band {
+  max-width: 1200px; margin: 0 auto; padding: 96px 40px;
+}
+.cta-inner {
+  background: var(--navy);
+  border-radius: 20px; padding: 72px 64px;
+  display: flex; align-items: center; justify-content: space-between; gap: 48px;
+  position: relative; overflow: hidden;
+  border: 1px solid rgba(124,108,246,.15);
+}
+.cta-inner::before {
+  content: '';
+  position: absolute; left: -100px; bottom: -100px;
+  width: 350px; height: 350px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,108,246,.25), transparent 70%);
+  pointer-events: none;
+}
+.cta-inner::after {
+  content: '';
+  position: absolute; right: -80px; top: -80px;
+  width: 280px; height: 280px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(34,211,238,.18), transparent 70%);
+  pointer-events: none;
+}
+.cta-copy { position: relative; }
+.cta-copy h2 {
+  font-family: var(--display);
+  font-size: clamp(22px, 2.8vw, 34px);
+  font-weight: 800; letter-spacing: -1px; color: var(--white);
+  margin-bottom: 10px; line-height: 1.15;
+}
+.cta-copy h2 .accent-text {
+  background: linear-gradient(135deg, var(--cyan), #93C5FD);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.cta-copy p { font-size: 14px; color: rgba(255,255,255,.5); line-height: 1.7; max-width: 420px; }
+.cta-btns { display: flex; gap: 10px; flex-shrink: 0; flex-wrap: wrap; position: relative; }
+.cta-btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 26px; border-radius: 10px;
+  background: var(--grad-aurora); color: var(--white);
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: .2s var(--ease);
+  box-shadow: 0 8px 24px -6px rgba(124,108,246,.5);
+  background-size: 160% 160%; background-position: 0% 50%;
+}
+.cta-btn-primary:hover { background-position: 100% 50%; transform: translateY(-1px); }
+.cta-btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 24px; border-radius: 10px;
+  background: rgba(255,255,255,.08); color: rgba(255,255,255,.8);
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+  text-decoration: none; border: 1px solid rgba(255,255,255,.15); cursor: pointer;
+  transition: .18s var(--ease);
+}
+.cta-btn-ghost:hover { background: rgba(255,255,255,.14); color: var(--white); }
+
+@media(max-width:768px) {
+  .cta-inner { flex-direction: column; padding: 48px 32px; }
+  .cta-btns { justify-content: flex-start; }
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--navy);
+  border-top: 1px solid rgba(255,255,255,.06);
+  padding: 28px 40px;
+}
+.footer-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+}
+.footer-logo-wrap {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--navy-mid);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.footer-logo-wrap img {
+  width: 24px; height: 24px; object-fit: contain;
+
+}
+.footer-copy { font-size: 12px; color: rgba(255,255,255,.3); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a {
+  font-size: 12.5px; color: rgba(255,255,255,.4);
+  text-decoration: none; transition: .15s;
+}
+.footer-links a:hover { color: rgba(255,255,255,.85); }
+
+/* ── MODALS ── */
+.overlay {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(10,22,40,.55);
+  backdrop-filter: blur(14px);
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.overlay.open { display: flex; }
+.modal {
+  width: min(400px, 100%); background: var(--white);
+  border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+  box-shadow: 0 40px 100px rgba(10,22,40,.25);
+  animation: popIn .22s var(--spring);
+}
+@keyframes popIn { from{opacity:0;transform:scale(.95) translateY(10px)} to{opacity:1;transform:none} }
+.modal-head {
+  padding: 24px 24px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.modal-head-copy h3 {
+  font-family: var(--display);
+  font-size: 16.5px; font-weight: 800; color: var(--navy);
+}
+.modal-head-copy p { font-size: 12.5px; color: var(--text-3); margin-top: 3px; }
+.modal-x {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--surface); border: 1px solid var(--line);
+  color: var(--text-3); cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center; font-size: 12px;
+  transition: .15s;
+}
+.modal-x:hover { background: var(--line); color: var(--navy); }
+.modal-body { padding: 24px; }
+.modal-body p { font-size: 13.5px; color: var(--text-2); line-height: 1.7; margin-bottom: 20px; }
+.modal-actions { display: flex; flex-direction: column; gap: 8px; }
+.btn-modal-p {
+  width: 100%; padding: 13px; border-radius: 10px;
+  background: var(--grad-aurora); color: var(--white);
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; border: none; cursor: pointer;
+  text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 7px;
+  transition: .18s var(--ease);
+  box-shadow: 0 6px 20px -6px rgba(41,82,227,.4);
+  background-size: 160% 160%; background-position: 0% 50%;
+}
+.btn-modal-p:hover { background-position: 100% 50%; }
+.btn-modal-s {
+  width: 100%; padding: 12px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--line); color: var(--text-2);
+  font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 500; cursor: pointer;
+  text-decoration: none; display: flex; align-items: center; justify-content: center;
+  transition: .15s;
+}
+.btn-modal-s:hover { background: var(--line); color: var(--navy); }
+
+/* ── REVEAL ANIMATIONS ── */
+.reveal { opacity: 0; transform: translateY(22px); animation: revealUp .65s var(--ease) forwards; }
+.d1{animation-delay:.05s} .d2{animation-delay:.15s}
+.d3{animation-delay:.26s} .d4{animation-delay:.38s}
+@keyframes revealUp { to{opacity:1;transform:none} }
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px) {
+  .hero { padding: 60px 24px 40px; }
+  .nav-inner { padding: 0 20px; }
+  nav { display: none; }
+  .hero-h1 { letter-spacing: -1.5px; }
+  .showcase { padding: 0 20px 72px; }
+  .features-section { padding: 72px 24px; }
+  .how-inner { padding: 72px 24px; }
+  .cta-band { padding: 72px 24px; }
+  footer { padding: 24px; }
+  .float-badge { display: none; }
+  .b-bar, .showcase-bar-spacer { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .feat, .float-badge, .pulse, .showcase-glow { animation: none !important; opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header>
+  <div class="nav-inner">
+    <a class="logo" href="#" onclick="openLogoModal(); return false;">
+      <div class="logo-wrap">
+        <img src="Images/UClogo.png" alt="UniConnect"
+             id="logoImg"
+             onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
+        <span id="logoFallback" style="display:none; width:22px; height:22px;">
+          <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="4.5" fill="white"/>
+            <circle cx="11" cy="11" r="9" stroke="white" stroke-width="1.8" fill="none"/>
+          </svg>
+        </span>
+      </div>
+      <span class="logo-name"></span>
+    </a>
+
+    <nav>
+      <a href="About.html">About</a>
+      <a href="Contact.html">Contact</a>
+      <a href="#" onclick="exitSite(event)">Exit</a>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="Login.html" class="btn-ghost">Log in</a>
+      <button class="btn-navy" onclick="openSignup()">
+        Get started <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow reveal d1">University Event Platform</div>
+  <h1 class="hero-h1 reveal d2">
+    One platform <br><span class="accent">endless</span> opportunities
+  </h1>
+  <p class="hero-sub reveal d3">
+    Discover events, book tickets, and stay connected with your university community - all from a single, seamless platform.
+  </p>
+  <div class="hero-cta-row reveal d4">
+    <a href="Login.html" class="cta-blue">
+      Get started <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i>
+    </a>
+    <button class="cta-outline" onclick="openSignup()">
+      Create account
+    </button>
+  </div>
+</section>
+
+<!-- SHOWCASE -->
+<section class="showcase">
+  <div class="showcase-glow">
+  <div class="showcase-frame">
+    <div class="showcase-bar">
+      <div class="b-dots">
+        <span class="b-dot bd-r"></span>
+        <span class="b-dot bd-y"></span>
+        <span class="b-dot bd-g"></span>
+      </div>
+      <div class="b-bar"><i class="fa-solid fa-lock"></i> uniconnect.lk</div>
+      <div class="showcase-bar-spacer"></div>
+    </div>
+    <div class="video-wrap">
+      <div class="video-shimmer" id="videoLoading">
+        <i class="fa-solid fa-circle-play"></i>
+        Loading demo…
+      </div>
+      <video id="heroVideo" autoplay loop muted playsinline preload="auto"
+        style="display:none;" oncanplay="videoReady()">
+        <source src="Videos/demo,vedio.mp4" type="video/mp4">
+      </video>
+      <div class="float-badge tl">
+        <span class="pulse"></span> Live platform walkthrough
+      </div>
+      <div class="float-badge bl">
+        <i class="fa-solid fa-qrcode" style="color:var(--blue);"></i> QR check-in in seconds
+      </div>
+      <div class="video-controls">
+        <button class="vid-btn" id="muteBtn" onclick="toggleMute()" aria-label="Toggle sound">
+          <i class="fa-solid fa-volume-xmark" id="muteIcon"></i>
+        </button>
+        <button class="vid-btn" id="playBtn" onclick="togglePlay()" aria-label="Toggle play">
+          <i class="fa-solid fa-pause" id="playIcon"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- PROOF STRIP -->
+<div class="proof">
+  <div class="proof-inner">
+    <div class="proof-item"><i class="fa-solid fa-shield-halved"></i> Secure platform</div>
+    <div class="proof-item"><i class="fa-solid fa-bolt"></i> Instant booking</div>
+    <div class="proof-item"><i class="fa-solid fa-qrcode"></i> Event Browsing</div>
+    <div class="proof-item"><i class="fa-solid fa-bell"></i> Real-time alerts</div>
+    <div class="proof-item"><i class="fa-solid fa-handshake"></i> Volunteer tools</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="sec-label">Platform features</div>
+  <h2 class="sec-h2">Built for <span class="accent">campus life</span></h2>
+  <p class="sec-sub">Everything students and organizers need, without the noise.</p>
+  <div class="feat-grid">
+    <div class="feat">
+      <div class="feat-ico"><i class="fa-regular fa-calendar"></i></div>
+      <h3>Discover Events</h3>
+      <p>Browse workshops, seminars, and activities happening across campus.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-ico"><i class="fa-solid fa-ticket"></i></div>
+      <h3>Instant Booking</h3>
+      <p>Reserve your spot in seconds. Your QR ticket arrives in your inbox immediately.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-ico"><i class="fa-regular fa-id-card"></i></div>
+      <h3>Simple Registration</h3>
+      <p>Create an account with your university email and you're ready to go.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-ico"><i class="fa-regular fa-bell"></i></div>
+      <h3>Stay Updated</h3>
+      <p>Real-time notifications about event changes, new openings, and announcements.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-ico"><i class="fa-solid fa-people-group"></i></div>
+      <h3>Get Involved</h3>
+      <p>Volunteer, participate, and make a genuine impact on campus life.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div class="how">
+  <div class="how-inner">
+    <div>
+      <div class="sec-label">Getting started</div>
+      <h2 class="sec-h2" style="margin-bottom:8px;">Up and running<br><span class="accent">in minutes</span></h2>
+      <p class="sec-sub">Three steps to start exploring your campus community.</p>
+      <div class="steps">
+        <div class="step">
+          <span class="step-n">1</span>
+          <div class="step-body">
+            <h3>Create your account</h3>
+            <p>Sign up with your university email. Takes under two minutes and unlocks the full platform.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-n">2</span>
+          <div class="step-body">
+            <h3>Discover what's on</h3>
+            <p>Browse by category, date, or faculty. Find events that are relevant to you.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-n">3</span>
+          <div class="step-body">
+            <h3>Register and show up</h3>
+            <p>Book your spot with one click. Receive your QR ticket and scan in at the venue on the day.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="how-card">
+      <h3>The simplest way to stay <span class="accent-text">connected</span> on campus.</h3>
+      <p>Students across campuses use UniConnect to discover events, volunteer, and never miss a thing.</p>
+      <a href="Reg.html" class="how-cta">
+        Join free <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- CTA BAND -->
+<div class="cta-band">
+  <div class="cta-inner">
+    <div class="cta-copy">
+      <h2>Ready to connect with<br><span class="accent-text">your campus?</span></h2>
+      <p>Join students already using UniConnect to discover events, volunteer, and stay engaged with university life.</p>
+    </div>
+    <div class="cta-btns">
+      <a href="Reg.html" class="cta-btn-primary">
+        Create free account <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i>
+      </a>
+      <a href="Login.html" class="cta-btn-ghost">Already have an account?</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    
+      
+    </div>
+    <span class="footer-copy">© 2026 UniConnect. All Rights Reserved.</span>
+    <div class="footer-links">
+      <a href="About.html">About</a>
+      <a href="Contact.html">Contact</a>
+      <a href="Login.html">Login</a>
+    </div>
+  </div>
+</footer>
+
+<!-- SIGNUP MODAL -->
+<div id="signupModal" class="overlay" onclick="if(event.target===this) closeSignup()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-copy">
+        <h3>Join UniConnect</h3>
+        <p>Create your account and start exploring.</p>
+      </div>
+      <button class="modal-x" onclick="closeSignup()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p>Sign up to discover events, book tickets, and connect with your university community - all in one platform.</p>
+      <div class="modal-actions">
+        <a href="Reg.html" class="btn-modal-p">
+          <i class="fa-solid fa-rocket"></i> Create account
+        </a>
+        <a href="Login.html" class="btn-modal-s">Already have an account? Log in</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGO MODAL -->
+<div id="logoModal" class="overlay" onclick="if(event.target===this) closeLogoModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-copy">
+        <h3>UniConnect</h3>
+        <p>One Platform. Endless Opportunities.</p>
+      </div>
+      <button class="modal-x" onclick="closeLogoModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p>UniConnect brings university life together - events, registrations, volunteers and community, all in one place.</p>
+      <div class="modal-actions">
+        <button class="btn-modal-s" onclick="closeLogoModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Video */
+function videoReady(){
+  document.getElementById('videoLoading').style.display = 'none';
+  document.getElementById('heroVideo').style.display    = 'block';
+}
+const vid = document.getElementById('heroVideo');
+if(vid && 'IntersectionObserver' in window){
+  new IntersectionObserver(e=>{
+    e.forEach(x=>{
+      if(x.isIntersecting){ if(!vid.dataset.userPaused) vid.play().catch(()=>{}); }
+      else { vid.pause(); }
+    });
+  },{threshold:.3}).observe(vid);
+} else if(vid) { vid.play().catch(()=>{}); }
+
+function toggleMute(){
+  vid.muted = !vid.muted;
+  document.getElementById('muteIcon').className =
+    vid.muted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+}
+function togglePlay(){
+  if(vid.paused){
+    vid.play().catch(()=>{});
+    delete vid.dataset.userPaused;
+    document.getElementById('playIcon').className = 'fa-solid fa-pause';
+  } else {
+    vid.pause();
+    vid.dataset.userPaused = '1';
+    document.getElementById('playIcon').className = 'fa-solid fa-play';
+  }
+}
+
+/* Modals */
+function openSignup()     { document.getElementById('signupModal').classList.add('open'); }
+function closeSignup()    { document.getElementById('signupModal').classList.remove('open'); }
+function openLogoModal()  { document.getElementById('logoModal').classList.add('open'); }
+function closeLogoModal() { document.getElementById('logoModal').classList.remove('open'); }
+
+/* Exit */
+function exitSite(e){
+  e && e.preventDefault();
+  localStorage.clear(); sessionStorage.clear();
+  window.location.href = 'Adminlogin.html';
+}
+</script>
+</body>
+</html>

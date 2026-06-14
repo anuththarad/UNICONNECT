@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect - Notifications</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:      #0d0934;
+  --navy-mid:  #1e1b4b;
+  --navy-light:#312e81;
+  --blue:      #3b82f6;
+  --blue-bg:   #dbeafe;
+  --emerald:   #10b981;
+  --amber:     #f59e0b;
+  --rose:      #ef4444;
+  --purple:    #8b5cf6;
+  --cyan:      #06b6d4;
+  --orange:    #f97316;
+  --pink:      #ec4899;
+  --bg:        #f3f4f6;
+  --surface:   #ffffff;
+  --surface2:  #f8fafc;
+  --border:    #e2e8f0;
+  --txt:       #1e293b;
+  --muted:     #64748b;
+  --light:     #94a3b8;
+  --sh-sm:     0 1px 3px rgba(0,0,0,.05);
+  --sh-md:     0 4px 16px rgba(0,0,0,.08);
+  --sh-lg:     0 12px 40px rgba(0,0,0,.12);
+  --r-sm:      10px;
+  --r-md:      16px;
+  --r-lg:      22px;
+  --ease:      cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Figtree',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;overflow-x:hidden;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:280px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;z-index:50;box-shadow:4px 0 24px rgba(0,0,0,.02);}
+.logo-area{height:80px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);padding:0 20px;}
+.logo-area img{max-width:140px;height:auto;object-fit:contain;}
+.logo-text{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:var(--navy);}
+.logo-text span{color:var(--blue);}
+.sb-user{display:flex;align-items:center;gap:12px;margin:22px 20px 16px;padding:12px;background:#fff;border:1px solid var(--border);border-radius:12px;transition:.2s;}
+.sb-user:hover{border-color:var(--blue);}
+.sb-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--blue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0;}
+.sb-name{font-weight:600;color:var(--txt);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-role{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:var(--blue-bg);color:var(--blue);padding:2px 8px;border-radius:99px;display:inline-block;margin-top:2px;}
+.nav-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--light);padding:0 28px;margin:8px 0 4px;}
+.menu{list-style:none;display:flex;flex-direction:column;gap:2px;padding:0 16px;}
+.menu li{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:.2s;color:#100232;font-weight:500;font-size:14px;position:relative;}
+.menu li i{width:18px;font-size:14px;text-align:center;}
+.menu li:hover{background:var(--surface2);color:var(--navy);}
+.menu li.active{background:var(--navy);color:#fff;box-shadow:0 4px 12px rgba(13,9,52,.25);}
+.menu li.active i{color:#fff;}
+.menu-badge{position:absolute;right:12px;background:var(--rose);color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:99px;display:flex;align-items:center;justify-content:center;}
+.sb-logout{display:flex;align-items:center;gap:12px;margin:16px 20px 24px;padding:12px;border-radius:10px;cursor:pointer;color:var(--rose);font-weight:500;font-size:14px;transition:.2s;}
+.sb-logout:hover{background:#fee2e2;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:5px;}
+
+/* === LANGUAGE PICKER === */
+.sidebar-lang{padding:10px 16px;margin:4px 0}
+.sidebar-lang label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;padding-left:2px}
+.lang-select-wrap{position:relative;display:flex;align-items:center}
+.lang-select-wrap i{position:absolute;left:11px;color:var(--accent-blue);font-size:14px;pointer-events:none;z-index:1}
+.sidebar-lang select{width:100%;padding:10px 12px 10px 34px;border-radius:10px;border:1.5px solid var(--border);background:#f8fafc;color:var(--text-main);font-size:13px;font-weight:600;cursor:pointer;outline:none;font-family:inherit;transition:var(--trans-fast);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.sidebar-lang select:hover{border-color:var(--accent-blue);background:#fff}
+.sidebar-lang select:focus{border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(59,130,246,.15);background:#fff}
+
+.sidebar-logout{display:flex;align-items:center;gap:10px;margin:8px 16px 20px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--danger);font-weight:500;font-size:13px;transition:var(--trans-fast);background:transparent;border:1px solid transparent}
+.sidebar-logout:hover{background:var(--danger-bg);border-color:#fecaca}
+
+/* ── MAIN ── */
+.main{flex:1;padding:32px 36px;overflow-y:auto;}
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+.page-header h2{font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:var(--navy);}
+.page-header p{font-size:13px;color:var(--muted);margin-top:3px;}
+.header-actions{display:flex;gap:10px;align-items:center;}
+.live-badge{display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#16a34a;animation:livePulse 1.5s infinite;}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.7);}}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;border:none;padding:9px 16px;border-radius:var(--r-sm);font-family:'Figtree',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:.2s var(--ease);}
+.btn-primary{background:var(--navy);color:#fff;}
+.btn-primary:hover{background:var(--navy-mid);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--surface2);}
+.btn-sm{padding:7px 12px;font-size:12px;}
+.mark-all{font-size:12px;font-weight:600;color:var(--blue);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:.2s;}
+.mark-all:hover{background:var(--blue-bg);}
+
+/* ── STATS ── */
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;margin-bottom:24px;}
+.stat-chip{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;text-align:center;box-shadow:var(--sh-sm);transition:.2s;}
+.stat-chip:hover{transform:translateY(-2px);box-shadow:var(--sh-md);}
+.stat-chip .num{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:var(--navy);}
+.stat-chip .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:2px;}
+.stat-chip.c-blue   {border-top:3px solid var(--blue);}
+.stat-chip.c-green  {border-top:3px solid var(--emerald);}
+.stat-chip.c-amber  {border-top:3px solid var(--amber);}
+.stat-chip.c-purple {border-top:3px solid var(--purple);}
+.stat-chip.c-rose   {border-top:3px solid var(--rose);}
+.stat-chip.c-cyan   {border-top:3px solid var(--cyan);}
+
+/* ── FILTER TABS ── */
+.filter-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.tab{padding:8px 16px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:.2s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.tab:hover{border-color:var(--blue);color:var(--navy);}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:0 4px 12px rgba(13,9,52,.2);}
+.tab .cnt{font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:99px;display:inline-flex;align-items:center;justify-content:center;padding:0 4px;background:rgba(255,255,255,.2);color:inherit;}
+.tab:not(.active) .cnt{background:var(--border);color:var(--muted);}
+
+/* ── NEW NOTIFICATION ANIMATION ── */
+@keyframes slideInFade {
+  from { opacity:0; transform:translateY(-12px) scale(.98); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.notif-card.new-arrival { animation: slideInFade .4s var(--ease) both; }
+
+/* ── NOTIFICATION CARDS ── */
+.notif-list{display:flex;flex-direction:column;gap:10px;}
+.notif-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);
+  padding:16px 18px;display:flex;flex-direction:column;gap:0;
+  box-shadow:var(--sh-sm);transition:.25s var(--ease);position:relative;overflow:hidden;
+}
+.notif-card:hover{box-shadow:var(--sh-md);border-color:rgba(59,130,246,.2);}
+
+/* Per-type left border + bg tint */
+.notif-card.unread { border-left:4px solid var(--blue); }
+/* Volunteer */
+.notif-card.unread.volunteer_approved      { border-left-color:var(--emerald);background:linear-gradient(to right,#f0fdf4 0%,var(--surface) 40%); }
+.notif-card.unread.volunteer_rejected      { border-left-color:var(--rose);   background:linear-gradient(to right,#fff1f2 0%,var(--surface) 40%); }
+.notif-card.unread.volunteer_task_updated  { border-left-color:var(--amber);  background:linear-gradient(to right,#fffbeb 0%,var(--surface) 40%); }
+.notif-card.unread.volunteer_message,
+.notif-card.unread.participant_reply       { border-left-color:var(--purple); background:linear-gradient(to right,#faf5ff 0%,var(--surface) 40%); }
+/* Registration */
+.notif-card.unread.registration_confirmed  { border-left-color:var(--emerald);background:linear-gradient(to right,#f0fdf4 0%,var(--surface) 40%); }
+.notif-card.unread.registration_cancelled  { border-left-color:var(--rose);   background:linear-gradient(to right,#fff1f2 0%,var(--surface) 40%); }
+.notif-card.unread.registration_waitlisted { border-left-color:var(--amber);  background:linear-gradient(to right,#fffbeb 0%,var(--surface) 40%); }
+/* Event */
+.notif-card.unread.event_reminder          { border-left-color:var(--blue);   background:linear-gradient(to right,#eff6ff 0%,var(--surface) 40%); }
+.notif-card.unread.event_cancelled         { border-left-color:var(--rose);   background:linear-gradient(to right,#fff1f2 0%,var(--surface) 40%); }
+.notif-card.unread.event_updated           { border-left-color:var(--cyan);   background:linear-gradient(to right,#ecfeff 0%,var(--surface) 40%); }
+.notif-card.unread.event_started           { border-left-color:var(--emerald);background:linear-gradient(to right,#f0fdf4 0%,var(--surface) 40%); }
+/* Attendance */
+.notif-card.unread.attendance_marked       { border-left-color:var(--emerald);background:linear-gradient(to right,#f0fdf4 0%,var(--surface) 40%); }
+.notif-card.unread.certificate_issued      { border-left-color:var(--amber);  background:linear-gradient(to right,#fffbeb 0%,var(--surface) 40%); }
+/* Payment */
+.notif-card.unread.payment_confirmed       { border-left-color:var(--emerald);background:linear-gradient(to right,#f0fdf4 0%,var(--surface) 40%); }
+.notif-card.unread.payment_failed          { border-left-color:var(--rose);   background:linear-gradient(to right,#fff1f2 0%,var(--surface) 40%); }
+.notif-card.unread.payment_refunded        { border-left-color:var(--cyan);   background:linear-gradient(to right,#ecfeff 0%,var(--surface) 40%); }
+/* Profile/System */
+.notif-card.unread.profile_updated,
+.notif-card.unread.password_changed        { border-left-color:var(--navy);   background:linear-gradient(to right,#eef2ff 0%,var(--surface) 40%); }
+.notif-card.unread.announcement            { border-left-color:var(--orange); background:linear-gradient(to right,#fff7ed 0%,var(--surface) 40%); }
+.notif-card.unread.system_alert            { border-left-color:var(--rose);   background:linear-gradient(to right,#fff1f2 0%,var(--surface) 40%); }
+
+/* card top row */
+.notif-top{display:flex;gap:14px;align-items:flex-start;cursor:pointer;}
+.notif-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+/* icon colour classes */
+.icon-green    {background:#d1fae5;color:#059669;}
+.icon-red      {background:#fee2e2;color:#dc2626;}
+.icon-amber    {background:#fef3c7;color:#d97706;}
+.icon-purple   {background:#ede9fe;color:#7c3aed;}
+.icon-blue     {background:var(--blue-bg);color:var(--blue);}
+.icon-cyan     {background:#cffafe;color:#0891b2;}
+.icon-navy     {background:#e0e7ff;color:#3730a3;}
+.icon-orange   {background:#ffedd5;color:#ea580c;}
+.icon-pink     {background:#fce7f3;color:#be185d;}
+.icon-gray     {background:var(--surface2);color:var(--muted);}
+
+.notif-body{flex:1;min-width:0;}
+.notif-title{font-weight:700;font-size:14px;color:var(--navy);margin-bottom:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.notif-msg{font-size:13px;color:var(--muted);line-height:1.55;}
+.notif-meta{display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap;}
+.notif-time{font-size:11px;color:var(--light);display:flex;align-items:center;gap:4px;}
+.notif-time i{font-size:10px;}
+.notif-event-tag{display:inline-flex;align-items:center;gap:4px;background:var(--surface2);border:1px solid var(--border);padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;color:var(--muted);}
+.unread-dot{width:9px;height:9px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+
+/* dynamic dot colours */
+.notif-card.volunteer_approved .unread-dot,
+.notif-card.registration_confirmed .unread-dot,
+.notif-card.attendance_marked .unread-dot,
+.notif-card.payment_confirmed .unread-dot,
+.notif-card.event_started .unread-dot       { background:var(--emerald); }
+.notif-card.volunteer_rejected .unread-dot,
+.notif-card.registration_cancelled .unread-dot,
+.notif-card.event_cancelled .unread-dot,
+.notif-card.payment_failed .unread-dot,
+.notif-card.system_alert .unread-dot        { background:var(--rose); }
+.notif-card.volunteer_task_updated .unread-dot,
+.notif-card.registration_waitlisted .unread-dot,
+.notif-card.certificate_issued .unread-dot  { background:var(--amber); }
+.notif-card.volunteer_message .unread-dot,
+.notif-card.participant_reply .unread-dot   { background:var(--purple); }
+.notif-card.event_updated .unread-dot,
+.notif-card.payment_refunded .unread-dot    { background:var(--cyan); }
+.notif-card.announcement .unread-dot        { background:var(--orange); }
+
+/* type badge pill */
+.type-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.4px;}
+.badge-green  {background:#d1fae5;color:#065f46;}
+.badge-red    {background:#fee2e2;color:#991b1b;}
+.badge-amber  {background:#fef3c7;color:#92400e;}
+.badge-blue   {background:var(--blue-bg);color:#1d4ed8;}
+.badge-purple {background:#ede9fe;color:#5b21b6;}
+.badge-cyan   {background:#cffafe;color:#164e63;}
+.badge-orange {background:#ffedd5;color:#9a3412;}
+.badge-navy   {background:#e0e7ff;color:#3730a3;}
+.badge-gray   {background:var(--surface2);color:var(--muted);}
+
+/* ── ACTION BUTTONS on card ── */
+.notif-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.notif-action-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);transition:.2s;}
+.notif-action-btn:hover{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
+.notif-action-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy);}
+.notif-action-btn.primary:hover{background:var(--navy-mid);}
+
+/* ── CHAT THREAD ── */
+.chat-thread{display:none;flex-direction:column;gap:0;margin-top:14px;border-top:1px solid var(--border);padding-top:14px;}
+.notif-card.chat-open .chat-thread{display:flex;}
+.chat-toggle-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--navy);font-size:12px;font-weight:700;cursor:pointer;transition:.2s;width:fit-content;}
+.chat-toggle-btn:hover{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
+.chat-toggle-btn i{transition:transform .25s;}
+.notif-card.chat-open .chat-toggle-btn i.toggle-arrow{transform:rotate(180deg);}
+.msg-list{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto;padding:4px 2px 10px;}
+.msg-list::-webkit-scrollbar{width:3px;}
+.msg-list::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+.msg-bubble-wrap{display:flex;flex-direction:column;}
+.msg-bubble-wrap.from-me{align-items:flex-end;}
+.msg-bubble-wrap.from-them{align-items:flex-start;}
+.msg-sender{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:3px;padding:0 4px;}
+.msg-bubble{padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5;max-width:82%;word-break:break-word;}
+.from-me   .msg-bubble{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;border-bottom-right-radius:4px;}
+.from-them .msg-bubble{background:var(--surface2);border:1px solid var(--border);color:var(--txt);border-bottom-left-radius:4px;}
+.msg-time{font-size:10px;color:var(--light);margin-top:3px;padding:0 4px;}
+.reply-area{display:flex;gap:8px;align-items:flex-end;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.reply-wrap{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:20px;display:flex;align-items:center;padding:8px 14px;gap:8px;transition:.2s;}
+.reply-wrap:focus-within{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.12);}
+.reply-input{flex:1;border:none;background:transparent;font-family:'Figtree',sans-serif;font-size:13px;color:var(--txt);outline:none;resize:none;max-height:80px;line-height:1.5;}
+.reply-send{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1e3a8a,#3b82f6);border:none;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;}
+.reply-send:hover{transform:scale(1.08);box-shadow:0 4px 12px rgba(59,130,246,.4);}
+.reply-send:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+/* ── EMPTY / SPINNER ── */
+.empty{padding:60px 24px;text-align:center;color:var(--muted);}
+.empty-icon{width:72px;height:72px;border-radius:50%;background:var(--surface2);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--light);margin:0 auto 16px;}
+.empty h3{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.empty p{font-size:13px;line-height:1.6;}
+.spinner{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--muted);}
+.spinner i{font-size:24px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:#fff;border:1px solid var(--border);border-left:4px solid var(--emerald);border-radius:12px;padding:12px 16px;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:9px;z-index:9999;font-size:13px;font-weight:600;color:var(--navy);transform:translateX(140%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:300px;}
+.toast.show{transform:translateX(0);}
+.toast i{font-size:15px;color:var(--emerald);}
+.toast.error i{color:var(--rose);}
+.toast.error{border-left-color:var(--rose);}
+.toast.info i{color:var(--blue);}
+.toast.info{border-left-color:var(--blue);}
+
+/* ── SECTION DIVIDERS ── */
+.date-divider{display:flex;align-items:center;gap:10px;margin:6px 0 2px;}
+.date-divider span{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
+.date-divider::before,.date-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+@media(max-width:1100px){
+  .sidebar{width:80px;}
+  .sb-user .sb-name,.sb-user .sb-role,.menu li span,.sb-logout span,.nav-label{display:none;}
+  .sb-user{justify-content:center;padding:10px;}
+  .menu li{justify-content:center;padding:14px;}
+  .logo-area img{display:none;}
+  .logo-area{justify-content:center;}
+  .logo-text{display:none;}
+  .sb-logout{justify-content:center;padding:14px;margin:8px 12px 16px;}
+}
+@media(max-width:768px){
+  .main{padding:16px;}
+  .filter-tabs{gap:4px;}
+  .tab{padding:6px 10px;font-size:11px;}
+  .stats-bar{grid-template-columns:1fr 1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo-area">
+    <img src="images/UClogo.png" alt="UniConnect" onerror="this.style.display='none';document.getElementById('lt').style.display='block'">
+    <span class="logo-text" id="lt" style="display:none">Uni<span>Connect</span></span>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar" id="sbAvatar">--</div>
+    <div>
+      <div class="sb-name" id="sbName">Loading…</div>
+      <div class="sb-role">Student</div>
+    </div>
+  </div>
+  <span class="nav-label">Main Menu</span>
+  <ul class="menu">
+    <li onclick="window.location.href='UserDashboard.html'"><i class="fa-solid fa-house"></i><span>Dashboard</span></li>
+    <li onclick="window.location.href='UserSprofile.html'"><i class="fa-solid fa-user"></i><span>My Profile</span></li>
+    <li onclick="window.location.href='Allevents.html'"><i class="fa-solid fa-calendar-days"></i><span>Browse Events</span></li>
+   <li onclick="window.location.href='Myactivities.html'">
+      <i class="fa-solid fa-ticket"></i><span>Activity Log</span>
+      <span class="menu-badge" id="regBadge" style="display:none">0</span>
+    </li>
+    </ul>
+  <span class="nav-label" style="margin-top:8px">Account</span>
+  <ul class="menu">
+    <li class="active"><i class="fa-solid fa-bell"></i><span>Notifications</span>
+      <span class="menu-badge" id="unreadBadge" style="display:none">0</span>
+    </li>
+    <li><i class="fa-solid fa-gear"></i><span>Settings</span></li>
+  </ul>
+
+  <div class="sidebar-lang">
+    <label for="langSelect">🌐 Language</label>
+    <div class="lang-select-wrap">
+      <i class="fa-solid fa-globe"></i>
+      <select id="langSelect" onchange="doGoogleTranslate(this.value)">
+        <option value="en">English</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+        <option value="si">සිංහල (Sinhala)</option>
+      </select>
+    </div>
+  </div>
+  <div class="sb-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></div>
+</aside>
+
+<main class="main">
+
+  <div class="page-header">
+    <div>
+      <h2><i class="fa-solid fa-bell" style="color:var(--blue);margin-right:8px"></i>Notifications</h2>
+      <p>All your activity updates - registrations, events, volunteer, messages &amp; more</p>
+    </div>
+    <div class="header-actions">
+      <div class="live-badge"><span class="live-dot"></span> Live</div>
+      <button class="mark-all" id="markAllBtn" onclick="markAllRead()" style="display:none">
+        <i class="fa-solid fa-check-double"></i> Mark all as read
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="loadNotifications()">
+        <i class="fa-solid fa-rotate-right"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-chip c-blue">  <div class="num" id="stTotal">0</div>    <div class="lbl">Total</div></div>
+    <div class="stat-chip c-purple"><div class="num" id="stUnread">0</div>   <div class="lbl">Unread</div></div>
+    <div class="stat-chip c-green"> <div class="num" id="stApproved">0</div> <div class="lbl">Approved</div></div>
+    <div class="stat-chip c-cyan">  <div class="num" id="stEvents">0</div>   <div class="lbl">Events</div></div>
+    <div class="stat-chip c-amber"> <div class="num" id="stMessages">0</div> <div class="lbl">Messages</div></div>
+    <div class="stat-chip c-rose">  <div class="num" id="stAlerts">0</div>   <div class="lbl">Alerts</div></div>
+  </div>
+
+  <!-- FILTER TABS -->
+  <div class="filter-tabs">
+    <div class="tab active" data-filter="all"                    onclick="setFilter('all')">All <span class="cnt" id="cnt-all">0</span></div>
+    <!-- Volunteer -->
+    <div class="tab" data-filter="volunteer"                     onclick="setFilter('volunteer')"><i class="fa-solid fa-hands-helping" style="color:#10b981;font-size:10px"></i> Volunteer <span class="cnt" id="cnt-volunteer">0</span></div>
+    <!-- Registration -->
+    <div class="tab" data-filter="registration"                  onclick="setFilter('registration')"><i class="fa-solid fa-ticket" style="color:#3b82f6;font-size:10px"></i> Registration <span class="cnt" id="cnt-registration">0</span></div>
+    <!-- Events -->
+    <div class="tab" data-filter="event"                         onclick="setFilter('event')"><i class="fa-solid fa-calendar-days" style="color:#06b6d4;font-size:10px"></i> Events <span class="cnt" id="cnt-event">0</span></div>
+    <!-- Attendance -->
+    <div class="tab" data-filter="attendance"                    onclick="setFilter('attendance')"><i class="fa-solid fa-clipboard-check" style="color:#10b981;font-size:10px"></i> Attendance <span class="cnt" id="cnt-attendance">0</span></div>
+    <!-- Payment -->
+    <div class="tab" data-filter="payment"                       onclick="setFilter('payment')"><i class="fa-solid fa-credit-card" style="color:#8b5cf6;font-size:10px"></i> Payment <span class="cnt" id="cnt-payment">0</span></div>
+    <!-- Messages -->
+    <div class="tab" data-filter="message"                       onclick="setFilter('message')"><i class="fa-solid fa-comment-dots" style="color:#8b5cf6;font-size:10px"></i> Messages <span class="cnt" id="cnt-message">0</span></div>
+    <!-- System -->
+    <div class="tab" data-filter="system"                        onclick="setFilter('system')"><i class="fa-solid fa-circle-exclamation" style="color:#ef4444;font-size:10px"></i> System <span class="cnt" id="cnt-system">0</span></div>
+    <!-- Unread -->
+    <div class="tab" data-filter="unread"                        onclick="setFilter('unread')"><i class="fa-solid fa-circle" style="color:var(--blue);font-size:8px"></i> Unread <span class="cnt" id="cnt-unread">0</span></div>
+  </div>
+
+  <div id="notifList" class="notif-list">
+    <div class="spinner"><i class="fa-solid fa-spinner fa-spin"></i></div>
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg">Done!</span></div>
+
+<script>
+const API    = "http://localhost:3000/api";
+
+/* ────────────────────────────────────────────────────────────
+   IMPORTANT: this MUST match the storage type used at login /
+   on UserDashboard.html. The dashboard stores the session in
+   sessionStorage, so this page reads from sessionStorage too.
+   If you ever change the login page to use localStorage instead,
+   update both places to match.
+──────────────────────────────────────────────────────────── */
+const token  = sessionStorage.getItem("token");
+const userId = sessionStorage.getItem("user_id");
+const uname  = sessionStorage.getItem("username");
+
+if (!token || !userId) window.location.href = "Login.html";
+
+if (uname) {
+  document.getElementById("sbName").innerText   = uname;
+  document.getElementById("sbAvatar").innerText = initials(uname);
+}
+function initials(n){ return n ? n.trim().split(" ").map(w=>w[0]).join("").substring(0,2).toUpperCase() : "--"; }
+function logout(){ sessionStorage.clear(); window.location.href = "Login.html"; }
+
+/* ─────────────────────────────────────────────────
+   NOTIFICATION TYPE REGISTRY
+   Maps every type → { icon, iconCls, titleDefault,
+                       badgeCls, filterGroup, actionFn }
+───────────────────────────────────────────────── */
+const TYPE_MAP = {
+  // ── Volunteer ──
+  volunteer_approved:     { icon:"fa-check-circle",    iconCls:"icon-green",  title:"Volunteer Application Approved ✅",         badge:"badge-green",  group:"volunteer" },
+  volunteer_rejected:     { icon:"fa-times-circle",    iconCls:"icon-red",    title:"Volunteer Application Not Accepted",         badge:"badge-red",    group:"volunteer" },
+  volunteer_task_updated: { icon:"fa-pen-to-square",   iconCls:"icon-amber",  title:"Task Assignment Updated 📋",                 badge:"badge-amber",  group:"volunteer" },
+  volunteer_message:      { icon:"fa-comment-dots",    iconCls:"icon-purple", title:"Message from Organizer 💬",                  badge:"badge-purple", group:"message",   hasThread:true },
+  participant_reply:      { icon:"fa-reply",           iconCls:"icon-purple", title:"Reply from Organizer 💬",                    badge:"badge-purple", group:"message",   hasThread:true },
+  // ── Registration ──
+  registration_confirmed: { icon:"fa-circle-check",   iconCls:"icon-green",  title:"Registration Confirmed ✅",                  badge:"badge-green",  group:"registration", action:"viewEvent" },
+  registration_cancelled: { icon:"fa-circle-xmark",   iconCls:"icon-red",    title:"Registration Cancelled",                     badge:"badge-red",    group:"registration" },
+  registration_waitlisted:{ icon:"fa-hourglass-half", iconCls:"icon-amber",  title:"Added to Waitlist ⏳",                       badge:"badge-amber",  group:"registration" },
+  registration_approved:  { icon:"fa-check-double",   iconCls:"icon-green",  title:"Waitlist Spot Confirmed! 🎉",                badge:"badge-green",  group:"registration", action:"viewEvent" },
+  // ── Events ──
+  event_reminder:         { icon:"fa-bell",            iconCls:"icon-blue",   title:"Event Reminder 🔔",                          badge:"badge-blue",   group:"event",    action:"viewEvent" },
+  event_cancelled:        { icon:"fa-calendar-xmark",  iconCls:"icon-red",    title:"Event Cancelled",                            badge:"badge-red",    group:"event" },
+  event_updated:          { icon:"fa-calendar-pen",    iconCls:"icon-cyan",   title:"Event Details Updated 📅",                   badge:"badge-cyan",   group:"event",    action:"viewEvent" },
+  event_started:          { icon:"fa-play-circle",     iconCls:"icon-green",  title:"Event Is Live Now! 🟢",                      badge:"badge-green",  group:"event",    action:"viewEvent" },
+  event_completed:        { icon:"fa-flag-checkered",  iconCls:"icon-navy",   title:"Event Completed",                            badge:"badge-navy",   group:"event" },
+  new_event_nearby:       { icon:"fa-location-dot",    iconCls:"icon-orange", title:"New Event in Your Area 📍",                  badge:"badge-orange", group:"event",    action:"viewEvent" },
+  // ── Attendance ──
+  attendance_marked:      { icon:"fa-clipboard-check", iconCls:"icon-green",  title:"Attendance Marked ✅",                       badge:"badge-green",  group:"attendance" },
+  attendance_missed:      { icon:"fa-clipboard-list",  iconCls:"icon-amber",  title:"Attendance Not Recorded",                    badge:"badge-amber",  group:"attendance" },
+  certificate_issued:     { icon:"fa-award",           iconCls:"icon-amber",  title:"Certificate Issued 🏆",                      badge:"badge-amber",  group:"attendance", action:"viewCert" },
+  // ── Payment ──
+  payment_confirmed:      { icon:"fa-circle-check",    iconCls:"icon-green",  title:"Payment Confirmed 💳",                       badge:"badge-green",  group:"payment" },
+  payment_failed:         { icon:"fa-circle-xmark",    iconCls:"icon-red",    title:"Payment Failed",                             badge:"badge-red",    group:"payment",  action:"retryPayment" },
+  payment_refunded:       { icon:"fa-rotate-left",     iconCls:"icon-cyan",   title:"Refund Processed 💰",                        badge:"badge-cyan",   group:"payment" },
+  // ── Profile / Account ──
+  profile_updated:        { icon:"fa-user-pen",        iconCls:"icon-navy",   title:"Profile Updated",                            badge:"badge-navy",   group:"system" },
+  password_changed:       { icon:"fa-lock",            iconCls:"icon-navy",   title:"Password Changed 🔐",                        badge:"badge-navy",   group:"system" },
+  // ── System ──
+  announcement:           { icon:"fa-bullhorn",        iconCls:"icon-orange", title:"Announcement 📢",                            badge:"badge-orange", group:"system" },
+  system_alert:           { icon:"fa-triangle-exclamation",iconCls:"icon-red","title":"System Alert ⚠️",                         badge:"badge-red",    group:"system" },
+  general:                { icon:"fa-bell",            iconCls:"icon-blue",   title:"Notification",                               badge:"badge-blue",   group:"system" },
+};
+
+function getTypeMeta(type){
+  return TYPE_MAP[type] || TYPE_MAP.general;
+}
+
+/* ── State ── */
+let allNotifs    = [];
+let threadCache  = {};
+let currentFilter = "all";
+let knownIds     = new Set();
+
+/* ── Toast ── */
+function showToast(msg, type="success"){
+  const icons = { success:"fa-check-circle", error:"fa-exclamation-circle", info:"fa-info-circle" };
+  const t = document.getElementById("toast");
+  t.querySelector("i").className = `fas ${icons[type]||icons.success}`;
+  document.getElementById("toastMsg").innerText = msg;
+  t.className = "toast " + type;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 3200);
+}
+
+/* ══════════════════════════════════════════════════
+   LOAD NOTIFICATIONS
+══════════════════════════════════════════════════ */
+async function loadNotifications(silent=false){
+  if(!silent) document.getElementById("notifList").innerHTML =
+    `<div class="spinner"><i class="fa-solid fa-spinner fa-spin"></i></div>`;
+  try {
+    const res  = await fetch(`${API}/notifications/user/${userId}`, {
+      headers:{ Authorization:"Bearer "+token }
+    });
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const incoming = Array.isArray(data) ? data : (data.notifications||data.data||[]);
+
+    // Detect new arrivals for toast
+    const newOnes = incoming.filter(n => !knownIds.has(n.notification_id||n.id) && !(n.is_read));
+    if(newOnes.length && knownIds.size > 0){
+      showToast(`${newOnes.length} new notification${newOnes.length>1?"s":""}`, "info");
+    }
+    incoming.forEach(n => knownIds.add(n.notification_id||n.id));
+
+    allNotifs = incoming;
+    // Sort: unread first → newest
+    allNotifs.sort((a,b)=>{
+      if(!a.is_read && b.is_read) return -1;
+      if(a.is_read && !b.is_read) return 1;
+      return new Date(b.created_at||0)-new Date(a.created_at||0);
+    });
+
+    updateStats();
+    updateCounts();
+    renderNotifications(newOnes.map(n=>n.notification_id||n.id));
+  } catch(e){
+    if(!silent) document.getElementById("notifList").innerHTML = `
+      <div class="empty">
+        <div class="empty-icon"><i class="fa-solid fa-wifi-slash"></i></div>
+        <h3>Could not load notifications</h3>
+        <p>${e.message}</p>
+      </div>`;
+  }
+}
+
+/* ── Counts & Stats ── */
+function typeGroup(n){
+  return (getTypeMeta(n.type||"general")).group;
+}
+function updateStats(){
+  const unread = allNotifs.filter(n=>!n.is_read).length;
+  document.getElementById("stTotal").innerText    = allNotifs.length;
+  document.getElementById("stUnread").innerText   = unread;
+  document.getElementById("stApproved").innerText = allNotifs.filter(n=>
+    n.type==="volunteer_approved"||n.type==="registration_confirmed"||n.type==="registration_approved"
+  ).length;
+  document.getElementById("stEvents").innerText   = allNotifs.filter(n=>typeGroup(n)==="event").length;
+  document.getElementById("stMessages").innerText = allNotifs.filter(n=>typeGroup(n)==="message").length;
+  document.getElementById("stAlerts").innerText   = allNotifs.filter(n=>
+    n.type==="system_alert"||n.type==="event_cancelled"||n.type==="payment_failed"||n.type==="registration_cancelled"
+  ).length;
+
+  const badge = document.getElementById("unreadBadge");
+  if(unread>0){ badge.style.display="flex"; badge.innerText=unread>99?"99+":unread; }
+  else badge.style.display="none";
+  document.getElementById("markAllBtn").style.display = unread>0 ? "inline-flex" : "none";
+}
+
+function updateCounts(){
+  const groups = { volunteer:0, registration:0, event:0, attendance:0, payment:0, message:0, system:0 };
+  allNotifs.forEach(n=>{ const g=typeGroup(n); if(groups[g]!==undefined) groups[g]++; });
+  document.getElementById("cnt-all").innerText          = allNotifs.length;
+  document.getElementById("cnt-volunteer").innerText    = groups.volunteer;
+  document.getElementById("cnt-registration").innerText = groups.registration;
+  document.getElementById("cnt-event").innerText        = groups.event;
+  document.getElementById("cnt-attendance").innerText   = groups.attendance;
+  document.getElementById("cnt-payment").innerText      = groups.payment;
+  document.getElementById("cnt-message").innerText      = groups.message;
+  document.getElementById("cnt-system").innerText       = groups.system;
+  document.getElementById("cnt-unread").innerText       = allNotifs.filter(n=>!n.is_read).length;
+}
+
+/* ── Filter ── */
+function setFilter(f){
+  currentFilter = f;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.filter===f));
+  renderNotifications();
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER LIST  (with optional new-arrival IDs)
+══════════════════════════════════════════════════ */
+function renderNotifications(newIds=[]){
+  let list = allNotifs;
+  if(currentFilter==="unread")     list = list.filter(n=>!n.is_read);
+  else if(currentFilter==="volunteer")    list = list.filter(n=>typeGroup(n)==="volunteer");
+  else if(currentFilter==="registration") list = list.filter(n=>typeGroup(n)==="registration");
+  else if(currentFilter==="event")        list = list.filter(n=>typeGroup(n)==="event");
+  else if(currentFilter==="attendance")   list = list.filter(n=>typeGroup(n)==="attendance");
+  else if(currentFilter==="payment")      list = list.filter(n=>typeGroup(n)==="payment");
+  else if(currentFilter==="message")      list = list.filter(n=>typeGroup(n)==="message");
+  else if(currentFilter==="system")       list = list.filter(n=>typeGroup(n)==="system");
+
+  const box = document.getElementById("notifList");
+  if(!list.length){
+    box.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon"><i class="fa-solid fa-bell-slash"></i></div>
+        <h3>No notifications here</h3>
+        <p>${currentFilter==="unread"?"You're all caught up! 🎉":"Nothing in this category yet."}</p>
+      </div>`;
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  list.forEach(n=>{
+    const label = dateLabel(n.created_at);
+    if(!groups[label]) groups[label]=[];
+    groups[label].push(n);
+  });
+
+  let html = "";
+  for(const [label,items] of Object.entries(groups)){
+    html += `<div class="date-divider"><span>${esc(label)}</span></div>`;
+    html += items.map(n=>notifCardHTML(n, newIds.includes(n.notification_id||n.id))).join("");
+  }
+  box.innerHTML = html;
+}
+
+/* ══════════════════════════════════════════════════
+   NOTIFICATION CARD HTML
+══════════════════════════════════════════════════ */
+function notifCardHTML(n, isNew=false){
+  const type   = n.type || "general";
+  const isRead = n.is_read || false;
+  const nid    = n.notification_id || n.id;
+  const msg    = n.message || "You have a new notification.";
+  const time   = formatTime(n.created_at);
+  const evTitle = n.event_title || n.event_name || "";
+  const meta = getTypeMeta(type);
+  const hasThread = !!meta.hasThread;
+
+  // Optional action buttons
+  let actionBtns = "";
+  if(meta.action==="viewEvent" && n.event_id){
+    actionBtns += `<button class="notif-action-btn primary" onclick="goEvent(${n.event_id})"><i class="fa-solid fa-arrow-right"></i> View Event</button>`;
+  }
+  if(meta.action==="viewCert" && n.certificate_id){
+    actionBtns += `<button class="notif-action-btn" onclick="viewCert('${n.certificate_id}')"><i class="fa-solid fa-download"></i> Download Certificate</button>`;
+  }
+  if(meta.action==="retryPayment" && n.event_id){
+    actionBtns += `<button class="notif-action-btn" onclick="retryPayment(${n.event_id})"><i class="fa-solid fa-rotate-right"></i> Retry Payment</button>`;
+  }
+
+  // Thread toggle for message types
+  const cached = threadCache[nid];
+  const msgCount = cached ? cached.length : "";
+  const threadToggle = hasThread
+    ? `<span class="chat-toggle-btn" onclick="toggleChat(event,${nid},this)">
+         <i class="fa-solid fa-comments"></i>
+         ${msgCount ? msgCount+" message"+(msgCount>1?"s":"") : "View conversation"}
+         <i class="fa-solid fa-chevron-down toggle-arrow"></i>
+       </span>`
+    : "";
+
+  return `
+  <div class="notif-card ${isRead?"":"unread"} ${type}${isNew?" new-arrival":""}" id="notif_${nid}">
+    <div class="notif-top" onclick="markOneRead(this.closest('.notif-card'),${nid})">
+      <div class="notif-icon ${meta.iconCls}"><i class="fa-solid ${meta.icon}"></i></div>
+      <div class="notif-body">
+        <div class="notif-title">
+          ${esc(n.title || meta.title)}
+          <span class="type-badge ${meta.badge}">${typeLabel(type)}</span>
+          ${!isRead?`<span class="unread-dot"></span>`:""}
+        </div>
+        <div class="notif-msg">${esc(msg)}</div>
+        <div class="notif-meta">
+          <div class="notif-time"><i class="fa-regular fa-clock"></i> ${time}</div>
+          ${evTitle?`<div class="notif-event-tag"><i class="fa-solid fa-calendar-days" style="font-size:10px;color:var(--blue)"></i> ${esc(evTitle)}</div>`:""}
+          ${n.location?`<div class="notif-event-tag"><i class="fa-solid fa-location-dot" style="font-size:10px;color:var(--rose)"></i> ${esc(n.location)}</div>`:""}
+        </div>
+      </div>
+    </div>
+
+    ${actionBtns?`<div class="notif-actions">${actionBtns}</div>`:""}
+    ${threadToggle}
+
+    ${hasThread?`
+    <div class="chat-thread" id="thread_${nid}">
+      <div class="msg-list" id="msgs_${nid}">
+        <div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">
+          <i class="fa-solid fa-spinner fa-spin"></i> Loading messages…
+        </div>
+      </div>
+      <div class="reply-area">
+        <div class="reply-wrap">
+          <textarea class="reply-input" id="replyInput_${nid}" rows="1"
+            placeholder="Type your reply…"
+            onkeydown="handleReplyKey(event,${nid})"
+            oninput="autoResize(this)"></textarea>
+        </div>
+        <button class="reply-send" id="replyBtn_${nid}" onclick="sendReply(${nid})" title="Send reply">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>`:""}
+  </div>`;
+}
+
+/* ── Action helpers ── */
+function goEvent(id){ window.location.href = `EventDetails.html?id=${id}`; }
+function viewCert(id){ window.open(`${API}/certificates/${id}/download?token=${token}`,"_blank"); }
+function retryPayment(eventId){ window.location.href = `Payment.html?event_id=${eventId}`; }
+
+/* ── Type label ── */
+function typeLabel(type){
+  const map = {
+    volunteer_approved:"Approved", volunteer_rejected:"Rejected",
+    volunteer_task_updated:"Task Update", volunteer_message:"Message", participant_reply:"Reply",
+    registration_confirmed:"Registered", registration_cancelled:"Cancelled",
+    registration_waitlisted:"Waitlisted", registration_approved:"Off Waitlist",
+    event_reminder:"Reminder", event_cancelled:"Cancelled",
+    event_updated:"Updated", event_started:"Live Now", event_completed:"Completed",
+    new_event_nearby:"New Event",
+    attendance_marked:"Attended", attendance_missed:"Missed",
+    certificate_issued:"Certificate",
+    payment_confirmed:"Paid", payment_failed:"Failed", payment_refunded:"Refunded",
+    profile_updated:"Profile", password_changed:"Security",
+    announcement:"Announcement", system_alert:"Alert", general:"Info"
+  };
+  return map[type] || type.replace(/_/g," ");
+}
+
+/* ══════════════════════════════════════════════════
+   CHAT THREAD
+══════════════════════════════════════════════════ */
+async function toggleChat(e, nid, btn){
+  e.stopPropagation();
+  const card = document.getElementById(`notif_${nid}`);
+  const isOpen = card.classList.contains("chat-open");
+  document.querySelectorAll(".notif-card.chat-open").forEach(c=>{ if(c!==card) c.classList.remove("chat-open"); });
+  card.classList.toggle("chat-open",!isOpen);
+  if(!isOpen) await loadThread(nid);
+}
+
+async function loadThread(nid){
+  const msgBox = document.getElementById(`msgs_${nid}`);
+  if(!msgBox) return;
+  try {
+    const res  = await fetch(`${API}/notifications/${nid}/thread`,{ headers:{Authorization:"Bearer "+token} });
+    const data = await res.json();
+    const msgs = Array.isArray(data)?data:(data.messages||data.data||[]);
+    threadCache[nid]=msgs;
+    renderThread(nid,msgs);
+  } catch {
+    const notif = allNotifs.find(n=>(n.notification_id||n.id)===nid);
+    const fb = notif ? [{sender:"organizer",sender_name:"Organizer",message:notif.message,created_at:notif.created_at}]:[];
+    threadCache[nid]=fb;
+    renderThread(nid,fb);
+  }
+}
+
+function renderThread(nid,msgs){
+  const msgBox = document.getElementById(`msgs_${nid}`);
+  if(!msgBox) return;
+  if(!msgs.length){ msgBox.innerHTML=`<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">No messages yet</div>`; return; }
+  msgBox.innerHTML = msgs.map(m=>{
+    const fromMe = (m.sender==="participant"||String(m.sender_id)===String(userId));
+    return `
+    <div class="msg-bubble-wrap ${fromMe?"from-me":"from-them"}">
+      <div class="msg-sender">${esc(fromMe?"You":(m.sender_name||"Organizer"))}</div>
+      <div class="msg-bubble">${esc(m.message||m.text||"")}</div>
+      <div class="msg-time">${formatTime(m.created_at)}</div>
+    </div>`;
+  }).join("");
+  setTimeout(()=>{ msgBox.scrollTop=msgBox.scrollHeight; },50);
+}
+
+async function sendReply(nid){
+  const inp = document.getElementById(`replyInput_${nid}`);
+  const btn = document.getElementById(`replyBtn_${nid}`);
+  const text = inp?.value.trim();
+  if(!text) return;
+  btn.disabled = inp.disabled = true;
+  const tempMsg = { sender:"participant", sender_id:userId, sender_name:uname||"You", message:text, created_at:new Date().toISOString() };
+  if(!threadCache[nid]) threadCache[nid]=[];
+  threadCache[nid].push(tempMsg);
+  renderThread(nid,threadCache[nid]);
+  inp.value=""; inp.style.height="auto";
+  try {
+    await fetch(`${API}/notifications/${nid}/reply`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},
+      body:JSON.stringify({sender_id:userId,sender:"participant",sender_name:uname||"Participant",message:text})
+    });
+    showToast("Reply sent!");
+  } catch {
+    showToast("Failed to send reply — please try again.","error");
+    threadCache[nid].pop();
+    renderThread(nid,threadCache[nid]);
+    inp.value=text;
+  } finally {
+    btn.disabled = inp.disabled = false;
+    inp.focus();
+  }
+}
+
+/* ── Mark Read ── */
+async function markOneRead(card, nid){
+  if(!card.classList.contains("unread")) return;
+  card.classList.remove("unread");
+  card.querySelector(".unread-dot")?.remove();
+  const notif = allNotifs.find(n=>(n.notification_id||n.id)===nid);
+  if(notif){ notif.is_read=true; updateStats(); updateCounts(); }
+  try {
+    await fetch(`${API}/notifications/${nid}/read`,{ method:"PATCH", headers:{Authorization:"Bearer "+token} });
+  } catch{}
+}
+
+async function markAllRead(){
+  allNotifs.forEach(n=>n.is_read=true);
+  updateStats(); updateCounts(); renderNotifications();
+  try {
+    await fetch(`${API}/notifications/read-all`,{
+      method:"PATCH",
+      headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},
+      body:JSON.stringify({user_id:userId})
+    });
+    showToast("All notifications marked as read");
+  } catch {}
+}
+
+/* ── Helpers ── */
+function handleReplyKey(e,nid){ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendReply(nid);} }
+function autoResize(el){ el.style.height="auto"; el.style.height=Math.min(el.scrollHeight,80)+"px"; }
+
+function formatTime(ts){
+  if(!ts) return "Just now";
+  const d=new Date(ts), now=new Date();
+  const s=Math.floor((now-d)/1000);
+  if(s<60)    return "Just now";
+  if(s<3600)  return Math.floor(s/60)+"m ago";
+  if(s<86400) return Math.floor(s/3600)+"h ago";
+  if(s<604800)return Math.floor(s/86400)+"d ago";
+  return d.toLocaleDateString([],{month:"short",day:"numeric"});
+}
+
+function dateLabel(ts){
+  if(!ts) return "Recently";
+  const d=new Date(ts), now=new Date();
+  const diff=Math.floor((now-d)/86400000);
+  if(diff===0) return "Today";
+  if(diff===1) return "Yesterday";
+  if(diff<7)   return `${diff} days ago`;
+  return d.toLocaleDateString([],{month:"long",day:"numeric",year:"numeric"});
+}
+
+function esc(str){
+  if(!str) return "";
+  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
+}
+
+/* ── Init ── */
+loadNotifications();
+// Poll silently every 20 seconds
+setInterval(()=>loadNotifications(true), 20000);
+</script>
+</body>
+</html>
+

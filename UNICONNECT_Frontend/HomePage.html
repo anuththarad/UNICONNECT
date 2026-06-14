@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect — University Event Platform</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================
+   VARIABLES — matches dashboard exactly
+   ============================================ */
+:root {
+  --ink:        #0a1628;
+  --ink-mid:    #122036;
+  --ink-light:  #1e3a5f;
+  --blue:       #031c6c;
+  --blue-glow:  rgba(41,82,227,.12);
+  --teal:       #0e2fc4;
+  --emerald:    #10b981;
+  --amber:      #f59e0b;
+  --rose:       #f43f5e;
+  --purple:     #6d5ce8;
+  --bg:         #ffffff;
+  --surface:    #ffffff;
+  --surface2:   #f4f7fe;
+  --border:     #e1e7f5;
+  --txt:        #0a1628;
+  --muted:      #5b6b85;
+  --light:      #94a3b8;
+  --sh-sm:      0 1px 3px rgba(10,22,40,.06);
+  --sh-md:      0 4px 16px rgba(10,22,40,.08);
+  --sh-lg:      0 12px 40px rgba(10,22,40,.12);
+  --sh-xl:      0 24px 64px rgba(10,22,40,.16);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'DM Sans', sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  overflow-x:hidden;
+  line-height:1.6;
+}
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+.navbar {
+  position:sticky; top:0; z-index:200;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 60px;
+  height:100px;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 2px 20px rgba(10,22,40,.06);
+  transition:.3s;
+}
+
+/* LOGO */
+.logo img {
+  height: 60px;
+  transform: scale(1.8);
+  object-fit: contain;
+}
+
+.nav-links {
+  display:flex; align-items:center; gap:6px;
+}
+.nav-links a {
+  text-decoration:none;
+  color:var(--muted);
+  font-weight:500; font-size:14px;
+  padding:8px 14px;
+  border-radius:9px;
+  transition:.2s;
+  position:relative;
+}
+.nav-links a:hover { color:var(--ink); background:var(--surface2); }
+.nav-links a.active { color:var(--ink); font-weight:700; }
+.nav-links a.active::after {
+  content:'';
+  position:absolute; bottom:4px; left:50%; transform:translateX(-50%);
+  width:18px; height:2.5px;
+  background:linear-gradient(90deg,var(--blue),var(--teal));
+  border-radius:2px;
+}
+
+.nav-actions { display:flex; align-items:center; gap:10px; }
+.btn-signin {
+  padding:9px 20px;
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  background:transparent;
+  color:var(--ink);
+  font-family:'DM Sans', sans-serif;
+  font-weight:600; font-size:14px;
+  cursor:pointer; text-decoration:none;
+  transition:.2s;
+  display:inline-flex; align-items:center;
+}
+.btn-signin:hover { border-color:var(--blue); color:var(--blue); background:var(--blue-glow); }
+
+.btn-dashboard {
+  padding:9px 22px;
+  background:linear-gradient(135deg, var(--blue), var(--ink-light));
+  color:#fff;
+  border:none; border-radius:10px;
+  font-family:'DM Sans', sans-serif;
+  font-weight:700; font-size:14px;
+  cursor:pointer; text-decoration:none;
+  display:inline-flex; align-items:center; gap:7px;
+  box-shadow:0 4px 14px rgba(41,82,227,.3);
+  transition:.2s;
+}
+.btn-dashboard:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(41,82,227,.4); }
+
+/* ============================================
+   HERO
+   ============================================ */
+.hero {
+  position:relative;
+  padding:90px 60px 80px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:60px;
+  overflow:hidden;
+  min-height:calc(100vh - 72px);
+}
+
+/* mesh background */
+.hero::before {
+  content:'';
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 10% 20%, rgba(79,110,247,.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 10%, rgba(6,182,212,.1) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 100%, rgba(139,92,246,.07) 0%, transparent 50%);
+  pointer-events:none;
+}
+
+/* floating blobs */
+.hero-blob {
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  pointer-events:none;
+  opacity:.4;
+  animation:blobFloat 8s ease-in-out infinite;
+}
+.blob-1 { width:420px; height:420px; background:var(--blue); top:-120px; right:5%; animation-delay:0s; }
+.blob-2 { width:320px; height:320px; background:var(--teal); bottom:0; right:28%; opacity:.25; animation-delay:3s; }
+.blob-3 { width:200px; height:200px; background:var(--purple); top:30%; left:5%; opacity:.2; animation-delay:5s; }
+@keyframes blobFloat {
+  0%,100% { transform:translateY(0) scale(1); }
+  50%      { transform:translateY(-28px) scale(1.04); }
+}
+
+.hero-text { flex:1; max-width:580px; position:relative; z-index:1; }
+
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(79,110,247,.1);
+  border:1px solid rgba(79,110,247,.25);
+  color:var(--blue);
+  font-size:12px; font-weight:700; letter-spacing:.6px; text-transform:uppercase;
+  padding:6px 14px; border-radius:99px;
+  margin-bottom:24px;
+  animation:fadeUp .6s ease both;
+}
+.hero-badge-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--emerald);
+  animation:blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.hero-text h1 {
+  font-family:'Sora', sans-serif;
+  font-size:58px; font-weight:800;
+  color:var(--ink); line-height:1.12;
+  letter-spacing:-.02em;
+  margin-bottom:22px;
+  animation:fadeUp .6s .1s ease both;
+}
+.hero-text h1 .accent {
+  background:linear-gradient(135deg, var(--blue), var(--teal));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.hero-text p {
+  font-size:17px; color:var(--muted); line-height:1.7;
+  max-width:480px; margin-bottom:36px;
+  animation:fadeUp .6s .2s ease both;
+}
+
+.hero-cta {
+  display:flex; gap:14px; flex-wrap:wrap;
+  animation:fadeUp .6s .3s ease both;
+}
+.btn-hero-primary {
+  display:inline-flex; align-items:center; gap:9px;
+  background:linear-gradient(135deg, var(--ink), var(--blue));
+  color:#fff;
+  border:none; padding:14px 28px; border-radius:12px;
+  font-family:'DM Sans', sans-serif;
+  font-weight:700; font-size:15px;
+  cursor:pointer;
+  box-shadow:0 6px 22px rgba(41,82,227,.3);
+  transition:.25s;
+  text-decoration:none;
+}
+.btn-hero-primary:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(41,82,227,.4); }
+.btn-hero-primary i { font-size:13px; }
+
+.btn-hero-secondary {
+  display:inline-flex; align-items:center; gap:9px;
+  background:var(--surface);
+  color:var(--ink);
+  border:1.5px solid var(--border);
+  padding:13px 26px; border-radius:12px;
+  font-family:'DM Sans', sans-serif;
+  font-weight:600; font-size:15px;
+  cursor:pointer;
+  box-shadow:var(--sh-sm);
+  transition:.25s;
+  text-decoration:none;
+}
+.btn-hero-secondary:hover { border-color:var(--blue); color:var(--blue); transform:translateY(-2px); box-shadow:var(--sh-md); }
+
+/* hero social proof */
+.hero-proof {
+  display:flex; align-items:center; gap:14px;
+  margin-top:38px;
+  animation:fadeUp .6s .4s ease both;
+}
+.proof-avatars { display:flex; }
+.proof-avatars .av {
+  width:34px; height:34px; border-radius:50%;
+  background:linear-gradient(135deg, var(--ink-light), var(--blue));
+  border:2.5px solid #fff;
+  margin-left:-10px;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:11px; font-weight:700;
+  box-shadow:0 2px 8px rgba(10,8,32,.15);
+}
+.proof-avatars .av:first-child { margin-left:0; }
+.proof-text { font-size:13px; color:var(--muted); }
+.proof-text strong { color:var(--ink); font-weight:700; }
+
+/* hero image side */
+.hero-visual {
+  flex:1; position:relative; z-index:1;
+  display:flex; justify-content:center;
+  animation:fadeUp .6s .2s ease both;
+}
+.hero-img-wrap {
+  position:relative; width:100%; max-width:520px;
+}
+.hero-img-wrap img {
+  width:100%; height:auto;
+  border-radius:24px;
+  box-shadow:var(--sh-xl);
+  display:block;
+}
+
+/* floating stat chips on hero image */
+.hero-chip {
+  position:absolute;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px 16px;
+  box-shadow:var(--sh-lg);
+  display:flex; align-items:center; gap:10px;
+  font-size:13px; font-weight:600; color:var(--ink);
+  white-space:nowrap;
+  animation:chipBob 4s ease-in-out infinite;
+}
+.chip-ico { font-size:18px; }
+.chip-val { font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:var(--ink); line-height:1; }
+.chip-lbl { font-size:11px; color:var(--muted); font-weight:500; }
+.hero-chip.c1 { top:-20px; right:-10px; animation-delay:0s; }
+.hero-chip.c2 { bottom:30px; left:-20px; animation-delay:2s; }
+.hero-chip.c3 { top:45%; right:-30px; animation-delay:1s; }
+@keyframes chipBob {
+  0%,100% { transform:translateY(0); }
+  50%      { transform:translateY(-8px); }
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ============================================
+   FEATURES STRIP
+   ============================================ */
+.features-strip {
+  padding:50px 60px;
+  position:relative;
+}
+.features-strip::before {
+  content:'';
+  position:absolute; top:0; left:60px; right:60px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+.features-grid {
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:16px;
+}
+.feat-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:26px 18px;
+  text-align:center;
+  box-shadow:var(--sh-sm);
+  transition:.25s cubic-bezier(.4,0,.2,1);
+  cursor:default;
+  position:relative;
+  overflow:hidden;
+}
+.feat-card::after {
+  content:'';
+  position:absolute; bottom:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg, var(--blue), var(--teal));
+  transform:scaleX(0);
+  transition:.25s;
+  transform-origin:left;
+}
+.feat-card:hover { transform:translateY(-6px); box-shadow:var(--sh-lg); border-color:rgba(79,110,247,.2); }
+.feat-card:hover::after { transform:scaleX(1); }
+.feat-icon {
+  font-size:26px; margin-bottom:12px; display:block;
+  filter:drop-shadow(0 2px 8px rgba(79,110,247,.25));
+}
+.feat-label { font-weight:700; font-size:13.5px; color:var(--ink); }
+.feat-sub { font-size:11.5px; color:var(--muted); margin-top:4px; }
+
+/* ============================================
+   SEARCH SECTION
+   ============================================ */
+.search-section {
+  padding:40px 60px;
+}
+.search-wrap {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:28px 32px;
+  box-shadow:var(--sh-md);
+}
+.search-title {
+  font-family:'Sora', sans-serif;
+  font-size:18px; font-weight:700;
+  color:var(--ink); margin-bottom:18px;
+}
+.search-row {
+  display:flex; gap:12px; flex-wrap:wrap;
+}
+.search-input-wrap {
+  flex:2; min-width:200px;
+  display:flex; align-items:center; gap:10px;
+  background:var(--surface2);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  padding:0 16px;
+  transition:.2s;
+}
+.search-input-wrap:focus-within { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-glow); }
+.search-input-wrap i { color:var(--muted); font-size:14px; }
+.search-input-wrap input {
+  flex:1; border:none; background:transparent;
+  font-family:'DM Sans', sans-serif;
+  font-size:14px; color:var(--txt);
+  padding:12px 0; outline:none;
+}
+.search-input-wrap input::placeholder { color:var(--light); }
+
+.search-select {
+  flex:1; min-width:140px;
+  background:var(--surface2);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  padding:12px 16px;
+  font-family:'DM Sans', sans-serif;
+  font-size:14px; color:var(--txt);
+  outline:none; cursor:pointer;
+  transition:.2s;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  padding-right:36px;
+}
+.search-select:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-glow); }
+
+.btn-search {
+  display:inline-flex; align-items:center; gap:8px;
+  background:linear-gradient(135deg, var(--blue), var(--ink-light));
+  color:#fff; border:none;
+  padding:12px 28px; border-radius:12px;
+  font-family:'DM Sans', sans-serif;
+  font-weight:700; font-size:14px;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(91,141,239,.35);
+  transition:.2s; white-space:nowrap;
+}
+.btn-search:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(91,141,239,.45); }
+
+/* ============================================
+   EVENTS SECTION
+   ============================================ */
+.events-section { padding:40px 60px 50px; }
+.sec-header {
+  display:flex; justify-content:space-between; align-items:flex-end;
+  margin-bottom:24px;
+}
+.sec-header-left h2 {
+  font-family:'Sora', sans-serif;
+  font-size:24px; font-weight:800;
+  color:var(--ink); letter-spacing:-.02em;
+}
+.sec-header-left p { font-size:14px; color:var(--muted); margin-top:4px; }
+.btn-view-all {
+  display:inline-flex; align-items:center; gap:7px;
+  background:linear-gradient(135deg, var(--blue), var(--ink-light)); color:#fff;
+  border:none; padding:10px 20px; border-radius:10px;
+  font-family:'DM Sans', sans-serif;
+  font-weight:600; font-size:13.5px;
+  cursor:pointer; text-decoration:none;
+  transition:.2s;
+}
+.btn-view-all:hover { filter:brightness(1.1); transform:translateY(-1px); }
+
+.event-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(280px,1fr));
+  gap:22px;
+}
+.event-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:var(--sh-sm);
+  transition:.25s cubic-bezier(.4,0,.2,1);
+  display:flex; flex-direction:column;
+}
+.event-card:hover { transform:translateY(-6px); box-shadow:var(--sh-lg); border-color:rgba(79,110,247,.22); }
+
+.ev-img-box { position:relative; height:170px; overflow:hidden; }
+.ev-img-box img { width:100%; height:100%; object-fit:cover; transition:transform .5s; }
+.event-card:hover .ev-img-box img { transform:scale(1.06); }
+.ev-status {
+  position:absolute; top:12px; left:12px;
+  padding:5px 12px; border-radius:99px;
+  font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase;
+  color:#fff;
+}
+.ev-status.upcoming { background:linear-gradient(135deg,#f59e0b,#d97706); }
+.ev-status.open     { background:linear-gradient(135deg,#10b981,#059669); }
+.ev-status.closed   { background:linear-gradient(135deg,#64748b,#475569); }
+
+.ev-cat {
+  position:absolute; top:12px; right:12px;
+  background:rgba(255,255,255,.92); backdrop-filter:blur(6px);
+  padding:4px 10px; border-radius:7px;
+  font-size:10px; font-weight:700; color:var(--ink);
+}
+
+.ev-body { padding:18px; flex:1; display:flex; flex-direction:column; }
+.ev-title {
+  font-family:'Sora', sans-serif;
+  font-size:15.5px; font-weight:700;
+  color:var(--ink); margin-bottom:8px; line-height:1.35;
+}
+.ev-meta { display:flex; flex-direction:column; gap:5px; margin-bottom:16px; }
+.ev-meta-row { display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); }
+.ev-meta-row i { color:var(--blue); width:13px; font-size:11.5px; }
+.ev-footer { display:flex; gap:8px; margin-top:auto; }
+.btn-ev-detail, .btn-ev-reg {
+  flex:1; padding:9px; border-radius:10px;
+  font-family:'DM Sans', sans-serif;
+  font-weight:700; font-size:12.5px;
+  border:none; cursor:pointer; transition:.15s;
+}
+.btn-ev-detail { background:var(--surface2); color:var(--ink); }
+.btn-ev-detail:hover { background:var(--border); }
+.btn-ev-reg { background:linear-gradient(135deg, var(--blue), var(--ink-light)); color:#fff; box-shadow:0 3px 10px rgba(91,141,239,.3); }
+.btn-ev-reg:hover { filter:brightness(1.1); transform:translateY(-1px); }
+
+/* no results */
+.no-events {
+  grid-column:1/-1;
+  padding:60px 20px; text-align:center;
+  background:var(--surface); border:1px dashed var(--border);
+  border-radius:20px; color:var(--muted);
+}
+.no-events i { font-size:36px; display:block; margin-bottom:14px; color:var(--light); }
+
+/* ============================================
+   STATS SECTION
+   ============================================ */
+.stats-section {
+  padding:20px 60px 60px;
+}
+.stats-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+}
+.stat-block {
+  background:linear-gradient(135deg, var(--ink), var(--ink-light));
+  border-radius:22px;
+  padding:32px 24px;
+  text-align:center;
+  position:relative; overflow:hidden;
+  transition:.25s cubic-bezier(.4,0,.2,1);
+}
+.stat-block:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(10,22,40,.3); }
+.stat-block::before {
+  content:'';
+  position:absolute; top:-60px; right:-60px;
+  width:160px; height:160px; border-radius:50%;
+  background:rgba(79,110,247,.15);
+  pointer-events:none;
+}
+.stat-block::after {
+  content:'';
+  position:absolute; bottom:-40px; left:-40px;
+  width:120px; height:120px; border-radius:50%;
+  background:rgba(6,182,212,.1);
+  pointer-events:none;
+}
+.stat-ico-wrap {
+  width:52px; height:52px; border-radius:16px; margin:0 auto 16px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px;
+  position:relative; z-index:1;
+}
+.stat-block:nth-child(1) .stat-ico-wrap { background:rgba(79,110,247,.2); color:var(--blue); }
+.stat-block:nth-child(2) .stat-ico-wrap { background:rgba(16,185,129,.2); color:var(--emerald); }
+.stat-block:nth-child(3) .stat-ico-wrap { background:rgba(245,158,11,.2); color:var(--amber); }
+.stat-block:nth-child(4) .stat-ico-wrap { background:rgba(139,92,246,.2); color:var(--purple); }
+.stat-num {
+  font-family:'Sora', sans-serif;
+  font-size:36px; font-weight:800;
+  color:#fff; line-height:1;
+  margin-bottom:6px;
+  position:relative; z-index:1;
+}
+.stat-lbl { font-size:13px; color:rgba(255,255,255,.6); font-weight:500; position:relative; z-index:1; }
+
+/* ============================================
+   CTA SECTION
+   ============================================ */
+.cta-section { padding:0 60px 60px; }
+.cta-card {
+  background:linear-gradient(135deg, var(--ink) 0%, var(--ink-light) 55%, #16407a 100%);
+  border-radius:28px;
+  padding:56px 60px;
+  display:flex; justify-content:space-between; align-items:center;
+  gap:40px;
+  position:relative; overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  border:1px solid var(--border);
+}
+.cta-card::before {
+  content:'';
+  position:absolute; top:-80px; right:60px;
+  width:300px; height:300px; border-radius:50%;
+  background:radial-gradient(circle, rgba(91,141,239,.35) 0%, transparent 65%);
+  pointer-events:none;
+}
+.cta-card::after {
+  content:'';
+  position:absolute; bottom:-60px; left:40%;
+  width:200px; height:200px; border-radius:50%;
+  background:radial-gradient(circle, rgba(34,211,238,.25) 0%, transparent 65%);
+  pointer-events:none;
+}
+.cta-text { position:relative; z-index:1; }
+.cta-text h2 {
+  font-family:'Sora', sans-serif;
+  font-size:28px; font-weight:800;
+  color:#fff; margin-bottom:12px; line-height:1.25;
+}
+.cta-text p { color:rgba(255,255,255,.72); font-size:15px; max-width:460px; line-height:1.65; }
+.cta-actions { display:flex; gap:12px; flex-shrink:0; position:relative; z-index:1; flex-wrap:wrap; }
+.btn-cta-primary {
+  display:inline-flex; align-items:center; gap:8px;
+  background:#fff; color:var(--ink);
+  border:none; padding:14px 28px; border-radius:12px;
+  font-family:'DM Sans', sans-serif;
+  font-weight:800; font-size:14px;
+  cursor:pointer; text-decoration:none;
+  box-shadow:0 6px 20px rgba(0,0,0,.2);
+  transition:.2s;
+}
+.btn-cta-primary:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,.25); }
+.btn-cta-secondary {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.25);
+  padding:13px 24px; border-radius:12px;
+  font-family:'DM Sans', sans-serif;
+  font-weight:600; font-size:14px;
+  cursor:pointer; text-decoration:none;
+  transition:.2s;
+}
+.btn-cta-secondary:hover { background:rgba(255,255,255,.22); }
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer {
+  background:var(--ink);
+  border-top:1px solid var(--border);
+  padding:40px 60px 28px;
+  color:rgba(255,255,255,.5);
+}
+.footer-inner {
+  display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:20px;
+}
+.footer-brand {
+  display:flex; align-items:center; gap:10px;
+}
+.footer-logo-mark {
+  width:34px; height:34px; border-radius:10px;
+  background:linear-gradient(135deg, var(--blue), var(--teal));
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:14px;
+}
+.footer-brand-name {
+  font-family:'Sora', sans-serif;
+  font-weight:800; font-size:16px; color:#fff;
+}
+.footer-brand-name span { color:var(--teal); }
+.footer-links { display:flex; gap:24px; flex-wrap:wrap; }
+.footer-links a {
+  color:rgba(255,255,255,.45);
+  text-decoration:none; font-size:13.5px; font-weight:500;
+  transition:.2s;
+}
+.footer-links a:hover { color:#fff; }
+.footer-copy { font-size:12.5px; }
+
+/* ============================================
+   POPUP (event detail)
+   ============================================ */
+.popup-overlay {
+  display:none;
+  position:fixed; inset:0;
+  background:rgba(10,8,32,.65);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  z-index:500;
+  justify-content:center; align-items:center;
+  padding:20px;
+}
+.popup-overlay.open { display:flex; }
+.popup-box {
+  background:var(--surface);
+  border-radius:24px;
+  padding:36px;
+  width:100%; max-width:440px;
+  position:relative;
+  box-shadow:var(--sh-xl);
+  animation:popIn .28s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn {
+  from { opacity:0; transform:scale(.92) translateY(20px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+.popup-close {
+  position:absolute; top:16px; right:16px;
+  width:32px; height:32px; border-radius:9px;
+  background:var(--surface2); border:1px solid var(--border);
+  color:var(--muted); cursor:pointer; font-size:15px;
+  display:flex; align-items:center; justify-content:center;
+  transition:.15s;
+}
+.popup-close:hover { background:var(--border); color:var(--ink); }
+.popup-img { width:100%; height:180px; object-fit:cover; border-radius:16px; margin-bottom:20px; }
+.popup-cat {
+  display:inline-block;
+  background:var(--blue-glow); color:var(--blue);
+  font-size:10px; font-weight:800; letter-spacing:.6px; text-transform:uppercase;
+  padding:4px 10px; border-radius:6px; margin-bottom:10px;
+}
+.popup-title {
+  font-family:'Sora', sans-serif;
+  font-size:20px; font-weight:800; color:var(--ink);
+  margin-bottom:12px;
+}
+.popup-meta { display:flex; flex-direction:column; gap:6px; margin-bottom:22px; }
+.popup-meta-row { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); }
+.popup-meta-row i { color:var(--blue); width:14px; }
+.btn-popup-reg {
+  width:100%;
+  padding:13px;
+  background:linear-gradient(135deg, var(--ink), var(--blue));
+  color:#fff; border:none; border-radius:12px;
+  font-family:'DM Sans', sans-serif;
+  font-weight:700; font-size:14px;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(41,82,227,.3);
+  transition:.2s;
+  text-decoration:none; display:block; text-align:center;
+}
+.btn-popup-reg:hover { transform:translateY(-1px); box-shadow:0 8px 20px rgba(41,82,227,.4); }
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:#cdd6ec; border-radius:6px; }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media(max-width:1200px) {
+  .features-grid { grid-template-columns:repeat(3,1fr); }
+  .stats-grid    { grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:960px) {
+  .navbar { padding:0 24px; }
+  .hero { flex-direction:column; padding:60px 28px 50px; text-align:center; min-height:auto; gap:40px; }
+  .hero-text { max-width:100%; }
+  .hero-text p { margin-inline:auto; }
+  .hero-cta { justify-content:center; }
+  .hero-proof { justify-content:center; }
+  .hero-img-wrap { max-width:380px; margin:0 auto; }
+  .hero-chip.c1, .hero-chip.c3 { display:none; }
+  .features-strip, .search-section, .events-section, .stats-section, .cta-section { padding-inline:28px; }
+  footer { padding:32px 28px 24px; }
+  .cta-card { flex-direction:column; align-items:flex-start; padding:40px 32px; }
+  .footer-inner { flex-direction:column; align-items:flex-start; gap:16px; }
+}
+@media(max-width:700px) {
+  .nav-links { display:none; }
+  .hero-text h1 { font-size:40px; }
+  .features-grid { grid-template-columns:repeat(2,1fr); }
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .event-grid { grid-template-columns:1fr; }
+  .search-row { flex-direction:column; }
+  .navbar { padding:0 18px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===================== NAVBAR ===================== -->
+<header class="navbar" id="navbar">
+    <div class="logo">
+    <img src="images/UClogo.png" alt="UniConnect Logo" id="logoImg">
+</div>
+
+  <nav class="nav-links">
+    <a href="#" class="active">Home</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+  </nav>
+
+  <div class="nav-actions">
+    <a href="Login.html" class="btn-signin">Sign In</a>
+    <a href="Login.html" class="btn-dashboard">
+      <i class="fas fa-th-large"></i> Dashboard
+    </a>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <!-- blobs -->
+  <div class="hero-blob blob-1"></div>
+  <div class="hero-blob blob-2"></div>
+  <div class="hero-blob blob-3"></div>
+
+  <div class="hero-text">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      Your Campus. Your Connection
+    </div>
+
+    <h1>
+      Discover.<br>Participate.<br>
+      <span class="accent">Make an Impact.</span>
+    </h1>
+
+    <p>
+      UniConnect is your smart, all-in-one university event hub. Discover events tailored to your interests, register instantly, and manage everything from one beautiful dashboard.
+    </p>
+
+    <div class="hero-cta">
+      <a href="Allevents.html" class="btn-hero-primary">
+        <i class="fas fa-compass"></i> Explore Events
+      </a>
+      <a href="Login.html" class="btn-hero-secondary">
+        <i class="fas fa-th-large"></i> Go to Dashboard
+      </a>
+    </div>
+
+    <!--<div class="hero-proof">
+      <div class="proof-avatars">
+        <div class="av">AK</div>
+        <div class="av">MS</div>
+        <div class="av">NJ</div>
+        <div class="av">TR</div>
+        <div class="av" style="background:linear-gradient(135deg,var(--teal),var(--emerald))">+</div>
+      </div>
+      <div class="proof-text">Joined by <strong>2,500+</strong> students across 15+ faculties</div>
+    </div>-->
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-img-wrap">
+      <img src="images/Homehero.png" alt="UniConnect Platform"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <!-- fallback illustration if no image -->
+      <div style="display:none; width:100%; height:380px; background:linear-gradient(135deg,var(--ink),var(--ink-light)); border-radius:24px; align-items:center; justify-content:center; color:rgba(255,255,255,.3); font-size:80px;">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+
+      <!-- floating chips -->
+      <div class="hero-chip c1">
+        <span class="chip-ico">🎉</span>
+        <div>
+          <div class="chip-val" id="chipEvents">10K</div>
+          <div class="chip-lbl">Events Hosted</div>
+        </div>
+      </div>
+      <div class="hero-chip c2">
+        <span class="chip-ico">🙋</span>
+        <div>
+          <div class="chip-val" id="chipVolunteers">2K</div>
+          <div class="chip-lbl">Volunteers</div>
+        </div>
+      </div>
+      <div class="hero-chip c3">
+        <span class="chip-ico">⭐</span>
+        <div>
+          <div class="chip-val" id="chipRating"></div>
+          <div class="chip-lbl">High Rating</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FEATURES ===================== -->
+<section class="features-strip">
+  <div class="features-grid">
+    <div class="feat-card">
+      <span class="feat-icon">📌</span>
+      <div class="feat-label">Event Registration</div>
+      <div class="feat-sub">Register in one tap</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🤖</span>
+      <div class="feat-label">Smart Recommendations</div>
+      <div class="feat-sub">AI-powered for you</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">📅</span>
+      <div class="feat-label">My Schedule</div>
+      <div class="feat-sub">Never miss an event</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🔔</span>
+      <div class="feat-label">Notifications</div>
+      <div class="feat-sub">Real-time alerts</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🙋</span>
+      <div class="feat-label">Volunteer</div>
+      <div class="feat-sub">Give back, earn XP</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">💰</span>
+      <div class="feat-label">Budget Tracker</div>
+      <div class="feat-sub">Organizer finance hub</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SEARCH ===================== -->
+<section class="search-section">
+  <div class="search-wrap">
+    <div class="search-title">Find Your Next Event</div>
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search events, categories, organizers…">
+      </div>
+      <select class="search-select" id="catFilter">
+        <option value="">All Categories</option>
+        <option value="tech">Tech</option>
+        <option value="coding">Coding</option>
+        <option value="culture">Culture</option>
+        <option value="sports">Sports</option>
+        <option value="academic">Academic</option>
+      </select>
+      <select class="search-select" id="dateFilter">
+        <option value="">Any Date</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+      </select>
+      <button class="btn-search" id="searchBtn">
+        <i class="fas fa-search"></i> Search
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EVENTS ===================== -->
+<section class="events-section" id="events-section">
+  <div class="sec-header">
+    <div class="sec-header-left">
+      <h2>Recommended For You</h2>
+      <p>Handpicked events based on your interests</p>
+    </div>
+    <a href="Login.html" class="btn-view-all">View All <i class="fas fa-arrow-right"></i></a>
+  </div>
+  <div class="event-grid" id="eventContainer">
+    <!-- skeleton loaders -->
+    <div style="border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--border)">
+      <div style="height:170px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite"></div>
+      <div style="padding:18px"><div style="height:14px;border-radius:6px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;margin-bottom:10px;width:70%"></div><div style="height:11px;border-radius:6px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;width:50%"></div></div>
+    </div>
+    <div style="border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--border)">
+      <div style="height:170px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite"></div>
+      <div style="padding:18px"><div style="height:14px;border-radius:6px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;margin-bottom:10px;width:70%"></div><div style="height:11px;border-radius:6px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;width:50%"></div></div>
+    </div>
+    <div style="border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--border)">
+      <div style="height:170px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite"></div>
+      <div style="padding:18px"><div style="height:14px;border-radius:6px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;margin-bottom:10px;width:70%"></div><div style="height:11px;border-radius:6px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;width:50%"></div></div>
+    </div>
+    <div style="border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--border)">
+      <div style="height:170px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite"></div>
+      <div style="padding:18px"><div style="height:14px;border-radius:6px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;margin-bottom:10px;width:70%"></div><div style="height:11px;border-radius:6px;background:linear-gradient(90deg,var(--surface2) 25%,#e8ecff 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;width:50%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STATS ===================== -->
+<section class="stats-section">
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-block">
+      <div class="stat-ico-wrap"><i class="fas fa-calendar-days"></i></div>
+      <div class="stat-num" id="statEvents"></div>
+      <div class="stat-lbl">Events Hosted</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-ico-wrap"><i class="fas fa-users"></i></div>
+      <div class="stat-num" id="statStudents"></div>
+      <div class="stat-lbl">Active Students</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-ico-wrap"><i class="fas fa-hands-helping"></i></div>
+      <div class="stat-num" id="statVolunteers"></div>
+      <div class="stat-lbl">Volunteers</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-ico-wrap"><i class="fas fa-building-columns"></i></div>
+      <div class="stat-num" id="statFaculties"></div>
+      <div class="stat-lbl">Faculties</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA ===================== -->
+<section class="cta-section">
+  <div class="cta-card">
+    <div class="cta-text">
+      <h2>Ready to Manage Events Like a Pro?</h2>
+      <p>Join thousands of students and organizers who use UniConnect to discover, create, and manage university events effortlessly.</p>
+    </div>
+    <div class="cta-actions">
+      <a href="Login.html" class="btn-cta-primary">
+        <i class="fas fa-rocket"></i> Get Started Free
+      </a>
+      <a href="Login.html" class="btn-cta-secondary">
+        <i class="fas fa-compass"></i> Browse Events
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo-mark"><i class="fas fa-graduation-cap"></i></div>
+      <div class="footer-brand-name"><span></span></div>
+    </div>
+    <nav class="footer-links">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+      <a href="Login.html">Login</a>
+    </nav>
+    <div class="footer-copy">© 2026 UniConnect. All Rights Reserved.</div>
+  </div>
+</footer>
+
+<!-- ===================== EVENT POPUP ===================== -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup()"><i class="fas fa-times"></i></button>
+    <img id="popupImg" class="popup-img" src="" alt="">
+    <div id="popupCat" class="popup-cat"></div>
+    <div id="popupTitle" class="popup-title"></div>
+    <div class="popup-meta" id="popupMeta"></div>
+    <a href="Login.html" class="btn-popup-reg">
+      <i class="fas fa-ticket"></i> Register for Event
+    </a>
+  </div>
+</div>
+
+<!-- ===================== SHIMMER KEYFRAMES ===================== -->
+<style>
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+</style>
+
+<!-- ===================== SCRIPTS ===================== -->
+<script>
+/* ============================================
+   NAVBAR SCROLL EFFECT
+   ============================================ */
+window.addEventListener('scroll', () => {
+  const nb = document.getElementById('navbar');
+  if (window.scrollY > 20) {
+    nb.style.boxShadow = '0 4px 28px rgba(10,22,40,.1)';
+  } else {
+    nb.style.boxShadow = '0 2px 20px rgba(10,22,40,.06)';
+  }
+});
+
+/* ============================================
+   API CONFIG
+   ============================================ */
+const API_BASE = "http://localhost:3000";
+
+function authHeaders() {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: "Bearer " + token } : {};
+}
+
+function loadEvents() {
+  return fetch(`${API_BASE}/api/events`, { headers: authHeaders() })
+    .then(r => { if (!r.ok) throw new Error("Request failed"); return r.json(); })
+    .then(d => Array.isArray(d) ? d : (d.events || d.data || []))
+    .catch(() => null);
+}
+
+function loadStats() {
+  return fetch(`${API_BASE}/api/stats`, { headers: authHeaders() })
+    .then(r => { if (!r.ok) throw new Error("Request failed"); return r.json(); })
+    .then(d => d && d.data ? d.data : d)
+    .catch(() => null);
+}
+
+let allEvents = [];
+
+/* ============================================
+   RENDER STATS
+   ============================================ */
+function renderStats(stats) {
+  if (!stats) return;
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val !== undefined && val !== null) el.textContent = val;
+  };
+  set("statEvents",     stats.events_hosted   ?? stats.eventsHosted);
+  set("statStudents",   stats.active_students ?? stats.activeStudents);
+  set("statVolunteers", stats.volunteers);
+  set("statFaculties",  stats.faculties);
+
+  set("chipEvents",      stats.events_hosted ?? stats.eventsHosted);
+  set("chipVolunteers",  stats.volunteers);
+  set("chipRating",      stats.avg_rating ?? stats.avgRating);
+}
+
+/* ============================================
+   RENDER EVENTS
+   ============================================ */
+function renderEvents(events) {
+  const container = document.getElementById("eventContainer");
+  container.innerHTML = "";
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const upcoming  = events.filter(e => {
+    const d = e.event_date ? String(e.event_date).split("T")[0] : (e.date || "");
+    return d >= today;
+  }).slice(0, 2);
+
+  const completed = events.filter(e => {
+    const d = e.event_date ? String(e.event_date).split("T")[0] : (e.date || "");
+    return d && d < today;
+  }).slice(0, 3);
+
+  const display = [...upcoming, ...completed];
+
+  if (display.length === 0) {
+    container.innerHTML = `
+      <div class="no-events">
+        <i class="fas fa-calendar-xmark"></i>
+        <h3>No events found</h3>
+        <p>Try a different search term or check back soon</p>
+      </div>`;
+    return;
+  }
+
+  display.forEach(ev => {
+    const evDate = ev.event_date ? String(ev.event_date).split("T")[0] : (ev.date || "");
+    const isPast  = evDate && evDate < today;
+    const isNow   = evDate && evDate === today;
+    const statusCls   = isPast ? "closed" : isNow ? "open" : "upcoming";
+    const statusLabel = isPast ? "Ended"  : isNow ? "Live Today" : "Upcoming";
+
+    const img = ev.image_url
+      ? `${API_BASE}${ev.image_url}`
+      : (ev.image || `https://picsum.photos/seed/${ev.id || ev.event_id || Math.random()}/400/250`);
+
+    const universityName = ev.university_name || ev.university || ev.department_name || ev.department || "University";
+
+    container.innerHTML += `
+    <div class="event-card" onclick="openPopup(${JSON.stringify(ev).replace(/"/g,'&quot;')})">
+      <div class="ev-img-box">
+        <img src="${img}" alt="${ev.title}"
+             onerror="this.src='https://picsum.photos/seed/${ev.id||1}/400/250'">
+        <div class="ev-status ${statusCls}">${statusLabel}</div>
+        <div class="ev-cat">${ev.category || "General"}</div>
+      </div>
+      <div class="ev-body">
+        <div class="ev-title">${ev.title}</div>
+        <div class="ev-meta">
+          <div class="ev-meta-row"><i class="fas fa-calendar"></i> ${evDate || "TBA"}</div>
+          <div class="ev-meta-row"><i class="fas fa-location-dot"></i> ${ev.venue || ev.location || "TBA"}</div>
+          <div class="ev-meta-row"><i class="fas fa-university"></i> ${universityName}</div>
+        </div>
+        <div class="ev-footer">
+          <button class="btn-ev-detail" onclick="event.stopPropagation(); openPopup(${JSON.stringify(ev).replace(/"/g,'&quot;')})">Details</button>
+          <button class="btn-ev-reg"    onclick="event.stopPropagation(); window.location.href='Login.html'">Register</button>
+        </div>
+      </div>
+    </div>`;
+  });
+}
+
+/* ============================================
+   INIT
+   ============================================ */
+(async () => {
+  const [events, stats] = await Promise.all([loadEvents(), loadStats()]);
+
+  allEvents = events || [];
+  renderStats(stats);
+
+  if (events === null) {
+    document.getElementById("eventContainer").innerHTML = `
+      <div class="no-events">
+        <i class="fas fa-triangle-exclamation"></i>
+        <h3>Couldn't load events</h3>
+        <p>Please check your connection and try again</p>
+      </div>`;
+    return;
+  }
+
+  renderEvents(allEvents);
+})();
+
+/* ============================================
+   SEARCH & FILTER
+   ============================================ */
+function filterAndRender() {
+  const q   = document.getElementById("searchInput").value.toLowerCase().trim();
+  const cat = document.getElementById("catFilter").value.toLowerCase();
+  let filtered = allEvents.filter(e => {
+    const matchQ   = !q   || e.title.toLowerCase().includes(q) || (e.category||"").toLowerCase().includes(q);
+    const matchCat = !cat || (e.category||"").toLowerCase().includes(cat);
+    return matchQ && matchCat;
+  });
+  renderEvents(filtered);
+}
+
+document.getElementById("searchInput").addEventListener("input", filterAndRender);
+document.getElementById("catFilter").addEventListener("change", filterAndRender);
+document.getElementById("searchBtn").addEventListener("click", filterAndRender);
+document.getElementById("searchInput").addEventListener("keydown", e => { if (e.key==="Enter") filterAndRender(); });
+
+/* ============================================
+   POPUP
+   ============================================ */
+function openPopup(ev) {
+  if (typeof ev === 'string') { try { ev = JSON.parse(ev); } catch(e) { return; } }
+  const evDate = ev.event_date ? String(ev.event_date).split("T")[0] : (ev.date || "TBA");
+  const img = ev.image_url
+    ? `${API_BASE}${ev.image_url}`
+    : (ev.image || `https://picsum.photos/seed/${ev.id||1}/400/250`);
+
+  document.getElementById("popupImg").src = img;
+  document.getElementById("popupCat").textContent = ev.category || "General";
+  document.getElementById("popupTitle").textContent = ev.title;
+  document.getElementById("popupMeta").innerHTML = `
+    <div class="popup-meta-row"><i class="fas fa-calendar"></i> ${evDate}</div>
+    <div class="popup-meta-row"><i class="fas fa-location-dot"></i> ${ev.venue || ev.location || "TBA"}</div>
+    <div class="popup-meta-row"><i class="fas fa-building"></i> ${ev.department_name || ev.department || "University"}</div>
+    ${ev.description ? `<div class="popup-meta-row" style="margin-top:10px;color:var(--txt);font-size:13.5px;line-height:1.6">${ev.description}</div>` : ""}
+  `;
+  document.getElementById("popupOverlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closePopup() {
+  document.getElementById("popupOverlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+document.getElementById("popupOverlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closePopup();
+});
+</script>
+
+</body>
+</html>

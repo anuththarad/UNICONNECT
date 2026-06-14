@@ -1,0 +1,4823 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Document metadata and external libraries -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Manager - UniConnect</title>
+    <script src="uc-translate.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      :root {
+  --navy-deep:#0d0934;
+  --navy-mid:#1e1b4b;
+  --navy-light:#312e81;
+  --accent-blue:#3b82f6;
+  --accent-cyan:#06b6d4;
+  --accent-violet:#7c3aed;
+  --bg-body:#f1f5f9;
+  --surface:#ffffff;
+  --surface-alt:#f8fafc;
+  --surface-dark:#0f172a;
+  --text-main:#1e293b;
+  --text-muted:#64748b;
+  --text-light:#94a3b8;
+  --success:#10b981;
+  --success-bg:#d1fae5;
+  --warning:#f59e0b;
+  --warning-bg:#fef3c7;
+  --danger:#ef4444;
+  --danger-bg:#fee2e2;
+  --info:#3b82f6;
+  --info-bg:#dbeafe;
+  --purple:#8b5cf6;
+  --purple-bg:#ede9fe;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
+  --shadow-md:0 4px 16px rgba(0,0,0,.10);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.14);
+  --border:#e2e8f0;
+  --radius:16px;
+}
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box
+}
+body {
+  font-family:'Inter',sans-serif;
+  background:var(--bg-body);
+  color:var(--text-main);
+  min-height:100vh;
+  overflow-x:hidden;
+  display:flex
+}
+.container {
+  display:flex;
+  width:100%;
+  min-height:100vh
+}
+
+/* SIDEBAR */
+.sidebar{width:272px;background:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;z-index:100;overflow-y:auto;border-right:1px solid var(--border);box-shadow:0 0 30px rgba(15,23,42,.04);}
+.logo-area{height:80px;display:flex;align-items:center;justify-content:center;padding:16px 20px;border-bottom:1px solid var(--border);}
+.logo-area img{width:150px;max-width:100%;height:auto;object-fit:contain;}
+.logo-text{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:#0f172a;}
+.logo-text span{color:#1e3a8a;}
+.sb-profile{display:flex;align-items:center;gap:12px;margin:18px 14px 16px;padding:14px;background:linear-gradient(135deg,#0f172a,#1e3a8a);border-radius:16px;box-shadow:0 8px 20px rgba(15,23,42,.2);}
+.sb-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#60a5fa,#38bdf8);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0;}
+.sb-name{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}
+.sb-role{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#bfdbfe;margin-top:2px;}
+.nav-section{padding:0 12px;}
+.nav-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;padding:16px 12px 6px;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;cursor:pointer;color:#334155;font-weight:600;font-size:14px;transition:.2s;position:relative;margin-bottom:4px;text-decoration:none;}
+.nav-item i{width:18px;font-size:15px;text-align:center;color:#475569;transition:.2s;}
+.nav-item:hover{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;}
+.nav-item:hover i{color:#fff;}
+.nav-item.active{background:linear-gradient(135deg,#0f172a,#1e40af);color:#fff;box-shadow:0 6px 16px rgba(30,58,138,.2);}
+.nav-item.active i{color:#fff;}
+.nav-badge{margin-left:auto;background:#ef4444;color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+.sb-footer{margin-top:auto;padding:16px 14px;border-top:1px solid var(--border);}
+.sb-logout{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;cursor:pointer;color:#475569;font-size:14px;font-weight:600;transition:.2s;}
+.sb-logout:hover{background:#fee2e2;color:#b91c1c;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:#d0d7f0;border-radius:4px;}
+
+/* === LANGUAGE PICKER — prominent === */
+.sidebar-lang{padding:10px 16px;margin:4px 0}
+.sidebar-lang label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;padding-left:2px}
+.lang-select-wrap{position:relative;display:flex;align-items:center}
+.lang-select-wrap i{position:absolute;left:11px;color:var(--accent-blue);font-size:14px;pointer-events:none;z-index:1}
+.sidebar-lang select{
+  width:100%;
+  padding:10px 12px 10px 34px;
+  border-radius:10px;
+  border:1.5px solid var(--border);
+  background:#f8fafc;
+  color:var(--text-main);
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  outline:none;
+  font-family:inherit;
+  transition:var(--trans-fast);
+  appearance:none;
+  -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+}
+
+
+/* MAIN */
+.main {
+  flex:1;
+  padding:28px 32px;
+  overflow-y:auto;
+  min-height:100vh
+}
+.topbar {
+  margin-bottom:28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px
+}
+.topbar-left h2 {
+  font-size:28px;
+  font-weight:900;
+  color:var(--navy-deep);
+  letter-spacing:-.03em;
+  margin-bottom:3px
+}
+.topbar-left p {
+  color:var(--text-muted);
+  font-size:14px
+}
+.topbar-right {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap
+}
+/* TABS */
+.tab-bar {
+  display:flex;
+  gap:6px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:5px;
+  margin-bottom:24px;
+  width:fit-content;
+  flex-wrap:wrap
+}
+.tab-btn {
+  padding:9px 20px;
+  border-radius:10px;
+  border:none;
+  background:none;
+  font-size:13px;
+  font-weight:700;
+  color:var(--text-muted);
+  cursor:pointer;
+  transition:.2s;
+  font-family:'Inter',sans-serif
+}
+.tab-btn.active {
+  background:var(--navy-deep);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(13,9,52,.2)
+}
+
+
+/* PANEL */
+.panel {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:24px;
+  box-shadow:var(--shadow-sm);
+  margin-bottom:20px
+}
+.panel-title {
+  font-size:16px;
+  font-weight:700;
+  color:var(--navy-deep);
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+/* FORM */
+.form-row {
+  display:grid;
+  gap:14px;
+  margin-bottom:14px
+}
+.form-row-2 {
+  grid-template-columns:1fr 1fr
+}
+.form-row-3 {
+  grid-template-columns:1fr 1fr 1fr
+}
+.form-row-4 {
+  grid-template-columns:1fr 1fr 1fr 1fr
+}
+label {
+  display:block;
+  margin-bottom:5px;
+  font-size:12px;
+  font-weight:700;
+  color:var(--text-muted);
+  text-transform:uppercase;
+  letter-spacing:.4px
+}
+input,select,textarea {
+  width:100%;
+  padding:11px 13px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  outline:none;
+  font-size:14px;
+  font-family:'Inter',sans-serif;
+  color:var(--text-main);
+  background:var(--surface);
+  transition:border-color .2s
+}
+input:focus,select:focus,textarea:focus {
+  border-color:var(--accent-blue);
+  box-shadow:0 0 0 3px rgba(59,130,246,.1)
+}
+select {
+  cursor:pointer
+}
+/* BUTTONS */
+button {
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+  font-size:13px;
+  font-family:'Inter',sans-serif;
+  transition:.2s;
+  padding:11px 18px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px
+}
+.btn-primary {
+  background:var(--navy-deep);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(13,9,52,.2)
+}
+.btn-primary:hover {
+  background:var(--navy-mid);
+  transform:translateY(-1px)
+}
+.btn-secondary {
+  background:var(--surface-alt);
+  color:var(--navy-deep);
+  border:1px solid var(--border)
+}
+.btn-secondary:hover {
+  background:#e2e8f0
+}
+.btn-success {
+  background:var(--success);
+  color:#fff
+}
+.btn-success:hover {
+  background:#059669;
+  transform:translateY(-1px)
+}
+.btn-danger {
+  background:var(--danger);
+  color:#fff
+}
+.btn-danger:hover {
+  background:#dc2626
+}
+.btn-violet {
+  background:var(--accent-violet);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(124,58,237,.25)
+}
+.btn-violet:hover {
+  background:#6d28d9;
+  transform:translateY(-1px)
+}
+.btn-report {
+  background:linear-gradient(135deg,#1e3a8a,#3b82f6);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(59,130,246,.25)
+}
+.btn-report:hover {
+  opacity:.9;
+  transform:translateY(-1px)
+}
+.btn-ai {
+  background:linear-gradient(135deg,#7c3aed,#8b5cf6);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(124,58,237,.25)
+}
+.btn-ai:hover {
+  opacity:.9;
+  transform:translateY(-1px)
+}
+.btn-sm {
+  padding:7px 14px;
+  font-size:12px
+}
+/* STATS */
+.stats-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:16px;
+  margin-bottom:20px
+}
+.stat-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px 20px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  box-shadow:var(--shadow-sm);
+  transition:.25s;
+  position:relative;
+  overflow:hidden
+}
+.stat-card::before {
+  content:'';
+  position:absolute;
+  right:-20px;
+  top:-20px;
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  opacity:.06
+}
+.stat-card.blue::before {
+  background:var(--accent-blue)
+}
+.stat-card.green::before {
+  background:var(--success)
+}
+.stat-card.amber::before {
+  background:var(--warning)
+}
+.stat-card.red::before {
+  background:var(--danger)
+}
+.stat-card.purple::before {
+  background:var(--purple)
+}
+.stat-card.teal::before {
+  background:#0d9488
+}
+.stat-card:hover {
+  transform:translateY(-3px);
+  box-shadow:var(--shadow-lg)
+}
+.stat-icon {
+  width:46px;
+  height:46px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  flex-shrink:0
+}
+.stat-icon.blue {
+  background:var(--info-bg);
+  color:var(--info)
+}
+.stat-icon.green {
+  background:var(--success-bg);
+  color:var(--success)
+}
+.stat-icon.amber {
+  background:var(--warning-bg);
+  color:var(--warning)
+}
+.stat-icon.red {
+  background:var(--danger-bg);
+  color:var(--danger)
+}
+.stat-icon.purple {
+  background:var(--purple-bg);
+  color:var(--purple)
+}
+.stat-icon.teal {
+  background:#ccfbf1;
+  color:#0d9488
+}
+.stat-info h3 {
+  font-size:21px;
+  font-weight:900;
+  color:var(--navy-deep);
+  margin-bottom:1px;
+  letter-spacing:-.02em
+}
+.stat-info p {
+  font-size:12px;
+  color:var(--text-muted);
+  font-weight:600
+}
+.stat-trend {
+  font-size:11px;
+  font-weight:700;
+  padding:3px 8px;
+  border-radius:99px;
+  margin-top:4px;
+  display:inline-block
+}
+.stat-trend.up {
+  background:var(--danger-bg);
+  color:var(--danger)
+}
+.stat-trend.down {
+  background:var(--success-bg);
+  color:var(--success)
+}
+.stat-trend.ok {
+  background:var(--warning-bg);
+  color:var(--warning)
+}
+/* CHARTS */
+.chart-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-bottom:20px
+}
+.chart-panel {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:22px;
+  box-shadow:var(--shadow-sm)
+}
+.chart-panel.wide {
+  grid-column:span 2
+}
+.chart-title {
+  font-size:15px;
+  font-weight:700;
+  color:var(--navy-deep);
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+.chart-box {
+  position:relative;
+  height:220px
+}
+.chart-box.tall {
+  height:280px
+}
+.chart-box.xtall {
+  height:320px
+}
+/* PROGRESS */
+.progress-bar-wrap {
+  width:100%;
+  background:#f1f5f9;
+  border-radius:99px;
+  height:6px;
+  overflow:hidden
+}
+.progress-bar-inner {
+  height:100%;
+  border-radius:99px;
+  transition:.5s
+}
+.progress-wrap {
+  background:#e2e8f0;
+  border-radius:99px;
+  height:8px;
+  overflow:hidden;
+  margin-top:6px
+}
+.progress-bar {
+  height:100%;
+  border-radius:99px;
+  transition:width .6s ease
+}
+.progress-bar.green {
+  background:var(--success)
+}
+.progress-bar.amber {
+  background:var(--warning)
+}
+.progress-bar.red {
+  background:var(--danger)
+}
+/* TABLE */
+.table-wrap {
+  overflow-x:auto;
+  border-radius:12px
+}
+table {
+  width:100%;
+  border-collapse:collapse
+}
+th,td {
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+  font-size:13px
+}
+th {
+  background:var(--surface-alt);
+  color:var(--text-muted);
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  position:sticky;
+  top:0
+}
+tr:last-child td {
+  border-bottom:none
+}
+tr:hover td {
+  background:#f8fafc
+}
+.status-badge {
+  padding:4px 10px;
+  border-radius:99px;
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.4px
+}
+.status-over {
+  background:var(--danger-bg);
+  color:var(--danger)
+}
+.status-under {
+  background:var(--success-bg);
+  color:var(--success)
+}
+.status-on {
+  background:var(--warning-bg);
+  color:var(--warning)
+}
+.action-btns {
+  display:flex;
+  gap:6px
+}
+/* CHIPS */
+.chip-grid {
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px
+}
+.chip {
+  padding:7px 13px;
+  background:var(--info-bg);
+  color:var(--navy-mid);
+  border-radius:99px;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+  border:1px solid #bfdbfe;
+  transition:.2s;
+  display:inline-flex;
+  align-items:center;
+  gap:5px
+}
+.chip:hover {
+  background:var(--accent-blue);
+  color:#fff;
+  border-color:var(--accent-blue);
+  transform:translateY(-1px)
+}
+/* EVENT BANNER */
+.event-banner {
+  background:linear-gradient(135deg,var(--navy-deep) 0%,#1e3a8a 60%,#1d4ed8 100%);
+  border-radius:18px;
+  padding:22px 26px;
+  color:#fff;
+  margin-bottom:20px;
+  box-shadow:0 10px 30px rgba(13,9,52,.25);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap
+}
+.event-banner-info h3 {
+  font-size:18px;
+  font-weight:800;
+  margin-bottom:6px
+}
+.event-banner-info p {
+  font-size:12px;
+  color:rgba(255,255,255,.75);
+  margin-bottom:3px;
+  display:flex;
+  align-items:center;
+  gap:7px
+}
+.event-banner-actions {
+  display:flex;
+  gap:8px;
+  flex-shrink:0;
+  flex-wrap:wrap
+}
+/* EVENT RESULT CARD */
+.event-result-card {
+  background:var(--surface-alt);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  margin-top:14px;
+  transition:.2s
+}
+.event-result-card:hover {
+  border-color:var(--accent-blue);
+  box-shadow:var(--shadow-md)
+}
+.event-result-card h3 {
+  font-size:17px;
+  font-weight:700;
+  color:var(--navy-deep);
+  margin-bottom:10px
+}
+.event-result-card p {
+  color:var(--text-muted);
+  font-size:13px;
+  margin-bottom:5px;
+  display:flex;
+  align-items:center;
+  gap:7px
+}
+/* INSIGHT */
+.insight-box {
+  background:linear-gradient(135deg,#ede9fe,#dbeafe);
+  border:1px solid #c4b5fd;
+  border-radius:14px;
+  padding:16px 18px;
+  margin-bottom:16px
+}
+.insight-box h4 {
+  font-size:13px;
+  font-weight:800;
+  color:#5b21b6;
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  gap:7px
+}
+.insight-item {
+  font-size:12px;
+  color:#3730a3;
+  margin-bottom:4px;
+  display:flex;
+  align-items:flex-start;
+  gap:6px;
+  line-height:1.5
+}
+.insight-item i {
+  margin-top:2px;
+  flex-shrink:0
+}
+/* HEALTH METER */
+.health-meter {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+  margin-bottom:20px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  flex-wrap:wrap
+}
+.health-score {
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  border:5px solid;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  flex-shrink:0
+}
+.health-score.good {
+  border-color:var(--success)
+}
+.health-score.warn {
+  border-color:var(--warning)
+}
+.health-score.bad {
+  border-color:var(--danger)
+}
+.health-score h2 {
+  font-size:22px;
+  font-weight:900;
+  line-height:1
+}
+.health-score p {
+  font-size:9px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--text-muted)
+}
+.health-info {
+  flex:1;
+  min-width:200px
+}
+.health-info h3 {
+  font-size:15px;
+  font-weight:800;
+  color:var(--navy-deep);
+  margin-bottom:4px
+}
+.health-info p {
+  font-size:13px;
+  color:var(--text-muted);
+  line-height:1.5
+}
+.health-bar-row {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:10px;
+  flex-wrap:wrap
+}
+.health-segment {
+  flex:1;
+  min-width:100px
+}
+.health-seg-label {
+  font-size:11px;
+  font-weight:700;
+  color:var(--text-muted);
+  margin-bottom:4px;
+  display:flex;
+  justify-content:space-between
+}
+.seg-bar {
+  height:8px;
+  background:#f1f5f9;
+  border-radius:99px;
+  overflow:hidden
+}
+.seg-fill {
+  height:100%;
+  border-radius:99px;
+  transition:.5s
+}
+/* AI PANEL */
+.ai-panel {
+  background:linear-gradient(135deg,#f8f4ff,#ede9fe);
+  border:1px solid #c4b5fd;
+  border-radius:20px;
+  padding:24px;
+  margin-bottom:24px
+}
+.ai-panel-header {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+  flex-wrap:wrap
+}
+.ai-badge {
+  background:linear-gradient(135deg,#7c3aed,#8b5cf6);
+  color:#fff;
+  padding:6px 14px;
+  border-radius:99px;
+  font-size:12px;
+  font-weight:700
+}
+.ai-insight-list {
+  display:flex;
+  flex-direction:column;
+  gap:10px
+}
+.ai-insight-item {
+  background:#fff;
+  border-radius:12px;
+  padding:14px 16px;
+  border-left:4px solid #8b5cf6;
+  font-size:14px;
+  color:var(--text-main)
+}
+.ai-insight-item.danger {
+  border-left-color:var(--danger)
+}
+.ai-insight-item.success {
+  border-left-color:var(--success)
+}
+.ai-insight-item.warning {
+  border-left-color:var(--warning)
+}
+.ai-insight-item.info {
+  border-left-color:var(--info)
+}
+.ai-insight-item strong {
+  display:block;
+  font-weight:700;
+  margin-bottom:2px;
+  font-size:13px
+}
+.ai-loading {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:var(--purple);
+  font-weight:600;
+  font-size:14px
+}
+/* FORECAST */
+.forecast-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-top:14px
+}
+.forecast-card {
+  background:#fff;
+  border-radius:14px;
+  padding:16px;
+  border:1px solid var(--border);
+  text-align:center
+}
+.forecast-card .fc-label {
+  font-size:12px;
+  color:var(--text-muted);
+  font-weight:600;
+  margin-bottom:8px
+}
+.forecast-card .fc-value {
+  font-size:20px;
+  font-weight:800;
+  color:var(--navy-deep)
+}
+.forecast-card .fc-sub {
+  font-size:11px;
+  color:var(--text-muted);
+  margin-top:4px
+}
+/* CATEGORY BREAKDOWN */
+.cat-row {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px
+}
+.cat-label {
+  font-size:13px;
+  font-weight:600;
+  color:var(--text-main);
+  min-width:130px
+}
+.cat-bar-wrap {
+  flex:1;
+  background:#e2e8f0;
+  border-radius:99px;
+  height:10px;
+  overflow:hidden
+}
+.cat-bar {
+  height:100%;
+  border-radius:99px
+}
+.cat-pct {
+  font-size:13px;
+  font-weight:700;
+  color:var(--navy-deep);
+  min-width:90px;
+  text-align:right
+}
+.cat-meta {
+  min-width:90px;
+  font-size:12px;
+  color:var(--text-muted)
+}
+/* OVERALL PROGRESS */
+.overall-progress-panel {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:18px 24px;
+  margin-bottom:20px
+}
+/* EMPTY / LOADING / ERROR */
+.empty-box {
+  padding:40px 20px;
+  text-align:center;
+  color:var(--text-muted);
+  font-size:14px;
+  background:var(--surface-alt);
+  border-radius:14px;
+  border:1.5px dashed var(--border)
+}
+.empty-box i {
+  font-size:30px;
+  display:block;
+  margin-bottom:10px;
+  color:var(--text-light)
+}
+.loading-box {
+  padding:32px 20px;
+  text-align:center;
+  color:var(--text-muted);
+  font-size:14px
+}
+.spinner {
+  width:32px;
+  height:32px;
+  border:3px solid var(--border);
+  border-top-color:var(--accent-blue);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+  margin:0 auto 12px
+}
+.spinner-sm {
+  width:20px;
+  height:20px;
+  border:3px solid #c4b5fd;
+  border-top-color:#7c3aed;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+  display:inline-block
+}
+@keyframes spin {
+  to {
+  transform:rotate(360deg)
+}
+
+}
+.error-box {
+  padding:28px 20px;
+  text-align:center;
+  background:#fff5f5;
+  border:1.5px dashed #fca5a5;
+  border-radius:14px
+}
+.error-box i {
+  font-size:28px;
+  color:var(--danger);
+  display:block;
+  margin-bottom:10px
+}
+.error-box p {
+  color:#991b1b;
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:4px
+}
+.error-box small {
+  color:var(--text-muted);
+  font-size:12px
+}
+/* POPUP */
+.popup-overlay {
+  position:fixed;
+  inset:0;
+  background:rgba(13,9,52,.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:2000;
+  backdrop-filter:blur(4px)
+}
+.popup-overlay.show {
+  display:flex
+}
+.popup-box {
+  background:var(--surface);
+  border-radius:20px;
+  padding:28px 32px;
+  width:min(480px,100%);
+  box-shadow:var(--shadow-lg)
+}
+.popup-box h2 {
+  font-size:18px;
+  font-weight:800;
+  color:var(--navy-deep);
+  margin-bottom:8px
+}
+.popup-box p {
+  font-size:14px;
+  color:var(--text-muted);
+  margin-bottom:20px
+}
+.popup-icon-wrap {
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 14px;
+  font-size:24px
+}
+.popup-icon-wrap.delete {
+  background:var(--danger-bg);
+  color:var(--danger)
+}
+.popup-buttons {
+  display:flex;
+  gap:10px
+}
+.popup-buttons button {
+  flex:1
+}
+/* REPORT MODAL */
+.modal-bg {
+  position:fixed;
+  inset:0;
+  background:rgba(13,9,52,.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:3000;
+  backdrop-filter:blur(4px)
+}
+.modal-bg.show {
+  display:flex
+}
+.report-modal {
+  background:var(--surface);
+  border-radius:20px;
+  padding:0;
+  width:min(920px,100%);
+  box-shadow:0 24px 70px rgba(13,9,52,.3);
+  overflow:hidden;
+  max-height:90vh;
+  display:flex;
+  flex-direction:column
+}
+.report-header {
+  background:linear-gradient(135deg,#0d0934,#1e3a8a);
+  padding:28px 32px;
+  color:#fff;
+  flex-shrink:0
+}
+.report-header h2 {
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:5px
+}
+.report-header p {
+  opacity:.75;
+  font-size:13px
+}
+.report-body {
+  padding:28px;
+  overflow-y:auto;
+  flex:1
+}
+.report-section {
+  margin-bottom:26px
+}
+.report-section h3 {
+  font-size:15px;
+  font-weight:700;
+  color:var(--navy-deep);
+  border-bottom:2px solid var(--border);
+  padding-bottom:10px;
+  margin-bottom:16px
+}
+.report-summary-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px
+}
+.report-stat {
+  background:var(--surface-alt);
+  border-radius:12px;
+  padding:16px;
+  text-align:center;
+  border:1px solid var(--border)
+}
+.report-stat .rs-val {
+  font-size:18px;
+  font-weight:800;
+  color:var(--navy-deep)
+}
+.report-stat .rs-label {
+  font-size:12px;
+  color:var(--text-muted);
+  margin-top:4px
+}
+.report-event-img {
+  width:100%;
+  max-height:200px;
+  object-fit:cover;
+  border-radius:12px;
+  margin-bottom:18px
+}
+.report-footer {
+  padding:18px 28px;
+  border-top:1px solid var(--border);
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  flex-shrink:0
+}
+/* TOAST */
+.toast-container {
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  pointer-events:none
+}
+.toast {
+  background:var(--navy-deep);
+  color:#fff;
+  padding:12px 20px;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:600;
+  box-shadow:var(--shadow-lg);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  pointer-events:all;
+  animation:toastIn .35s ease;
+  min-width:260px
+}
+.toast.success {
+  background:#065f46
+}
+.toast.error {
+  background:#991b1b
+}
+.toast.warning {
+  background:#92400e
+}
+@keyframes toastIn {
+  from {
+  transform:translateX(110%);
+  opacity:0
+}
+to {
+  transform:translateX(0);
+  opacity:1
+}
+
+}
+@keyframes toastOut {
+  from {
+  opacity:1
+}
+to {
+  transform:translateX(110%);
+  opacity:0
+}
+
+}
+.hidden {
+  display:none!important
+}
+::-webkit-scrollbar {
+  width:5px;
+  height:5px
+}
+::-webkit-scrollbar-thumb {
+  background:#cbd5e1;
+  border-radius:10px
+}
+@media(max-width:1100px) {
+  .chart-grid {
+  grid-template-columns:1fr
+}
+.chart-panel.wide {
+  grid-column:span 1
+}
+.forecast-grid {
+  grid-template-columns:1fr 1fr
+}
+.report-summary-grid {
+  grid-template-columns:1fr 1fr
+}
+
+}
+@media(max-width:900px) {
+  .container {
+  flex-direction:column
+}
+.sidebar {
+  width:100%;
+  height:auto;
+  position:relative
+}
+.main {
+  padding:16px
+}
+.stats-grid {
+  grid-template-columns:1fr 1fr
+}
+.form-row-3,.form-row-4 {
+  grid-template-columns:1fr 1fr
+}
+
+}
+@media(max-width:600px) {
+  .stats-grid {
+  grid-template-columns:1fr
+}
+.form-row-2,.form-row-3,.form-row-4 {
+  grid-template-columns:1fr
+}
+.event-banner {
+  flex-direction:column
+}
+.forecast-grid {
+  grid-template-columns:1fr
+}
+.tab-bar {
+  width:100%
+}
+
+}
+/* ═══ ENHANCED RECOMMENDATION CHIPS ═══ */
+.rec-chip-wrap {
+  background: linear-gradient(135deg,#fffbeb,#fef3c7);
+  border:1px solid #fde68a;
+  border-radius:16px;
+  padding:18px 20px;
+}
+.rec-chip-title {
+  font-size:12px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:#92400e;
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  gap:7px
+}
+.chip {
+  padding:8px 15px;
+  background:#fff;
+  color:#1e293b;
+  border-radius:99px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  border:1.5px solid #e2e8f0;
+  transition:.2s;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  box-shadow:0 2px 6px rgba(0,0,0,.06)
+}
+.chip:hover {
+  background:linear-gradient(135deg,#1e3a8a,#3b82f6);
+  color:#fff;
+  border-color:transparent;
+  transform:translateY(-2px);
+  box-shadow:0 6px 16px rgba(59,130,246,.3)
+}
+.chip .chip-price {
+  font-size:10px;
+  opacity:.65;
+  margin-left:3px
+}
+/* ═══ REPORT CHART SECTION ═══ */
+.add-to-report-btn {
+  position:absolute;
+  top:12px;
+  right:12px;
+  z-index:10;
+  background:linear-gradient(135deg,#0d0934,#1e3a8a);
+  color:#fff;
+  padding:7px 13px;
+  border-radius:99px;
+  font-size:11px;
+  font-weight:700;
+  border:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  opacity:0;
+  transition:.25s;
+  box-shadow:0 4px 12px rgba(13,9,52,.25)
+}
+.chart-panel:hover .add-to-report-btn,.chart-panel:hover .add-to-report-btn {
+  opacity:1
+}
+.chart-panel {
+  position:relative;
+  overflow:visible
+}
+.add-to-report-btn.added {
+  background:linear-gradient(135deg,#059669,#10b981)
+}
+.add-to-report-btn i {
+  font-size:10px
+}
+/* ═══ LOGO IN REPORT ═══ */
+.report-logo-row {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:6px
+}
+.report-logo-mark {
+  width:44px;
+  height:44px;
+  background:linear-gradient(135deg,#0d0934,#1e3a8a);
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:900;
+  color:#fff;
+  font-family:'Space Grotesk',sans-serif;
+  flex-shrink:0
+}
+.report-logo-text {
+  font-family:'Space Grotesk',sans-serif;
+  font-size:22px;
+  font-weight:700;
+  color:#fff;
+  letter-spacing:-.02em
+}
+.report-logo-sub {
+  font-size:11px;
+  color:rgba(255,255,255,.6);
+  margin-top:1px
+}
+/* ═══ EVENT DETAILS DATE/TIME LIVE ═══ */
+.live-datetime {
+  background:rgba(255,255,255,.12);
+  border-radius:99px;
+  padding:5px 14px;
+  font-size:12px;
+  font-weight:700;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.2)
+}
+.live-dot {
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#4ade80;
+  animation:pulse-dot 1.5s infinite
+}
+@keyframes pulse-dot {
+  0%,100% {
+  opacity:1;
+  transform:scale(1)
+}
+50% {
+  opacity:.5;
+  transform:scale(.7)
+}
+
+}
+/* ═══ ENHANCED STAT CARDS ═══ */
+.stat-card {
+  transition:.3s cubic-bezier(.34,1.56,.64,1)
+}
+.stat-card:hover {
+  transform:translateY(-5px) scale(1.02)
+}
+/* ═══ CHART IMPRESSIVE COLORS ═══ */
+:root {
+  --chart-1:#6366f1;
+  --chart-2:#f43f5e;
+  --chart-3:#10b981;
+  --chart-4:#f59e0b;
+  --chart-5:#06b6d4;
+  --chart-6:#8b5cf6;
+  --chart-7:#ec4899;
+  --chart-8:#14b8a6;
+  --chart-9:#fb923c;
+  --chart-10:#a3e635;
+}
+/* ═══ REPORT CHART ADDED ITEMS ═══ */
+.report-added-charts {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px;
+  margin-top:12px
+}
+.report-chart-item {
+  background:var(--surface-alt);
+  border-radius:12px;
+  padding:16px;
+  border:1px solid var(--border);
+  font-size:13px;
+  font-weight:600;
+  color:var(--navy-deep);
+  display:flex;
+  align-items:center;
+  justify-content:space-between
+}
+.report-chart-item i {
+  color:var(--accent-blue)
+}
+
+/* ═══════════════════════════════════════════════════════
+   i18n-additions.css
+   Add this AFTER your main Budget.html <style> block,
+   or append to the existing <style> tag.
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Language Switcher ──────────────────────────────── */
+#langSwitcherWrap {
+  position: relative;
+}
+
+#langToggleBtn:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1e40af;
+}
+
+#langToggleBtn:hover i.fa-globe {
+  color: #1d4ed8;
+}
+
+#langDropdown::-webkit-scrollbar {
+  width: 4px;
+}
+#langDropdown::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+/* ── RTL Support ────────────────────────────────────── */
+[dir="rtl"] .sidebar {
+  border-right: none;
+  border-left: 1px solid #e5e7eb;
+}
+
+[dir="rtl"] .nav-item {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .nav-item:hover {
+  transform: translateX(-3px);
+}
+
+[dir="rtl"] .stat-card {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .stat-card::before {
+  right: auto;
+  left: -20px;
+}
+
+[dir="rtl"] .topbar {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .topbar-right {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .tab-bar {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] th,
+[dir="rtl"] td {
+  text-align: right;
+}
+
+[dir="rtl"] .panel-title {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .chart-title {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .insight-item {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .cat-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .cat-pct {
+  text-align: left;
+}
+
+[dir="rtl"] .event-banner-info p {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .health-bar-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .action-btns {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .add-to-report-btn {
+  right: auto;
+  left: 12px;
+}
+
+[dir="rtl"] .report-modal .report-header {
+  text-align: right;
+}
+
+[dir="rtl"] #langDropdown {
+  right: 16px;
+  left: 16px;
+}
+
+[dir="rtl"] .sb-logout {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .ai-insight-item {
+  border-left: none;
+  border-right: 4px solid #8b5cf6;
+}
+
+[dir="rtl"] .ai-insight-item.danger  { border-right-color: var(--danger);  border-left: none; }
+[dir="rtl"] .ai-insight-item.success { border-right-color: var(--success); border-left: none; }
+[dir="rtl"] .ai-insight-item.warning { border-right-color: var(--warning); border-left: none; }
+[dir="rtl"] .ai-insight-item.info    { border-right-color: var(--info);    border-left: none; }
+
+[dir="rtl"] .form-row {
+  direction: rtl;
+}
+
+[dir="rtl"] input,
+[dir="rtl"] select,
+[dir="rtl"] textarea {
+  text-align: right;
+}
+
+[dir="rtl"] .toast {
+  animation: toastInRTL .35s ease;
+}
+
+@keyframes toastInRTL {
+  from { transform: translateX(-110%); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+[dir="rtl"] .toast-container {
+  right: auto;
+  left: 24px;
+}
+
+/* ── Font adjustments for non-Latin scripts ─────────── */
+:lang(si),
+:lang(si) input,
+:lang(si) select,
+:lang(si) button {
+  font-family: 'Noto Sans Sinhala', 'Inter', sans-serif;
+  line-height: 1.7;
+}
+
+:lang(ta),
+:lang(ta) input,
+:lang(ta) select,
+:lang(ta) button {
+  font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
+  line-height: 1.7;
+}
+
+:lang(zh),
+:lang(zh) input,
+:lang(zh) select,
+:lang(zh) button {
+  font-family: 'PingFang SC', 'Microsoft YaHei', 'Inter', sans-serif;
+}
+
+:lang(ja),
+:lang(ja) input,
+:lang(ja) select,
+:lang(ja) button {
+  font-family: 'Hiragino Kaku Gothic Pro', 'Noto Sans JP', 'Inter', sans-serif;
+}
+
+:lang(ar),
+:lang(ar) input,
+:lang(ar) select,
+:lang(ar) button {
+  font-family: 'Noto Sans Arabic', 'Segoe UI', 'Inter', sans-serif;
+  line-height: 1.8;
+  letter-spacing: 0;
+}
+
+/* ── Sidebar footer layout (room for lang switcher) ─── */
+.sb-footer {
+  gap: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Nav item active/hover for RTL ──────────────────── */
+[dir="rtl"] .nav-item.active,
+[dir="rtl"] .nav-item:hover {
+  transform: translateX(-3px);
+}
+
+/* ── Report modal RTL ──────────────────────────────── */
+[dir="rtl"] .report-modal .report-footer {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .report-section h3 {
+  text-align: right;
+}
+
+[dir="rtl"] .report-logo-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .popup-box {
+  direction: rtl;
+}
+
+[dir="rtl"] .popup-buttons {
+  flex-direction: row-reverse;
+}
+
+.lang-picker-budget {
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--navy-deep);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  transition: .2s;
+}
+.lang-picker-budget:hover {
+  border-color: var(--accent-blue);
+  background: var(--surface);
+}
+
+
+    </style>
+</head>
+  <body>
+    <!-- App shell -->
+    <div class="container">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="logo-area">
+          <img src="images/UClogo.png" alt="UniConnect" onerror="this.style.display='none';document.getElementById('lt').style.display='block'">
+          <span class="logo-text" id="lt" style="display:none">Uni<span>Connect</span></span>
+        </div>
+
+        <!-- Language Picker — prominent -->
+  <div class="sidebar-lang">
+   
+    <div class="lang-select-wrap">
+      <i class="fa-solid fa-globe"></i>
+      <select id="langSelect" onchange="doGoogleTranslate(this.value)">
+        <option value="en">English</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+        <option value="si">සිංහල (Sinhala)</option>
+      </select>
+    </div>
+  </div>
+        <div class="nav-section">
+  <div class="nav-label">Main</div>
+  <a class="nav-item" href="OrganizerDash.html">
+    <i class="fa-solid fa-house"></i><span>Dashboard</span>
+  </a>
+  <a class="nav-item" href="HomePage.html">
+    <i class="fa-solid fa-wallet"></i><span>Back to Home</span>
+  </a>
+  <div class="nav-label" style="margin-top:10px">Create</div>
+  <a class="nav-item" href="Event.html">
+    <i class="fa-solid fa-circle-plus"></i><span>Create Event</span>
+  </a>
+  <a class="nav-item" href="Allevents.html">
+    <i class="fa-solid fa-calendar-days"></i><span>Browse Events</span>
+  </a>
+  <div class="nav-label" style="margin-top:10px">Manage</div>
+  <a class="nav-item active" href="Budget.html">
+    <i class="fa-solid fa-wallet"></i><span>Budget Management</span>
+  </a>
+  <a class="nav-item" href="Volunteer.html">
+    <i class="fa-solid fa-hands-helping"></i><span>Volunteer Management</span>
+  </a>
+</div>
+<div class="sb-footer">
+  <div class="sb-logout" onclick="logout()">
+    <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+  </div>
+</div>
+      </aside>
+      <!-- MAIN -->
+      <main class="main">
+        <div class="topbar">
+          <div class="topbar">
+  <div class="topbar-left">
+    <h2>Budget Management System - Uniconnect</h2>
+    <p>Plan, manage &amp; track budget allocations with AI insights and analytics</p>
+  </div>
+  <div class="topbar-right">
+    <button class="btn-report" onclick="openReportModal()" id="btnReport" style="display:none">
+      <i class="fa-solid fa-file-pdf"></i> <span>Export Report</span>
+    </button>
+    <button class="btn-ai" onclick="runAIInsights()" id="btnAI" style="display:none">
+      <i class="fa-solid fa-brain"></i> <span>AI Insights</span>
+    </button>
+  </div>
+</div>
+ 
+        <!-- TAB BAR -->
+        <div class="tab-bar">
+  <button class="tab-btn active" id="tab-setup"    onclick="showTab('setup')">
+    <i class="fa-solid fa-magnifying-glass"></i> <span>Setup</span>
+  </button>
+  <button class="tab-btn" id="tab-overview" onclick="showTab('overview')">
+    <i class="fa-solid fa-gauge-high"></i> <span>Overview</span>
+  </button>
+  <button class="tab-btn" id="tab-items"    onclick="showTab('items')">
+    <i class="fa-solid fa-list"></i> <span>Budget Items</span>
+  </button>
+  <button class="tab-btn" id="tab-charts"   onclick="showTab('charts')">
+    <i class="fa-solid fa-chart-pie"></i> <span>Analytics</span>
+  </button>
+  <button class="tab-btn" id="tab-forecast" onclick="showTab('forecast')">
+    <i class="fa-solid fa-chart-line"></i> <span>Forecast</span>
+  </button>
+  <button class="tab-btn" id="tab-category" onclick="showTab('category')">
+    <i class="fa-solid fa-layer-group"></i> <span>Category Split</span>
+  </button>
+  <button class="tab-btn" id="tab-planner"  onclick="showTab('planner')">
+    <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Smart Planner</span>
+  </button>
+</div>
+        <!-- SHARED: EVENT BANNER -->
+        <div id="selectedEventDetails" class="hidden"></div>
+        <!-- TAB: SETUP -->
+        <div id="tab-content-setup" style="width:100%">
+       <div class="panel" style="width:100%;max-width:100%">
+  <div class="panel-title">
+    <i class="fa-solid fa-magnifying-glass" style="color:var(--accent-blue)"></i>
+    <span>Find &amp; Select Event</span>
+  </div>
+  <p style="font-size:13px;color:var(--text-muted);margin-bottom:18px">Enter your Organizer ID to load all your events from the database.</p>
+  <div style="display:flex;gap:12px;align-items:flex-end">
+    <div style="flex:1">
+      <label>Organizer ID</label>
+      <input id="searchOrganizerId" type="number" placeholder="Enter organizer ID">
+    </div>
+    <button class="btn-primary" onclick="searchEvents()">
+      <i class="fa-solid fa-search"></i>
+      <span>Search Events</span>
+    </button>
+  </div>
+  <div id="eventResults" style="margin-top:14px"></div>
+</div>
+      </div>
+      <!-- TAB: OVERVIEW -->
+      <div id="tab-content-overview" class="hidden">
+        <div class="stats-grid" id="overviewStats">
+          <div class="empty-box"><i class="fa-solid fa-chart-bar"></i>Select an event to view overview.</div>
+        </div>
+        <!-- OVERALL PROGRESS -->
+        <div class="overall-progress-panel" id="overallProgressPanel" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <span style="font-weight:700;font-size:15px;color:var(--navy-deep)">Overall Budget Utilization</span>
+            <span id="overallPctText" style="font-size:14px;font-weight:700;color:var(--text-muted)">0%</span>
+          </div>
+          <div class="progress-wrap" style="height:14px">
+            <div class="progress-bar green" id="overallBar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="health-meter" id="healthMeter">
+          <div class="health-score good" id="healthScore"><h2 id="healthNum">—</h2><p>Score</p></div>
+          <div class="health-info">
+            <h3 id="healthTitle">Budget Health</h3>
+            <p id="healthDesc">Add budget items to see your budget health score.</p>
+            <div class="health-bar-row">
+              <div class="health-segment">
+                <div class="health-seg-label"><span>Utilization</span><span id="utilPct">0%</span></div>
+                <div class="seg-bar"><div class="seg-fill" id="utilBar" style="width:0%;background:var(--accent-blue)"></div></div>
+              </div>
+              <div class="health-segment">
+                <div class="health-seg-label"><span>On-track Items</span><span id="ontrackPct">0%</span></div>
+                <div class="seg-bar"><div class="seg-fill" id="ontrackBar" style="width:0%;background:var(--success)"></div></div>
+              </div>
+              <div class="health-segment">
+                <div class="health-seg-label"><span>Overspend Risk</span><span id="riskPct">0%</span></div>
+                <div class="seg-bar"><div class="seg-fill" id="riskBar" style="width:0%;background:var(--danger)"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="insightBox" class="insight-box hidden">
+          <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Smart Insights</h4>
+          <div id="insightList"></div>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-panel">
+            <button class="add-to-report-btn" onclick="addChartToReport(this,'barChart','Estimated vs Actual by Category')"><i class="fa-solid fa-plus"></i> Add to Report</button>
+            <div class="chart-title"><i class="fa-solid fa-chart-column" style="color:var(--accent-blue)"></i> Estimated vs Actual by Category</div>
+            <div class="chart-box"><canvas id="barChart"></canvas></div>
+          </div>
+          <div class="chart-panel">
+            <button class="add-to-report-btn" onclick="addChartToReport(this,'doughnutChart','Spending Distribution')"><i class="fa-solid fa-plus"></i> Add to Report</button>
+            <div class="chart-title"><i class="fa-solid fa-chart-pie" style="color:var(--purple)"></i> Spending Distribution</div>
+            <div class="chart-box"><canvas id="doughnutChart"></canvas></div>
+          </div>
+          <div class="chart-panel wide">
+            <button class="add-to-report-btn" onclick="addChartToReport(this,'lineChart','Cumulative Spending Timeline')"><i class="fa-solid fa-plus"></i> Add to Report</button>
+            <div class="chart-title"><i class="fa-solid fa-chart-area" style="color:var(--success)"></i> Cumulative Spending Timeline</div>
+            <div class="chart-box tall"><canvas id="lineChart"></canvas></div>
+          </div>
+        </div>
+        <!-- AI PANEL inside overview -->
+        <div id="aiPanelOverview" class="hidden">
+          <div class="ai-panel">
+            <div class="ai-panel-header">
+              <div class="ai-badge"><i class="fa-solid fa-brain" style="margin-right:6px"></i>AI Budget Analysis</div>
+              <span style="font-size:13px;color:#6d28d9;font-weight:600">Powered by Claude</span>
+            </div>
+            <div id="aiContentOverview"><div class="ai-loading"><div class="spinner-sm"></div>&nbsp;Analyzing…</div></div>
+          </div>
+        </div>
+       <div>
+  <label>Event Name</label>
+  <input
+    id="plannerEventName"
+    type="text"
+    placeholder="Example: Blood donation camp for university students"
+  />
+</div>
+
+<div id="plannerQuestions" class="hidden"></div>
+      </div>
+      <!-- TAB: ITEMS -->
+      <div id="tab-content-items" class="hidden">
+     <div id="budgetItemsSection" class="hidden">
+     < class="panel">
+  <div class="panel-title">
+    <i class="fa-solid fa-plus-circle" style="color:var(--accent-blue)"></i>
+    <span>Add Budget Item</span>
+  </div>
+  
+  <div class="form-row form-row-4">
+    <div style="grid-column:span 2">
+      <label>Description</label>
+      <input id="description" placeholder="e.g. Venue booking">
+    </div>
+    <div>
+      <label>Category</label>
+      <select id="itemCategory"></select>
+    </div>
+    <div>
+      <label>Priority</label>
+      <select id="itemPriority"></select>
+    </div>
+  </div>
+  <div class="form-row form-row-4">
+    <div>
+      <label>Estimated Cost (Rs.)</label>
+      <input id="estimated" type="number" placeholder="0.00" min="0">
+    </div>
+    <div>
+      <label>Actual Cost (Rs.)</label>
+      <input id="actual" type="number" placeholder="0.00" min="0">
+    </div>
+    <div>
+      <label>Vendor / Supplier</label>
+      <input id="vendor" placeholder="Vendor name (optional)">
+    </div>
+    <div>
+      <label>Payment Status</label>
+      <select id="paymentStatus"></select>
+    </div>
+  </div>
+  <div class="form-row" style="grid-template-columns:1fr auto">
+    <div>
+      <label>Notes (optional)</label>
+      <input id="notes" placeholder="Additional notes...">
+    </div>
+    <div style="display:flex;align-items:flex-end">
+      <button class="btn-primary" style="white-space:nowrap" onclick="addBudgetItem()">
+        <i class="fa-solid fa-plus"></i>
+        <span>Add Item</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+ 
+  <div class="panel-title">
+  <i class="fa-solid fa-lightbulb" style="color:var(--warning)"></i>
+  <span>Here are few Recommendations. Click to Auto Fill</span>
+</div>
+<div id="recommendations" style="margin-top:14px"></div>
+        </div>
+        <div class="panel">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+            <div class="panel-title" style="margin-bottom:0"><i class="fa-solid fa-table-list" style="color:var(--navy-deep)"></i> All Budget Items</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <input id="searchItems" placeholder="Search items..." style="width:180px;padding:8px 12px" oninput="filterTable()">
+              <select id="filterCategory" style="width:160px;padding:8px 12px" onchange="filterTable()">
+                <option value="">All Categories</option>
+              </select>
+              <select id="filterStatus" style="width:150px;padding:8px 12px" onchange="filterTable()">
+                <option value="">All Status</option>
+                <option value="Over Budget">Over Budget</option>
+                <option value="Under Budget">Under Budget</option>
+                <option value="On Budget">On Budget</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+  <tr>
+    <th>Description</th>
+    <th>Category</th>
+    <th>Estimated</th>
+    <th>Actual</th>
+    <th>Difference</th>
+    <th>Usage</th>
+    <th>Status</th>
+    <th>Priority</th>
+    <th>Payment</th>
+    <th>Vendor</th>
+    <th>Actions</th>
+  </tr>
+</thead>
+              <tbody id="budgetTable">
+                <tr><td colspan="11"><div class="empty-box"><i class="fa-solid fa-receipt"></i>Select an event and add budget items to get started.</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- TAB: ANALYTICS CHARTS -->
+      <div id="tab-content-charts" class="hidden">
+        <div class="chart-grid">
+          <div class="chart-panel">
+            <button class="add-to-report-btn" onclick="addChartToReport(this,'horizontalBarChart','Estimated vs Actual by Item')"><i class="fa-solid fa-plus"></i> Add to Report</button>
+            <div class="chart-title"><i class="fa-solid fa-chart-column" style="color:var(--accent-blue)"></i> Estimated vs Actual (by Item)</div>
+            <div class="chart-box tall"><canvas id="horizontalBarChart"></canvas></div>
+          </div>
+          <div class="chart-panel">
+            <button class="add-to-report-btn" onclick="addChartToReport(this,'pieChart','Actual Cost by Category')"><i class="fa-solid fa-plus"></i> Add to Report</button>
+            <div class="chart-title"><i class="fa-solid fa-chart-pie" style="color:var(--purple)"></i> Actual Cost by Category</div>
+            <div class="chart-box tall"><canvas id="pieChart"></canvas></div>
+          </div>
+          <div class="chart-panel wide">
+            <button class="add-to-report-btn" onclick="addChartToReport(this,'varianceChart','Budget Variance Analysis')"><i class="fa-solid fa-plus"></i> Add to Report</button>
+            <div class="chart-title"><i class="fa-solid fa-chart-bar" style="color:var(--success)"></i> Budget Variance Analysis</div>
+            <div class="chart-box tall"><canvas id="varianceChart"></canvas></div>
+          </div>
+          <div class="chart-panel">
+            <button class="add-to-report-btn" onclick="addChartToReport(this,'paymentChart','Payment Status Distribution')"><i class="fa-solid fa-plus"></i> Add to Report</button>
+            <div class="chart-title"><i class="fa-solid fa-circle-half-stroke" style="color:var(--warning)"></i> Payment Status Distribution</div>
+            <div class="chart-box"><canvas id="paymentChart"></canvas></div>
+          </div>
+          <div class="chart-panel">
+            <button class="add-to-report-btn" onclick="addChartToReport(this,'priorityChart','Priority Breakdown')"><i class="fa-solid fa-plus"></i> Add to Report</button>
+            <div class="chart-title"><i class="fa-solid fa-flag" style="color:var(--danger)"></i> Priority Breakdown</div>
+            <div class="chart-box"><canvas id="priorityChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <!-- TAB: FORECAST -->
+      <div id="tab-content-forecast" class="hidden">
+        <div class="panel">
+          <div class="panel-title">
+  <i class="fa-solid fa-chart-line" style="color:var(--accent-blue)"></i>
+  <span>Spend Forecasting &amp; Analysis</span>
+</div>
+<p style="font-size:14px;color:var(--text-muted);margin-bottom:18px">Predictive analytics based on current spend patterns</p>
+          <div class="forecast-grid" id="forecastGrid">
+            <div class="empty-box" style="grid-column:1/-1"><i class="fa-solid fa-chart-line"></i>Select an event with budget items to see forecast.</div>
+          </div>
+          <div class="chart-panel" style="margin-top:20px;border:none;padding:0;box-shadow:none;position:relative">
+            <button class="add-to-report-btn" onclick="addChartToReport(this,'forecastChart','Budget Variance Forecast')"><i class="fa-solid fa-plus"></i> Add to Report</button>
+            <div class="chart-box xtall"><canvas id="forecastChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <!-- TAB: CATEGORY SPLIT -->
+      <div id="tab-content-category" class="hidden">
+      <div class="panel-title">
+  <i class="fa-solid fa-layer-group" style="color:var(--accent-blue)"></i>
+  <span>Category Spending Breakdown</span>
+</div>
+          <div id="categoryBreakdown">
+            <div class="empty-box"><i class="fa-solid fa-layer-group"></i>Select an event to see category breakdown.</div>
+          </div>
+        </div>
+      </div>
+      <!-- TAB: SMART PLANNER -->
+<div id="tab-content-planner" class="hidden">
+ <div class="panel-title">
+  <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--accent-violet)"></i>
+  <span>Smart Budget Planner</span>
+  <span style="margin-left:10px;background:linear-gradient(135deg,#7c3aed,#6366f1);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;letter-spacing:.5px">
+    <i class="fa-solid fa-brain" style="margin-right:4px"></i>AI POWERED
+  </span>
+</div>
+<p style="font-size:13px;color:var(--text-muted);margin-bottom:18px">Select an event first. The planner will understand the selected event name and create a suitable budget plan.</p>
+<div class="form-row form-row-2">
+  <div>
+    <label>Total Budget (Rs.)</label>
+    <input id="plannerTotal" type="number" placeholder="e.g. 500000">
+  </div>
+  <div>
+    <label>Expected Attendees</label>
+    <input id="plannerAttendees" type="number" placeholder="e.g. 200">
+  </div>
+</div>
+<button class="btn-violet" onclick="runSmartPlanner()">
+  <i class="fa-solid fa-wand-magic-sparkles"></i>
+  <span>Generate Smart Budget Plan</span>
+</button>
+ 
+ 
+  </div>
+
+  <div id="plannerResults" class="hidden">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 16px;background:linear-gradient(135deg,#faf5ff,#ede9fe);border:1px solid #c4b5fd;border-radius:12px">
+      <i class="fa-solid fa-brain" style="color:#7c3aed;font-size:1.1rem"></i>
+      <span style="font-size:13px;color:#5b21b6;font-weight:600">
+        Budget plan generated from selected event details
+      </span>
+      <button onclick="runSmartPlanner()" style="margin-left:auto;background:none;border:1px solid #c4b5fd;color:#7c3aed;font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;cursor:pointer">
+        <i class="fa-solid fa-rotate-right"></i> Regenerate
+      </button>
+    </div>
+
+    <div class="stats-grid" id="plannerStats"></div>
+
+    <div class="chart-grid">
+      <div class="chart-panel">
+        <div class="chart-title">
+          <i class="fa-solid fa-chart-pie" style="color:var(--accent-violet)"></i>
+          Suggested Allocation
+        </div>
+        <div class="chart-box tall"><canvas id="plannerPieChart"></canvas></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="chart-title">
+          <i class="fa-solid fa-list-check" style="color:var(--success)"></i>
+          Suggested Budget Breakdown
+        </div>
+        <div id="plannerTable"></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn-success" onclick="importPlanToItems()">
+        <i class="fa-solid fa-file-import"></i>
+        Import This Plan as Budget Items
+      </button>
+
+      <button class="btn-secondary" onclick="runSmartPlanner()">
+        <i class="fa-solid fa-rotate-right"></i>
+        Regenerate Plan
+      </button>
+    </div>
+  </div>
+</div>
+  <div id="plannerResults" class="hidden">
+    <!-- AI source badge -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 16px;background:linear-gradient(135deg,#faf5ff,#ede9fe);border:1px solid #c4b5fd;border-radius:12px">
+      <i class="fa-solid fa-brain" style="color:#7c3aed;font-size:1.1rem"></i>
+      <span style="font-size:13px;color:#5b21b6;font-weight:600">Budget plan generated by Claude AI - based on your event type and budget</span>
+      <button onclick="runSmartPlanner()" style="margin-left:auto;background:none;border:1px solid #c4b5fd;color:#7c3aed;font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;cursor:pointer">
+      <i class="fa-solid fa-rotate-right"></i> Regenerate
+    </button>
+  </div>
+  <div class="stats-grid" id="plannerStats"></div>
+  <div class="chart-grid">
+    <div class="chart-panel">
+      <div class="chart-title">
+        <i class="fa-solid fa-chart-pie" style="color:var(--accent-violet)"></i> Suggested Allocation
+      </div>
+      <div class="chart-box tall"><canvas id="plannerPieChart"></canvas></div>
+    </div>
+    <div class="chart-panel">
+      <div class="chart-title">
+        <i class="fa-solid fa-list-check" style="color:var(--success)"></i> Suggested Budget Breakdown
+      </div>
+      <div id="plannerTable"></div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <button class="btn-success" onclick="importPlanToItems()">
+    <i class="fa-solid fa-file-import"></i> Import This Plan as Budget Items
+  </button>
+  <button class="btn-secondary" onclick="runSmartPlanner()">
+  <i class="fa-solid fa-rotate-right"></i> Regenerate Plan
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- DELETE POPUP -->
+<div id="deletePopup" class="popup-overlay">
+  <div class="popup-box" style="text-align:center;width:min(400px,100%)">
+  <div class="popup-icon-wrap delete"><i class="fa-solid fa-trash"></i></div>
+  <h2>Delete Budget Item?</h2>
+  <p>This action cannot be undone.</p>
+  <div class="popup-buttons">
+    <button class="btn-secondary" onclick="closeDeletePopup()">Cancel</button>
+    <button class="btn-danger" onclick="confirmDelete()">
+      <i class="fa-solid fa-trash"></i>
+      <span>Delete</span>
+    </button>
+  </div>
+</div>
+ 
+</div>
+<!-- EDIT POPUP -->
+<div id="editPopup" class="popup-overlay">
+ <div class="popup-box" style="width:min(520px,100%)">
+  <h2 style="margin-bottom:16px">
+    <i class="fa-solid fa-pen" style="color:var(--accent-blue);margin-right:8px"></i>
+    <span>Edit Budget Item</span>
+  </h2>
+  <input type="hidden" id="editId">
+  <div class="form-row form-row-2" style="margin-bottom:12px">
+    <div>
+      <label>Description</label>
+      <input id="editDesc">
+    </div>
+    <div>
+      <label>Category</label>
+      <select id="editCat"></select>
+    </div>
+  </div>
+  <div class="form-row form-row-2" style="margin-bottom:12px">
+    <div>
+      <label>Estimated (Rs.)</label>
+      <input id="editEst" type="number">
+    </div>
+    <div>
+      <label>Actual (Rs.)</label>
+      <input id="editAct" type="number">
+    </div>
+  </div>
+  <div class="form-row form-row-2" style="margin-bottom:12px">
+    <div>
+      <label>Vendor</label>
+      <input id="editVendor">
+    </div>
+    <div>
+      <label>Payment Status</label>
+      <select id="editPay"></select>
+    </div>
+  </div>
+  <div class="form-row form-row-2" style="margin-bottom:18px">
+    <div>
+      <label>Priority</label>
+      <select id="editPriority"></select>
+    </div>
+    <div>
+      <label>Notes</label>
+      <input id="editNotes">
+    </div>
+  </div>
+  <div class="popup-buttons">
+    <button class="btn-secondary" onclick="closeEditPopup()">Cancel</button>
+    <button class="btn-primary" onclick="saveEdit()">
+      <i class="fa-solid fa-save"></i>
+      <span>Save Changes</span>
+    </button>
+  </div>
+</div>
+ 
+</div>
+<!-- REPORT MODAL -->
+<div id="reportModal" class="modal-bg">
+  <div class="report-modal">
+    <div class="report-header" style="background:linear-gradient(135deg,#0d0934 0%,#1e3a8a 60%,#0d1d49 100%)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px">
+        <div>
+          <div class="report-logo-row">
+            <img src="images/UClogo.png" alt="UniConnect"
+            style="height:48px;width:auto;object-fit:contain;filter:brightness(0) invert(1)"
+            onerror="this.style.display='none';document.getElementById('rptLogoFallback').style.display='flex'">
+            <div id="rptLogoFallback" style="display:none;align-items:center;gap:10px">
+              <div class="report-logo-mark">U</div>
+              <div>
+                <div class="report-logo-text">UniConnect</div>
+                <div class="report-logo-sub">Event Management System</div>
+              </div>
+            </div>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,.18);margin:12px 0 10px"></div>
+          <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">
+            <i class="fa-solid fa-file-chart-column" style="margin-right:9px;opacity:.8"></i> Budget Report
+          </h2>
+          <p id="reportEventName" style="opacity:.85;font-size:13px">UniConnect Event Management System</p>
+        </div>
+        <div style="text-align:right;font-size:12px;opacity:.8" id="reportMeta"></div>
+      </div>
+    </div>
+    <div class="report-body" id="reportBody">
+      <!-- EVENT IMAGE -->
+      <div id="reportImageSection" class="report-section" style="display:none">
+        <img id="reportEventImg" class="report-event-img" alt="Event Banner"
+        style="width:100%;max-height:220px;object-fit:cover;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.12)">
+      </div>
+      <!-- EVENT DETAILS -->
+      <div class="report-section" id="reportEventDetails"></div>
+      <!-- FINANCIAL SUMMARY -->
+      <div class="report-section">
+        <h3><i class="fa-solid fa-chart-pie" style="color:#6366f1;margin-right:8px"></i>Financial Summary</h3>
+        <div class="report-summary-grid" id="reportSummaryGrid"></div>
+      </div>
+      <!-- BUDGET HEALTH -->
+      <div class="report-section" id="reportHealthSection"></div>
+      <!-- CATEGORY BREAKDOWN WITH BARS -->
+      <div class="report-section">
+        <h3><i class="fa-solid fa-layer-group" style="color:#f43f5e;margin-right:8px"></i>Category Breakdown</h3>
+        <div id="reportCategoryBreakdown"></div>
+      </div>
+      <!-- ALL BUDGET ITEMS TABLE -->
+      <div class="report-section">
+        <h3><i class="fa-solid fa-table-list" style="color:#10b981;margin-right:8px"></i>Budget Items — Full Detail</h3>
+        <div id="reportItemsTable"></div>
+      </div>
+      <!-- OVER BUDGET ITEMS -->
+      <div class="report-section" id="reportOverBudgetSection" style="display:none">
+        <h3><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;margin-right:8px"></i>Over Budget Items</h3>
+        <div id="reportOverBudgetContent"></div>
+      </div>
+      <!-- PAYMENT STATUS SUMMARY -->
+      <div class="report-section">
+        <h3><i class="fa-solid fa-credit-card" style="color:#f59e0b;margin-right:8px"></i>Payment Status Summary</h3>
+        <div id="reportPaymentSummary"></div>
+      </div>
+      <!-- FORECAST SUMMARY -->
+      <div class="report-section" id="reportForecastSection" style="display:none">
+        <h3><i class="fa-solid fa-chart-line" style="color:#06b6d4;margin-right:8px"></i>Forecast & Risk Analysis</h3>
+        <div id="reportForecastContent"></div>
+      </div>
+      <!-- CHART SNAPSHOTS -->
+      <div class="report-section" id="reportChartsSection" style="display:none">
+        <h3><i class="fa-solid fa-chart-bar" style="color:#8b5cf6;margin-right:8px"></i>Chart Snapshots</h3>
+        <div id="reportChartsContent"></div>
+      </div>
+      <!-- AI INSIGHTS -->
+      <div class="report-section" id="reportInsightsSection" style="display:none">
+        <h3><i class="fa-solid fa-brain" style="color:#7c3aed;margin-right:8px"></i>AI Analysis Highlights</h3>
+        <div id="reportInsights"></div>
+      </div>
+      <!-- REPORT FOOTER STAMP -->
+      <div id="reportStamp" style="margin-top:30px;padding:18px 22px;background:linear-gradient(135deg,#0d0934,#1e3a8a);border-radius:14px;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <img src="images/UClogo.png" alt="UC" style="height:32px;filter:brightness(0) invert(1)"
+          onerror="this.outerHTML='<div style=\'width:32px;height:32px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px\'>U</div>'">
+          <div>
+            <div style="font-weight:800;font-size:14px">UniConnect</div>
+            <div style="font-size:11px;opacity:.7"></div>
+          </div>
+        </div>
+        <div style="font-size:11px;opacity:.75;text-align:right" id="reportStampMeta"></div>
+      </div>
+    </div>
+    <div class="report-footer">
+  <button class="btn-secondary" onclick="closeReportModal()">
+    <i class="fa-solid fa-xmark"></i>
+    <span>Close</span>
+  </button>
+  <button class="btn-primary" onclick="downloadPDF()">
+    <i class="fa-solid fa-download"></i>
+    <span>Download PDF</span>
+  </button>
+  <button class="btn-success" onclick="printReport()">
+    <i class="fa-solid fa-print"></i>
+    <span>Print</span>
+  </button>
+</div>
+  </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  // ═══════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════
+const API_BASE = "http://localhost:3000/api";
+
+let selectedEvent = null;
+
+let budgets = [];
+
+let charts = {};
+
+let deleteTargetId = null;
+
+let plannerData = null;
+
+let appConfig = null;
+
+let _lastSearchResults = [];
+
+let lastAIInsights = [];
+
+const CHART_COLORS = ['#6366f1','#f43f5e','#10b981','#f59e0b','#06b6d4','#8b5cf6','#ec4899','#14b8a6','#fb923c','#a3e635'];
+
+// Track which charts user added to report
+const reportCharts = new Set();
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+async function initApp() {
+  try {
+    const [catRes, payRes, priRes, evtRes, planRes] = await Promise.all([
+      fetch(API_BASE + '/config/categories'),
+      fetch(API_BASE + '/config/payment-statuses'),
+      fetch(API_BASE + '/config/priorities'),
+      fetch(API_BASE + '/config/event-types'),
+      fetch(API_BASE + '/config/planner-allocations')
+    ]);
+
+const [catData, payData, priData, evtData, planData] = await Promise.all([
+      catRes.ok  ? catRes.json()  : null,
+      payRes.ok  ? payRes.json()  : null,
+      priRes.ok  ? priRes.json()  : null,
+      evtRes.ok  ? evtRes.json()  : null,
+      planRes.ok ? planRes.json() : null
+    ]);
+    appConfig = {
+      categories:         catData?.success  ? catData.data.categories           : getFallbackCategories(),
+      paymentStatuses:    payData?.success  ? payData.data.payment_statuses     : getFallbackPaymentStatuses(),
+      priorities:         priData?.success  ? priData.data.priorities           : getFallbackPriorities(),
+      eventTypes:         evtData?.success  ? evtData.data.event_types          : getFallbackEventTypes(),
+      plannerAllocations: planData?.success ? planData.data.planner_allocations : getFallbackPlannerAllocations()
+    };
+  } catch (err) {
+    appConfig = {
+      categories:         getFallbackCategories(),
+      paymentStatuses:    getFallbackPaymentStatuses(),
+      priorities:         getFallbackPriorities(),
+      eventTypes:         getFallbackEventTypes(),
+      plannerAllocations: getFallbackPlannerAllocations()
+    };
+  }
+  populateAllDropdowns();
+}
+
+// ═══════════════════════════════════════════════════════
+// FALLBACK CONFIG
+// ═══════════════════════════════════════════════════════
+function getFallbackCategories() {
+  return [
+    { value:'venue',     label:'Venue',             color_bg:'#dbeafe', color_text:'#1e40af' },
+    { value:'food',      label:'Food & Catering',   color_bg:'#d1fae5', color_text:'#065f46' },
+    { value:'tech',      label:'Technology & AV',   color_bg:'#ede9fe', color_text:'#5b21b6' },
+    { value:'marketing', label:'Marketing & Print', color_bg:'#fef3c7', color_text:'#92400e' },
+    { value:'personnel', label:'Personnel & Fees',  color_bg:'#fee2e2', color_text:'#991b1b' },
+    { value:'transport', label:'Transport',         color_bg:'#e0f2fe', color_text:'#0369a1' },
+    { value:'awards',    label:'Awards & Gifts',    color_bg:'#fdf4ff', color_text:'#7e22ce' },
+    { value:'safety',    label:'Safety & Security', color_bg:'#fef9c3', color_text:'#78350f' },
+    { value:'misc',      label:'Miscellaneous',     color_bg:'#f1f5f9', color_text:'#475569' }
+  ];
+}
+function getFallbackPaymentStatuses() {
+  return [
+    { value:'pending',   label:'⏳ Pending'   },
+    { value:'paid',      label:'✅ Paid'       },
+    { value:'partial',   label:'🔶 Partial'   },
+    { value:'cancelled', label:'❌ Cancelled'  }
+  ];
+}
+function getFallbackPriorities() {
+  return [
+    { value:'high',   label:'🔴 High',   color:'var(--danger)'  },
+    { value:'medium', label:'🟡 Medium', color:'var(--warning)' },
+    { value:'low',    label:'🟢 Low',    color:'var(--success)' }
+  ];
+}
+function getFallbackEventTypes() {
+  return [
+    { value:'academic',   label:'Academic / Seminar'  },
+    { value:'workshop',   label:'Workshop / Training' },
+    { value:'cultural',   label:'Cultural Show'       },
+    { value:'sports',     label:'Sports Event'        },
+    { value:'career',     label:'Career Fair'         },
+    { value:'conference', label:'Conference'          }
+  ];
+}
+function getFallbackPlannerAllocations() {
+  return {
+    academic:   { venue:25, food:15, tech:20, marketing:10, personnel:20, awards:5,  misc:5  },
+    workshop:   { venue:20, food:15, tech:15, marketing:8,  personnel:30, awards:7,  misc:5  },
+    cultural:   { venue:20, food:15, tech:25, marketing:10, personnel:15, awards:10, misc:5  },
+    sports:     { venue:30, food:10, tech:5,  marketing:8,  personnel:15, awards:20, safety:7, misc:5 },
+    career:     { venue:25, food:15, tech:15, marketing:20, personnel:15, awards:5,  misc:5  },
+    conference: { venue:25, food:20, tech:20, marketing:10, personnel:15, awards:5,  misc:5  }
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// DROPDOWN POPULATION
+// ═══════════════════════════════════════════════════════
+function populateAllDropdowns() {
+  const catOpts = appConfig.categories.map(c => `<option value="${c.value}">${c.label}</option>`).join('');
+
+const payOpts = appConfig.paymentStatuses.map(s => `<option value="${s.value}">${s.label}</option>`).join('');
+
+const priOpts = appConfig.priorities.map(p => `<option value="${p.value}">${p.label}</option>`).join('');
+
+  ['itemCategory','editCat'].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = catOpts; });
+  ['paymentStatus','editPay'].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = payOpts; });
+  ['itemPriority','editPriority'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) { el.innerHTML = priOpts; if(id==='itemPriority') el.value = 'medium'; }
+  });
+
+
+const filterCatEl = document.getElementById('filterCategory');
+  if(filterCatEl) filterCatEl.innerHTML = '<option value="">All Categories</option>'
+    + appConfig.categories.map(c => `<option value="${c.value}">${c.label}</option>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function getCatMeta(value) {
+  return appConfig.categories.find(c => c.value === value)
+    || { value, label: value, color_bg:'#f1f5f9', color_text:'#475569' };
+}
+function getPriorityMeta(value) {
+  return appConfig.priorities.find(p => p.value === value)
+    || { value, label: value, color:'var(--text-muted)' };
+}
+function getPayLabel(value) {
+  const s = appConfig.paymentStatuses.find(s => s.value === value);
+  return s ? s.label : (value || '—');
+}
+function getPlannerAllocation(eventType) {
+  const alloc = appConfig.plannerAllocations;
+  return alloc[eventType] || alloc[Object.keys(alloc)[0]] || {};
+}
+function logout() { localStorage.clear(); window.location.href = 'Login.html'; }
+function formatDate(d) {
+  if(!d) return '—';
+  return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+function fmtMoney(n) {
+  return 'Rs. ' + Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+}
+function fmtK(n) {
+  if(n>=100000) return (n/1000).toFixed(0)+'K';
+  return Number(n).toLocaleString();
+}
+function showToast(msg, type) {
+  type = type || 'success';
+
+const c = document.getElementById('toastContainer');
+
+const t = document.createElement('div');
+  t.className = 'toast ' + type;
+
+const icons = { success:'fa-check-circle', error:'fa-circle-xmark', warning:'fa-triangle-exclamation' };
+  t.innerHTML = `<i class="fa-solid ${icons[type]||icons.success}"></i>${msg}`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.animation='toastOut .35s ease forwards'; setTimeout(()=>t.remove(),350); }, 3200);
+}
+function errBox(msg, sub, icon) {
+  return `<div class="error-box"><i class="fa-solid ${icon}"></i><p>${msg}</p><small>${sub}</small></div>`;
+}
+function getStats(items) {
+  let totalEst=0, totalAct=0, overCount=0, underCount=0, onCount=0, paidCount=0;
+  (items||[]).forEach(item => {
+    const est=Number(item.estimated_cost)||0, act=Number(item.actual_cost)||0;
+    totalEst+=est; totalAct+=act;
+    if(act>est) overCount++;
+    else if(act<est) underCount++;
+    else onCount++;
+    if(item.payment_status==='paid') paidCount++;
+  });
+  return { totalEst, totalAct, overCount, underCount, onCount, paidCount,
+    balance: totalEst-totalAct,
+    pct: totalEst>0 ? Math.round(totalAct/totalEst*100) : 0 };
+}
+function getCategoryData(items) {
+  const map = {};
+  (items||[]).forEach(b => {
+    const cat = b.category || 'misc';
+    if(!map[cat]) map[cat] = { est:0, act:0 };
+    map[cat].est += Number(b.estimated_cost)||0;
+    map[cat].act += Number(b.actual_cost)||0;
+  });
+  return map;
+}
+
+// ═══════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════
+function showTab(name) {
+  ['setup','overview','items','charts','forecast','category','planner'].forEach(t => {
+    document.getElementById('tab-content-'+t).classList.toggle('hidden', t!==name);
+    document.getElementById('tab-'+t).classList.toggle('active', t===name);
+  });
+  if(name==='charts')   setTimeout(renderAllCharts,100);
+  if(name==='overview') { renderOverviewCharts(); updateStats(); }
+  if(name==='forecast') renderForecast();
+  if(name==='category') renderCategoryBreakdown();
+}
+
+// ═══════════════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════════════
+async function searchEvents() {
+  const orgId  = Number(document.getElementById('searchOrganizerId').value);
+
+const resBox = document.getElementById('eventResults');
+  if(!orgId) { showToast('Please enter your Organizer ID.','warning'); return; }
+
+  resBox.innerHTML = '<div class="loading-box"><div class="spinner"></div>Searching database…</div>';
+
+  try {
+    const r = await fetch(`${API_BASE}/events/search?organizer_id=${orgId}`);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+
+const res = await r.json();
+    if(!res.success) { resBox.innerHTML = errBox(res.message||'Search failed.','Check your Organizer ID.','fa-circle-xmark'); return; }
+    if(!res.data.events.length) {
+      resBox.innerHTML = errBox(`No events found for Organizer ID <strong>${orgId}</strong>.`,'Verify the Organizer ID.','fa-calendar-xmark');
+      return;
+    }
+    _lastSearchResults = res.data.events;
+    renderEventResults(res.data.events);
+  } catch(err) {
+    resBox.innerHTML = errBox('Could not connect to the server.',`Make sure the backend is running at ${API_BASE}.`,'fa-wifi');
+  }
+}
+
+function renderEventResults(events) {
+  document.getElementById('eventResults').innerHTML = events.map(e => {
+
+    // Fix: extract HH:MM from ISO time strings or plain "HH:MM:SS"
+    const fmtTime = t => {
+      if (!t) return '—';
+      if (t.includes('T')) return t.split('T')[1].slice(0, 5); // "1970-01-01T06:00:00.000Z" → "06:00"
+      return t.slice(0, 5); // "06:00:00" → "06:00"
+    };
+
+    // Fix: extract date only, ignore time portion
+    const fmtDate = d => {
+      if (!d) return '—';
+
+const dateOnly = d.includes('T') ? d.split('T')[0] : d;
+      return new Date(dateOnly + 'T00:00:00').toLocaleDateString('en-GB', {
+        day: '2-digit', month: 'short', year: 'numeric'
+      });
+    };
+
+    return `
+    <div class="event-result-card">
+      <h3>${e.title}</h3>
+      <p><i class="fa-solid fa-hashtag" style="color:var(--accent-blue)"></i> Event ID: ${e.event_id} &nbsp;·&nbsp; Organizer ID: ${e.organizer_id}</p>
+      <p><i class="fa-solid fa-tag" style="color:var(--accent-blue)"></i> ${e.category || '—'}</p>
+      <p><i class="fa-solid fa-calendar" style="color:var(--accent-blue)"></i> ${fmtDate(e.event_date)} &nbsp;·&nbsp; ${fmtTime(e.start_time)} – ${fmtTime(e.end_time)}</p>
+      <p><i class="fa-solid fa-location-dot" style="color:var(--accent-blue)"></i> ${e.venue || '—'} &nbsp;·&nbsp; Capacity: ${e.capacity || 0}</p>
+      
+      <button class="btn-primary" style="margin-top:14px" onclick="selectEventById(${e.event_id}, ${e.organizer_id})">
+  <i class="fa-solid fa-circle-check"></i> Select This Event
+</button>
+    </div>`;
+  }).join('');
+}
+
+function selectEventById(eventId, organizerId) {
+  const found = _lastSearchResults.find(e => Number(e.event_id)===Number(eventId) && Number(e.organizer_id)===Number(organizerId));
+  if(found) selectEvent(found);
+}
+
+async function selectEvent(eventObj) {
+  selectedEvent = eventObj;
+  lastAIInsights = [];
+  renderEventBanner();
+  document.getElementById('tab-content-setup').classList.add('hidden');
+  document.getElementById('tab-setup').classList.remove('active');
+  document.getElementById('budgetItemsSection').classList.remove('hidden'); // ← add this
+  // Show top buttons
+  document.getElementById('btnReport').style.display = 'inline-flex';
+  document.getElementById('btnAI').style.display = 'inline-flex';
+  showTab('items');
+  loadRecommendations();
+  await loadBudgetItems();
+  showToast(`Event "${selectedEvent.title}" selected!`,'success');
+}
+
+function renderEventBanner() {
+  const el = document.getElementById('selectedEventDetails');
+  el.classList.remove('hidden');
+
+const imgUrl = selectedEvent.image_url
+    ? `http://localhost:3000${selectedEvent.image_url}`
+    : `https://picsum.photos/seed/${selectedEvent.event_id}/900/300`;
+
+  // ── time/date helpers ──────────────────────────────────────────
+  const fmtTime = t => {
+    if (!t) return '—';
+    if (String(t).includes('T')) return String(t).split('T')[1].slice(0, 5);
+    return String(t).slice(0, 5);
+  };
+
+const fmtDate = d => {
+    if (!d) return '—';
+
+const dateOnly = String(d).includes('T') ? String(d).split('T')[0] : String(d);
+    return new Date(dateOnly + 'T00:00:00').toLocaleDateString('en-GB', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    });
+  };
+  // ──────────────────────────────────────────────────────────────
+
+  if (window._liveClock) clearInterval(window._liveClock);
+
+  el.innerHTML = `
+    <div class="event-banner" style="position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background-image:url('${imgUrl}');background-size:cover;background-position:center;opacity:.13;border-radius:18px"></div>
+      <div style="position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;width:100%">
+        <div class="event-banner-info">
+          <div class="live-datetime" style="margin-bottom:10px" id="liveClock">
+            <span class="live-dot"></span><span id="liveTimeText">Loading…</span>
+          </div>
+          <h3><i class="fa-solid fa-circle-check" style="margin-right:8px;opacity:.8"></i>${selectedEvent.title}</h3>
+          <p><i class="fa-solid fa-hashtag"></i> Event ID: ${selectedEvent.event_id} &nbsp;·&nbsp; Organizer: ${selectedEvent.organizer_id}</p>
+          <p><i class="fa-solid fa-tag"></i> ${selectedEvent.category || '—'}
+             &nbsp;·&nbsp; <i class="fa-solid fa-calendar"></i> ${fmtDate(selectedEvent.event_date)}
+             &nbsp;·&nbsp; <i class="fa-solid fa-clock"></i> ${fmtTime(selectedEvent.start_time)} – ${fmtTime(selectedEvent.end_time)}</p>
+          <p><i class="fa-solid fa-location-dot"></i> ${selectedEvent.venue || '—'} &nbsp;·&nbsp; <i class="fa-solid fa-users"></i> Capacity: ${selectedEvent.capacity || 0}</p>
+        </div>
+        <div class="event-banner-actions">
+          <button class="btn-violet" onclick="showTab('overview')"><i class="fa-solid fa-gauge-high"></i> Overview</button>
+          <button class="btn-report" onclick="openReportModal()"><i class="fa-solid fa-file-pdf"></i> Report</button>
+          <button class="btn-ai" onclick="runAIInsights()"><i class="fa-solid fa-brain"></i> AI Insights</button>
+          <button class="btn-secondary" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" onclick="changeEvent()">
+            <i class="fa-solid fa-arrows-rotate"></i> Change
+          </button>
+        </div>
+      </div>
+    </div>`;
+
+function updateClock() {
+    const now = new Date();
+
+const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+const d = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+const t = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+const el2 = document.getElementById('liveTimeText');
+    if (el2) el2.textContent = `${d} · ${t}`;
+  }
+  updateClock();
+  window._liveClock = setInterval(updateClock, 1000);
+}
+// ── Global date/time helpers ───────────────────────────────────
+function fmtTime(t) {
+  if (!t) return '—';
+  if (String(t).includes('T')) return String(t).split('T')[1].slice(0, 5);
+  return String(t).slice(0, 5);
+}
+function fmtDate(d) {
+  if (!d) return '—';
+
+const dateOnly = String(d).includes('T') ? String(d).split('T')[0] : String(d);
+  return new Date(dateOnly + 'T00:00:00').toLocaleDateString('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric'
+  });
+}
+// ──────────────────────────────────────────────────────────────
+
+function changeEvent() {
+  selectedEvent = null;
+  budgets = [];
+  lastAIInsights = [];
+  document.getElementById('selectedEventDetails').classList.add('hidden');
+  document.getElementById('btnReport').style.display = 'none';
+  document.getElementById('btnAI').style.display = 'none';
+  document.getElementById('budgetItemsSection').classList.add('hidden'); // ← add this
+  document.getElementById('tab-content-setup').classList.remove('hidden');
+  showTab('setup');
+}
+
+// ═══════════════════════════════════════════════════════
+// RECOMMENDATIONS
+// ═══════════════════════════════════════════════════════
+async function loadRecommendations() {
+  const box = document.getElementById('recommendations');
+  if(!selectedEvent) {
+    box.innerHTML='<span style="color:var(--text-muted);font-size:13px">Select an event to see recommendations.</span>';
+    return;
+  }
+
+  box.innerHTML='<div class="loading-box" style="padding:12px"><div class="spinner" style="width:20px;height:20px;margin:0 auto 6px"></div>Loading recommendations…</div>';
+
+  // Normalize category to lowercase and try multiple variations
+  const rawCategory = String(selectedEvent.category||'').toLowerCase().trim();
+
+  // Map common category names to event types
+  const categoryMap = {
+    'academic':'academic', 'seminar':'academic', 'lecture':'academic',
+    'workshop':'workshop', 'training':'workshop',
+    'cultural':'cultural', 'culture':'cultural', 'show':'cultural', 'concert':'cultural',
+    'sports':'sports', 'sport':'sports', 'games':'sports', 'tournament':'sports',
+    'career':'career', 'job fair':'career', 'fair':'career',
+    'conference':'conference', 'summit':'conference', 'symposium':'conference',
+    'tech':'workshop', 'technology':'workshop'
+  };
+
+  // Find best matching event type
+  let eventType = 'academic'; // default
+  for(const [key, val] of Object.entries(categoryMap)) {
+    if(rawCategory.includes(key)) { eventType = val; break; }
+  }
+
+  try {
+    const r   = await fetch(`${API_BASE}/config/recommendations?event_type=${encodeURIComponent(eventType)}`);
+
+const res = await r.json();
+    if(r.ok && res.success && res.data.recommendations?.length) {
+      renderRecommendationChips(res.data.recommendations);
+      return;
+    }
+  } catch(err) {
+    // fall through to fallback
+  }
+
+  // ── FALLBACK: built-in recommendations per event type ──
+  const fallbackRecs = {
+    academic:   ['Venue Booking','Projector & Screen','Stationery','Certificate Printing','Catering','Photography','Banner Printing','Transport','Sound System','First Aid'],
+    workshop:   ['Venue Booking','Projector & Screen','Stationery','Catering','MC / Host','Sound System','Banner Printing','Photography','Certificate Printing','Transport'],
+    cultural:   ['Venue Booking','Stage Setup','Sound System','Lighting','Catering','Photography','Videography','Decoration','Banner Printing','MC / Host'],
+    sports:     ['Venue Booking','Trophies & Medals','First Aid','Transport','Catering','Banner Printing','Photography','Security Personnel','Sound System','Stationery'],
+    career:     ['Venue Booking','Banner Printing','Stationery','Catering','Photography','Social Media Ads','Flyers','Projector & Screen','Transport','Sound System'],
+    conference: ['Venue Booking','Catering','Sound System','Projector & Screen','Photography','Videography','Banner Printing','Stationery','Transport','Security Personnel']
+  };
+
+const recs = fallbackRecs[eventType] || fallbackRecs['academic'];
+  renderRecommendationChips(recs);
+}
+
+function renderRecommendationChips(items) {
+  const box = document.getElementById('recommendations');
+
+const costHints = {
+    'Venue Booking':35000,'Catering':20000,'Sound System':15000,'Lighting':10000,
+    'Photography':12000,'Videography':15000,'Banner Printing':5000,'Stage Setup':18000,
+    'Security Personnel':8000,'First Aid':4000,'Transport':6000,'Decoration':9000,
+    'MC / Host':7000,'DJ / Music':11000,'Projector & Screen':8500,'Stationery':3000,
+    'Trophies & Medals':6000,'Certificate Printing':2500,'Social Media Ads':5000,'Flyers':3500
+  };
+
+  // Build chips HTML directly — no inner ID lookup needed
+  const chipsHtml = items.map((item, idx) => {
+    const hint = costHints[item];
+    return `<div class="chip" onclick="fillFromChip(this, '${item.replace(/'/g,"\\'")}', ${hint||0})" data-idx="${idx}">
+      <i class="fa-solid fa-plus" style="font-size:9px;color:#10b981"></i>
+      ${item}
+      ${hint ? `<span class="chip-price">~Rs.${(hint/1000).toFixed(0)}K</span>` : ''}
+    </div>`;
+  }).join('');
+
+  box.innerHTML = `
+    <div class="rec-chip-wrap">
+      <div class="rec-chip-title">
+        <i class="fa-solid fa-lightbulb" style="color:#f59e0b"></i>
+        Recommended for <strong>${selectedEvent.category||'your event'}</strong> - Click to Auto-Fill
+      </div>
+      <div class="chip-grid">${chipsHtml}</div>
+    </div>`;
+}
+
+function fillFromChip(chipEl, item, hint) {
+  document.getElementById('description').value = item;
+  if(hint) document.getElementById('estimated').value = hint;
+  document.getElementById('estimated').focus();
+  showToast(`"${item}" filled in with suggested cost!`, 'success');
+  // Highlight selected chip
+  document.querySelectorAll('#recommendations .chip').forEach(ch => {
+    ch.style.background = '';
+    ch.style.color = '';
+    ch.style.borderColor = '';
+  });
+  chipEl.style.background = 'linear-gradient(135deg,#059669,#10b981)';
+  chipEl.style.color = '#fff';
+  chipEl.style.borderColor = 'transparent';
+}
+// ═══════════════════════════════════════════════════════
+// LOAD BUDGET ITEMS
+// ═══════════════════════════════════════════════════════
+async function loadBudgetItems() {
+  try {
+    const r   = await fetch(`${API_BASE}/budgets/event/${selectedEvent.event_id}?organizer_id=${selectedEvent.organizer_id}`);
+
+const res = await r.json();
+    budgets = (r.ok && res.success) ? (res.data.budgets||[]) : [];
+    if(!r.ok) showToast('Failed to load budget items.','error');
+  } catch(err) {
+    showToast('Could not connect to server.','error');
+    budgets = [];
+  }
+  renderTable();
+  updateStats();
+  renderOverviewCharts();
+  renderForecast();
+  renderCategoryBreakdown();
+}
+
+// ═══════════════════════════════════════════════════════
+// ADD ITEM
+// ═══════════════════════════════════════════════════════
+async function addBudgetItem() {
+  if(!selectedEvent) { showToast('Please select an event first.','warning'); return; }
+  const description   = document.getElementById('description').value.trim();
+
+const estimated     = Number(document.getElementById('estimated').value)||0;
+
+const actual        = Number(document.getElementById('actual').value)||0;
+
+const category      = document.getElementById('itemCategory').value;
+
+const priority      = document.getElementById('itemPriority').value;
+
+const vendor        = document.getElementById('vendor').value.trim();
+
+const paymentStatus = document.getElementById('paymentStatus').value;
+
+const notes         = document.getElementById('notes').value.trim();
+  if(!description) { showToast('Please enter a description.','warning'); return; }
+
+  const payload = { event_id:selectedEvent.event_id, organizer_id:selectedEvent.organizer_id,
+    description, estimated_cost:estimated, actual_cost:actual, category, priority,
+    vendor, payment_status:paymentStatus, notes };
+
+  try {
+    const r   = await fetch(`${API_BASE}/budgets`,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+
+const res = await r.json();
+    if(!r.ok||!res.success) { showToast(res.message||'Failed to add item.','error'); return; }
+  } catch(err) {
+    showToast('Server unreachable. Could not save budget item.','error'); return;
+  }
+
+  ['description','estimated','actual','vendor','notes'].forEach(id => { document.getElementById(id).value=''; });
+  document.getElementById('itemPriority').value  = 'medium';
+  document.getElementById('paymentStatus').value = appConfig.paymentStatuses[0]?.value||'pending';
+  await loadBudgetItems();
+  showToast('Budget item added!','success');
+}
+
+// ═══════════════════════════════════════════════════════
+// TABLE
+// ═══════════════════════════════════════════════════════
+function filterTable() {
+  const q   = document.getElementById('searchItems').value.toLowerCase();
+
+const cat = document.getElementById('filterCategory').value;
+
+const st  = document.getElementById('filterStatus').value;
+
+const filtered = budgets.filter(item => {
+    const matchQ   = !q   || item.description.toLowerCase().includes(q);
+
+const matchCat = !cat || (item.category||'misc')===cat;
+
+const est=Number(item.estimated_cost)||0, act=Number(item.actual_cost)||0;
+
+const status = act>est?'Over Budget':act<est?'Under Budget':'On Budget';
+
+const matchSt  = !st  || status===st;
+    return matchQ && matchCat && matchSt;
+  });
+  renderTableRows(filtered);
+}
+
+function renderTable() { renderTableRows(budgets); }
+
+function renderTableRows(items) {
+  const tbody = document.getElementById('budgetTable');
+  tbody.innerHTML='';
+  if(!items.length) {
+    tbody.innerHTML='<tr><td colspan="11"><div class="empty-box"><i class="fa-solid fa-receipt"></i>No budget items found.</div></td></tr>';
+    return;
+  }
+  items.forEach((item,idx) => {
+    const est  = Number(item.estimated_cost)||0;
+
+const act  = Number(item.actual_cost)||0;
+
+const diff = est-act;
+
+const pct  = est>0 ? Math.min(Math.round(act/est*100),200) : 0;
+
+let status='On Budget', cls='status-on';
+    if(act>est)      { status='Over Budget';  cls='status-over'; }
+    else if(act<est) { status='Under Budget'; cls='status-under'; }
+    const catMeta  = getCatMeta(item.category||'misc');
+
+const priMeta  = getPriorityMeta(item.priority||'medium');
+
+const barColor = act>est?'var(--danger)':(act/est>0.9?'var(--warning)':'var(--success)');
+
+const diffCol  = diff<0?'var(--danger)':'var(--success)';
+
+const diffLbl  = fmtMoney(Math.abs(diff))+' '+(diff<0?'▲ over':'▼ saved');
+
+const id       = item.budget_id||item.id||idx;
+
+const notesHtml= item.notes?`<br><small style="color:var(--text-muted)">${item.notes}</small>`:'';
+
+const payLbl   = getPayLabel(item.payment_status||'pending');
+    tbody.innerHTML+=`
+      <tr>
+        <td><strong>${item.description}</strong>${notesHtml}</td>
+        <td><span style="background:${catMeta.color_bg};color:${catMeta.color_text};padding:3px 9px;border-radius:8px;font-size:11px;font-weight:700">${catMeta.label}</span></td>
+        <td>${fmtMoney(est)}</td>
+        <td>${fmtMoney(act)}</td>
+        <td style="color:${diffCol};font-weight:700">${diffLbl}</td>
+        <td style="min-width:100px">
+          <div class="progress-bar-wrap"><div class="progress-bar-inner" style="width:${Math.min(pct,100)}%;background:${barColor}"></div></div>
+          <small style="color:var(--text-muted);font-size:10px">${pct}%</small>
+        </td>
+        <td><span class="status-badge ${cls}">${status}</span></td>
+        <td style="color:${priMeta.color};font-weight:700;font-size:12px">${priMeta.label}</td>
+        <td>${payLbl}</td>
+        <td style="color:var(--text-muted);font-size:12px">${item.vendor||'—'}</td>
+        <td><div class="action-btns">
+          <button class="btn-secondary btn-sm" onclick="openEditPopup(${id})" title="Edit"><i class="fa-solid fa-pen" style="color:var(--accent-blue)"></i></button>
+          <button class="btn-secondary btn-sm" onclick="openDeletePopup(${id})" title="Delete"><i class="fa-solid fa-trash" style="color:var(--danger)"></i></button>
+        </div></td>
+      </tr>`;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// STATS + HEALTH
+// ═══════════════════════════════════════════════════════
+function updateStats() {
+  if(!budgets.length) {
+    document.getElementById('overviewStats').innerHTML=
+      '<div class="empty-box"><i class="fa-solid fa-chart-bar"></i>No data yet. Add budget items to see analytics.</div>';
+    document.getElementById('overallProgressPanel').style.display='none';
+    return;
+  }
+  const s = getStats(budgets);
+
+  // Overall progress bar
+  const panel = document.getElementById('overallProgressPanel');
+  panel.style.display='block';
+
+const barEl = document.getElementById('overallBar');
+  barEl.style.width = Math.min(s.pct,100)+'%';
+  barEl.className = 'progress-bar ' + (s.pct>100?'red':s.pct>80?'amber':'green');
+  document.getElementById('overallPctText').textContent = s.pct+'%';
+
+  document.getElementById('overviewStats').innerHTML=`
+    <div class="stat-card blue"><div class="stat-icon blue"><i class="fa-solid fa-calculator"></i></div><div class="stat-info"><h3>${fmtMoney(s.totalEst)}</h3><p>Total Estimated</p><span class="stat-trend ok">${budgets.length} items</span></div></div>
+    <div class="stat-card green"><div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div><div class="stat-info"><h3>${fmtMoney(s.totalAct)}</h3><p>Total Actual Spent</p><span class="stat-trend ${s.pct>90?'up':'down'}">${s.pct}% utilization</span></div></div>
+    <div class="stat-card ${s.balance>=0?'green':'red'}"><div class="stat-icon ${s.balance>=0?'green':'red'}"><i class="fa-solid fa-piggy-bank"></i></div><div class="stat-info"><h3>${fmtMoney(Math.abs(s.balance))}</h3><p>${s.balance>=0?'Savings':'Overspend'}</p><span class="stat-trend ${s.balance>=0?'down':'up'}">${s.balance>=0?'Under budget':'Over budget'}</span></div></div>
+    <div class="stat-card ${s.overCount>0?'red':'green'}"><div class="stat-icon ${s.overCount>0?'red':'green'}"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="stat-info"><h3>${s.overCount}</h3><p>Over Budget Items</p><span class="stat-trend ${s.overCount>0?'up':'ok'}">${budgets.length-s.overCount} on track</span></div></div>
+    <div class="stat-card purple"><div class="stat-icon purple"><i class="fa-solid fa-check-double"></i></div><div class="stat-info"><h3>${s.paidCount}</h3><p>Payments Made</p><span class="stat-trend ok">${budgets.length-s.paidCount} pending</span></div></div>`;
+
+  // Health
+  let score=100;
+  if(s.pct>100) score-=30; else if(s.pct>90) score-=15;
+  if(s.overCount>0) score-=s.overCount*8;
+  score=Math.max(0,Math.min(100,score));
+
+const hEl=document.getElementById('healthScore');
+  hEl.className='health-score '+(score>=70?'good':score>=40?'warn':'bad');
+  document.getElementById('healthNum').textContent  =score;
+  document.getElementById('healthTitle').textContent=score>=70?'Healthy Budget':score>=40?'Needs Attention':'At Risk';
+  document.getElementById('healthDesc').textContent =score>=70?'Your budget is well-managed and on track.':score>=40?'Some items need attention — review over-budget entries.':'Multiple overspend risks detected. Immediate review recommended.';
+  document.getElementById('utilPct').textContent  =s.pct+'%';
+  document.getElementById('utilBar').style.width  =Math.min(s.pct,100)+'%';
+
+const ontrack=Math.round((budgets.length-s.overCount)/budgets.length*100);
+  document.getElementById('ontrackPct').textContent=ontrack+'%';
+  document.getElementById('ontrackBar').style.width=ontrack+'%';
+
+const risk=Math.round(s.overCount/budgets.length*100);
+  document.getElementById('riskPct').textContent=risk+'%';
+  document.getElementById('riskBar').style.width=risk+'%';
+
+  // Smart Insights
+  const insights=[];
+  if(s.overCount>0)         insights.push({icon:'fa-triangle-exclamation',color:'#dc2626',text:`${s.overCount} item(s) are over budget. Consider renegotiating with vendors.`});
+  if(s.pct<30)              insights.push({icon:'fa-info-circle',color:'#2563eb',text:'Budget utilization is low. Add actual costs as they occur for accurate tracking.'});
+  if(s.balance>s.totalEst*.3) insights.push({icon:'fa-piggy-bank',color:'#059669',text:`You have significant savings (${fmtMoney(s.balance)}). Consider allocating to contingency.`});
+
+const highPri=budgets.filter(b=>(b.priority||'medium')==='high'&&(Number(b.actual_cost)||0)===0);
+  if(highPri.length)        insights.push({icon:'fa-flag',color:'#d97706',text:`${highPri.length} high-priority item(s) have no actual cost recorded yet.`});
+
+const unpaid=budgets.filter(b=>b.payment_status==='pending'&&(Number(b.actual_cost)||0)>0);
+  if(unpaid.length)         insights.push({icon:'fa-clock',color:'#7c3aed',text:`${unpaid.length} item(s) have recorded costs but payment is still pending.`});
+
+const iBox=document.getElementById('insightBox');
+  if(insights.length){
+    iBox.classList.remove('hidden');
+    document.getElementById('insightList').innerHTML=insights.map(i=>
+      `<div class="insight-item"><i class="fa-solid ${i.icon}" style="color:${i.color}"></i><span>${i.text}</span></div>`).join('');
+  } else { iBox.classList.add('hidden'); }
+}
+
+// ═══════════════════════════════════════════════════════
+// FORECAST
+// ═══════════════════════════════════════════════════════
+function renderForecast() {
+  const el = document.getElementById('forecastGrid');
+  if(!budgets.length) {
+    el.innerHTML='<div class="empty-box" style="grid-column:1/-1"><i class="fa-solid fa-chart-line"></i>Add budget items to see forecast.</div>';
+    return;
+  }
+  const s = getStats(budgets);
+
+  const projectedOverrun = s.totalAct>s.totalEst ? s.totalAct-s.totalEst : 0;
+
+  const savingsPotential = s.totalEst>s.totalAct ? s.totalEst-s.totalAct : 0;
+
+  const avgUtil = budgets.reduce((a,b)=>{const e=Number(b.estimated_cost)||1;return a+Number(b.actual_cost)/e;},0)/budgets.length*100;
+
+  const riskScore = Math.min(100, Math.round((s.overCount/budgets.length)*100 + (s.pct>100?20:0)));
+
+  el.innerHTML=`
+    <div class="forecast-card"><div class="fc-label">Projected Overrun</div><div class="fc-value" style="color:${projectedOverrun>0?'var(--danger)':'var(--success)'}">${projectedOverrun>0?fmtMoney(projectedOverrun):'None'}</div><div class="fc-sub">${projectedOverrun>0?'Action needed':'On track'}</div></div>
+    <div class="forecast-card"><div class="fc-label">Savings Potential</div><div class="fc-value" style="color:var(--success)">${fmtMoney(savingsPotential)}</div><div class="fc-sub">Available buffer</div></div>
+    <div class="forecast-card"><div class="fc-label">Avg Utilization</div><div class="fc-value">${Math.round(avgUtil)}%</div><div class="fc-sub">Per item average</div></div>
+    <div class="forecast-card"><div class="fc-label">Risk Score</div><div class="fc-value" style="color:${riskScore>50?'var(--danger)':riskScore>25?'var(--warning)':'var(--success)'}">${riskScore}/100</div><div class="fc-sub">${riskScore>50?'High Risk':riskScore>25?'Medium Risk':'Low Risk'}</div></div>
+    <div class="forecast-card"><div class="fc-label">Best Performing</div><div class="fc-value" style="font-size:14px;font-weight:700">${getBestItem()}</div><div class="fc-sub">Lowest overspend</div></div>
+    <div class="forecast-card"><div class="fc-label">Needs Attention</div><div class="fc-value" style="font-size:14px;font-weight:700;color:var(--danger)">${getWorstItem()}</div><div class="fc-sub">Highest overrun</div></div>`;
+
+  // Variance bar chart
+  const labels = budgets.map(b=>b.description.length>14?b.description.substring(0,12)+'…':b.description);
+
+  const variance = budgets.map(b=>(Number(b.actual_cost)||0)-(Number(b.estimated_cost)||0));
+  destroyChart('forecastChart');
+  charts['forecastChart'] = new Chart(document.getElementById('forecastChart').getContext('2d'), {
+    type:'bar',
+    data:{ labels, datasets:[{
+      label:'Budget Variance (Actual − Estimated)',
+      data:variance,
+      backgroundColor:variance.map(v=>v>0?'rgba(239,68,68,.75)':'rgba(16,185,129,.75)'),
+      borderColor:variance.map(v=>v>0?'#ef4444':'#10b981'),
+      borderWidth:2, borderRadius:5
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{font:{size:12},boxWidth:12}}},
+      scales:{y:{ticks:{callback:v=>(v>=0?'+':'')+fmtK(Math.abs(v))},grid:{color:'rgba(0,0,0,.05)'}}}}
+  });
+}
+
+function getBestItem() {
+  if(!budgets.length) return '—';
+
+const sorted=[...budgets].sort((a,b)=>{
+    const da=(Number(a.actual_cost)-Number(a.estimated_cost))/Math.max(Number(a.estimated_cost),1);
+
+const db=(Number(b.actual_cost)-Number(b.estimated_cost))/Math.max(Number(b.estimated_cost),1);
+    return da-db;
+  });
+
+const n=sorted[0].description; return n.length>14?n.substring(0,12)+'…':n;
+}
+function getWorstItem() {
+  if(!budgets.length) return '—';
+
+const over=budgets.filter(b=>Number(b.actual_cost)>Number(b.estimated_cost));
+  if(!over.length) return 'None';
+
+const sorted=over.sort((a,b)=>(Number(b.actual_cost)-Number(b.estimated_cost))-(Number(a.actual_cost)-Number(a.estimated_cost)));
+
+const n=sorted[0].description; return n.length>14?n.substring(0,12)+'…':n;
+}
+
+// ═══════════════════════════════════════════════════════
+// CATEGORY BREAKDOWN
+// ═══════════════════════════════════════════════════════
+function renderCategoryBreakdown() {
+  const el = document.getElementById('categoryBreakdown');
+  if(!budgets.length) {
+    el.innerHTML='<div class="empty-box"><i class="fa-solid fa-layer-group"></i>No data.</div>';
+    return;
+  }
+  const catData = getCategoryData(budgets);
+
+const maxAct  = Math.max(...Object.values(catData).map(c=>c.act));
+  el.innerHTML = Object.entries(catData).map(([cat,v],i)=>{
+    const pct   = maxAct>0 ? Math.round(v.act/maxAct*100) : 0;
+
+const color = CHART_COLORS[i%CHART_COLORS.length];
+
+const meta  = getCatMeta(cat);
+    return `<div class="cat-row">
+      <div class="cat-label">${meta.label}</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:${pct}%;background:${color}"></div></div>
+      <div class="cat-pct">${fmtMoney(v.act)}</div>
+      <div class="cat-meta">of ${fmtMoney(v.est)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// AI INSIGHTS
+// ═══════════════════════════════════════════════════════
+async function runAIInsights() {
+  if(!selectedEvent) { showToast('Select an event first.','warning'); return; }
+  if(!budgets.length) { showToast('Add budget items first.','warning'); return; }
+
+  // Show the panel in overview tab
+  showTab('overview');
+
+const panel   = document.getElementById('aiPanelOverview');
+
+const content = document.getElementById('aiContentOverview');
+  panel.classList.remove('hidden');
+  content.innerHTML = '<div class="ai-loading"><div class="spinner-sm"></div>&nbsp; Analyzing your budget data with AI…</div>';
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+const s       = getStats(budgets);
+
+const catData = getCategoryData(budgets);
+
+const prompt = `You are a financial analyst for an event management system. Analyze this event budget data and provide exactly 5 specific, actionable insights in JSON format.
+
+Event: ${selectedEvent.title}
+Category: ${selectedEvent.category}
+Date: ${selectedEvent.event_date}
+Venue: ${selectedEvent.venue}
+
+Budget Summary:
+- Total Estimated: Rs.${s.totalEst}
+- Total Actual: Rs.${s.totalAct}
+- Balance: Rs.${s.balance}
+- Spend Rate: ${s.pct}%
+- Over Budget Items: ${s.overCount} of ${budgets.length}
+
+Budget Items:
+${budgets.map(b=>`- ${b.description} (${b.category||'Other'}): Est Rs.${b.estimated_cost} | Act Rs.${b.actual_cost}`).join('\n')}
+
+Category Totals:
+${Object.entries(catData).map(([k,v])=>`- ${k}: Est Rs.${v.est} | Act Rs.${v.act}`).join('\n')}
+
+Return ONLY a JSON array of exactly 5 objects with keys: "type" (one of: danger, warning, success, info), "title" (short, max 6 words), "message" (1-2 sentences, very specific with numbers from the data). No markdown, no explanation, only the JSON array.`;
+
+  try {
+    const res  = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompt}] })
+    });
+
+const data = await res.json();
+
+const text  = data.content.map(i=>i.text||'').join('');
+
+const clean = text.replace(/```json|```/g,'').trim();
+
+const insights = JSON.parse(clean);
+    lastAIInsights = insights;
+    content.innerHTML = `<div class="ai-insight-list">${insights.map(ins=>`
+      <div class="ai-insight-item ${ins.type}">
+        <strong><i class="fa-solid ${ins.type==='danger'?'fa-circle-exclamation':ins.type==='warning'?'fa-triangle-exclamation':ins.type==='success'?'fa-circle-check':'fa-circle-info'}" style="margin-right:7px"></i>${ins.title}</strong>
+        ${ins.message}
+      </div>`).join('')}</div>`;
+    showToast('AI insights generated!','success');
+  } catch(e) {
+    // Fallback
+    const s2 = getStats(budgets);
+    lastAIInsights = [
+      {type:s2.overCount>0?'danger':'success', title:s2.overCount>0?'Over-budget items detected':'Budget on track',
+       message:s2.overCount>0?`${s2.overCount} item(s) have exceeded their estimated costs. Review and reallocate from under-budget categories.`:'All items are within or under their estimated budgets. Great financial management!'},
+      {type:s2.pct>100?'danger':'info', title:'Overall spend rate',
+       message:`Current spend rate is ${s2.pct}% of total estimated budget (${fmtMoney(s2.totalAct)} of ${fmtMoney(s2.totalEst)}).`},
+      {type:'warning', title:'Monitor high-value items',
+       message:'Keep close watch on the top 3 items by estimated cost as they represent the highest financial risk.'},
+      {type:'success', title:'Savings identified',
+       message:`${fmtMoney(Math.max(0,s2.balance))} remains available from under-budget items that could offset overruns.`},
+      {type:'info', title:'Category diversification',
+       message:'Spreading costs across multiple categories reduces single-point risk. Consider reviewing vendor contracts for renegotiation.'}
+    ];
+    content.innerHTML = `<div class="ai-insight-list">${lastAIInsights.map(ins=>`
+      <div class="ai-insight-item ${ins.type}">
+        <strong>${ins.title}</strong>${ins.message}
+      </div>`).join('')}</div>`;
+  }
+}
+
+function openReportModal() {
+  if(!selectedEvent) { showToast('Select an event first.','warning'); return; }
+  const s = getStats(budgets);
+
+const now = new Date();
+
+const catData = getCategoryData(budgets);
+
+  // ── Header meta ──
+  document.getElementById('reportEventName').textContent = selectedEvent.title + ' — ' + formatDate(selectedEvent.event_date);
+  document.getElementById('reportMeta').innerHTML = `
+    <div style="font-weight:700;font-size:15px">${now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</div>
+    <div style="opacity:.8">${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>
+    <div style="margin-top:5px;background:rgba(255,255,255,.15);padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:.5px">CONFIDENTIAL</div>`;
+
+  // ── Event image ──
+  const imgSec = document.getElementById('reportImageSection');
+
+const imgEl  = document.getElementById('reportEventImg');
+if(selectedEvent.image_url) {
+    imgEl.src = `http://localhost:3000${selectedEvent.image_url}`;
+    imgEl.onerror = () => { imgSec.style.display='none'; };
+    imgSec.style.display = 'block';
+  } else {
+    imgSec.style.display = 'none';
+  }
+
+  // ── Event details block ──
+  document.getElementById('reportEventDetails').innerHTML = `
+    <div style="background:linear-gradient(135deg,#f8faff,#eff6ff);border:1px solid #bfdbfe;border-radius:14px;padding:18px 22px;margin-bottom:4px">
+      <div style="font-size:13px;font-weight:800;color:#1e3a8a;margin-bottom:14px;text-transform:uppercase;letter-spacing:.8px">
+        <i class="fa-solid fa-calendar-check" style="margin-right:7px"></i>Event Information
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+        ${[
+          ['Event',         selectedEvent.title],
+          ['Event ID',      selectedEvent.event_id],
+          ['Category',      selectedEvent.category || 'Not specified'],
+          ['Date',          formatDate(selectedEvent.event_date)],
+          ['Start Time',    selectedEvent.start_time || 'Not specified'],
+          ['End Time',      selectedEvent.end_time   || 'Not specified'],
+          ['Venue',         selectedEvent.venue      || 'Not specified'],
+          ['Capacity',      selectedEvent.capacity   || 'Not specified'],
+          ['Organizer ID',  selectedEvent.organizer_id],
+          ['Total Items',   budgets.length],
+          ['Report Date',   now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})],
+          ['Report Time',   now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})]
+        ].map(([label, value]) => `
+          <div style="background:#fff;border-radius:10px;padding:10px 14px;border:1px solid #e2e8f0">
+            <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">${label}</div>
+            <div style="font-size:13px;font-weight:700;color:#0f172a">${value}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // ── Financial summary cards ──
+  const utilColor = s.pct>100?'#ef4444':s.pct>80?'#f59e0b':'#10b981';
+  document.getElementById('reportSummaryGrid').innerHTML=`
+    <div class="report-stat" style="border-top:3px solid #6366f1">
+      <div class="rs-val" style="color:#6366f1">${fmtMoney(s.totalEst)}</div>
+      <div class="rs-label">Total Estimated</div>
+    </div>
+    <div class="report-stat" style="border-top:3px solid #10b981">
+      <div class="rs-val" style="color:#10b981">${fmtMoney(s.totalAct)}</div>
+      <div class="rs-label">Total Actual Spent</div>
+    </div>
+    <div class="report-stat" style="border-top:3px solid ${s.balance<0?'#ef4444':'#10b981'}">
+      <div class="rs-val" style="color:${s.balance<0?'#ef4444':'#10b981'}">${fmtMoney(Math.abs(s.balance))}</div>
+      <div class="rs-label">${s.balance<0?'⚠ Overrun':'✅ Savings'}</div>
+    </div>
+    <div class="report-stat" style="border-top:3px solid ${utilColor}">
+      <div class="rs-val" style="color:${utilColor}">${s.pct}%</div>
+      <div class="rs-label">Budget Utilization</div>
+    </div>
+    <div class="report-stat" style="border-top:3px solid #ef4444">
+      <div class="rs-val" style="color:#ef4444">${s.overCount}</div>
+      <div class="rs-label">Over Budget Items</div>
+    </div>
+    <div class="report-stat" style="border-top:3px solid #f59e0b">
+      <div class="rs-val" style="color:#f59e0b">${s.paidCount}</div>
+      <div class="rs-label">Payments Made</div>
+    </div>
+    <div class="report-stat" style="border-top:3px solid #06b6d4">
+      <div class="rs-val" style="color:#06b6d4">${budgets.length - s.paidCount}</div>
+      <div class="rs-label">Payments Pending</div>
+    </div>
+    <div class="report-stat" style="border-top:3px solid #8b5cf6">
+      <div class="rs-val" style="color:#8b5cf6">${budgets.length}</div>
+      <div class="rs-label">Total Budget Lines</div>
+    </div>`;
+
+  // ── Budget health score ──
+  let score=100;
+  if(s.pct>100) score-=30; else if(s.pct>90) score-=15;
+  if(s.overCount>0) score-=s.overCount*8;
+  score=Math.max(0,Math.min(100,score));
+
+const healthColor = score>=70?'#10b981':score>=40?'#f59e0b':'#ef4444';
+
+const healthLabel = score>=70?'Healthy':'Needs Attention';
+  document.getElementById('reportHealthSection').innerHTML=`
+    <div style="background:${score>=70?'#d1fae5':score>=40?'#fef3c7':'#fee2e2'};border:1px solid ${score>=70?'#6ee7b7':score>=40?'#fde68a':'#fca5a5'};border-radius:14px;padding:18px 22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div style="width:70px;height:70px;border-radius:50%;border:5px solid ${healthColor};display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="font-size:22px;font-weight:900;color:${healthColor};line-height:1">${score}</div>
+        <div style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase">Score</div>
+      </div>
+      <div>
+        <div style="font-size:16px;font-weight:800;color:${healthColor};margin-bottom:4px">Budget Health: ${healthLabel}</div>
+        <div style="font-size:13px;color:#475569">
+          ${score>=70?'Budget is well-managed and on track.':score>=40?'Some items need attention — review over-budget entries.':'Multiple overspend risks detected. Immediate review recommended.'}
+        </div>
+        <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap">
+          <span style="font-size:12px;font-weight:700;color:#475569">✅ Under Budget: <strong style="color:#10b981">${s.underCount}</strong></span>
+          <span style="font-size:12px;font-weight:700;color:#475569">⚠ Over Budget: <strong style="color:#ef4444">${s.overCount}</strong></span>
+          <span style="font-size:12px;font-weight:700;color:#475569">🎯 On Budget: <strong style="color:#f59e0b">${s.onCount}</strong></span>
+        </div>
+      </div>
+    </div>`;
+
+  // ── Category breakdown with progress bars ──
+  document.getElementById('reportCategoryBreakdown').innerHTML = Object.entries(catData).map(([cat,v],i)=>{
+    const meta=getCatMeta(cat);
+
+const pct=Math.round(v.act/Math.max(v.est,1)*100);
+
+const barColor=v.act>v.est?'#ef4444':pct>80?'#f59e0b':'#10b981';
+
+const diff=v.est-v.act;
+    return `<div style="margin-bottom:16px;padding:14px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+        <span style="background:${meta.color_bg};color:${meta.color_text};padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700">${meta.label}</span>
+        <div style="display:flex;gap:14px;font-size:12px;flex-wrap:wrap">
+          <span style="color:#64748b">Est: <strong>${fmtMoney(v.est)}</strong></span>
+          <span style="color:#64748b">Act: <strong style="color:${barColor}">${fmtMoney(v.act)}</strong></span>
+          <span style="color:${diff<0?'#ef4444':'#10b981'};font-weight:700">${diff<0?'▲ Over by ':'▼ Saved '}${fmtMoney(Math.abs(diff))}</span>
+        </div>
+      </div>
+      <div style="background:#e2e8f0;border-radius:99px;height:10px;overflow:hidden">
+        <div style="width:${Math.min(pct,100)}%;height:100%;background:${barColor};border-radius:99px"></div>
+      </div>
+      <div style="text-align:right;font-size:11px;color:#64748b;margin-top:4px">${pct}% utilized</div>
+    </div>`;
+  }).join('');
+
+  // ── All budget items full table ──
+  const itemRows = budgets.map((item,idx)=>{
+    const est=Number(item.estimated_cost)||0;
+
+const act=Number(item.actual_cost)||0;
+
+const diff=est-act;
+
+const pct=est>0?Math.round(act/est*100):0;
+
+const catMeta=getCatMeta(item.category||'misc');
+
+const priMeta=getPriorityMeta(item.priority||'medium');
+
+const rowBg = act>est?'#fff5f5':idx%2===0?'#fff':'#f8fafc';
+
+const statusLabel = act>est?'Over Budget':act<est?'Under Budget':'On Budget';
+
+const statusColor = act>est?'#ef4444':act<est?'#10b981':'#f59e0b';
+
+const statusBg    = act>est?'#fee2e2':act<est?'#d1fae5':'#fef3c7';
+    return `<tr style="background:${rowBg}">
+      <td style="padding:10px 12px;font-weight:600;font-size:13px;border-bottom:1px solid #e2e8f0">${idx+1}. ${item.description}${item.notes?`<br><span style="font-size:11px;color:#94a3b8;font-weight:400">${item.notes}</span>`:''}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:${catMeta.color_bg};color:${catMeta.color_text};padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">${catMeta.label}</span></td>
+      <td style="padding:10px 12px;font-size:13px;border-bottom:1px solid #e2e8f0">${fmtMoney(est)}</td>
+      <td style="padding:10px 12px;font-size:13px;font-weight:700;border-bottom:1px solid #e2e8f0;color:${act>est?'#ef4444':'#0f172a'}">${fmtMoney(act)}</td>
+      <td style="padding:10px 12px;font-size:13px;font-weight:700;color:${diff<0?'#ef4444':'#10b981'};border-bottom:1px solid #e2e8f0">${diff<0?'−':'+'} ${fmtMoney(Math.abs(diff))}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0">
+        <div style="background:#e2e8f0;border-radius:99px;height:6px;overflow:hidden;margin-bottom:3px">
+          <div style="width:${Math.min(pct,100)}%;height:100%;background:${act>est?'#ef4444':pct>80?'#f59e0b':'#10b981'};border-radius:99px"></div>
+        </div>
+        <div style="font-size:10px;color:#94a3b8;text-align:right">${pct}%</div>
+      </td>
+      <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:${statusBg};color:${statusColor};padding:3px 9px;border-radius:99px;font-size:10px;font-weight:800">${statusLabel}</span></td>
+      <td style="padding:10px 12px;font-size:12px;font-weight:700;color:${priMeta.color};border-bottom:1px solid #e2e8f0">${priMeta.label}</td>
+      <td style="padding:10px 12px;font-size:12px;border-bottom:1px solid #e2e8f0">${getPayLabel(item.payment_status||'pending')}</td>
+      <td style="padding:10px 12px;font-size:12px;color:#64748b;border-bottom:1px solid #e2e8f0">${item.vendor||'—'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('reportItemsTable').innerHTML=`
+    <div style="overflow-x:auto;border-radius:12px;border:1px solid #e2e8f0">
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead>
+        <tr style="background:linear-gradient(135deg,#0d0934,#1e3a8a)">
+          <th style="padding:12px 12px;text-align:left;font-size:11px;color:rgba(255,255,255,.85);font-weight:700">Description</th>
+          <th style="padding:12px 12px;text-align:left;font-size:11px;color:rgba(255,255,255,.85);font-weight:700">Category</th>
+          <th style="padding:12px 12px;text-align:left;font-size:11px;color:rgba(255,255,255,.85);font-weight:700">Estimated</th>
+          <th style="padding:12px 12px;text-align:left;font-size:11px;color:rgba(255,255,255,.85);font-weight:700">Actual</th>
+          <th style="padding:12px 12px;text-align:left;font-size:11px;color:rgba(255,255,255,.85);font-weight:700">Difference</th>
+          <th style="padding:12px 12px;text-align:left;font-size:11px;color:rgba(255,255,255,.85);font-weight:700">Usage</th>
+          <th style="padding:12px 12px;text-align:left;font-size:11px;color:rgba(255,255,255,.85);font-weight:700">Status</th>
+          <th style="padding:12px 12px;text-align:left;font-size:11px;color:rgba(255,255,255,.85);font-weight:700">Priority</th>
+          <th style="padding:12px 12px;text-align:left;font-size:11px;color:rgba(255,255,255,.85);font-weight:700">Payment</th>
+          <th style="padding:12px 12px;text-align:left;font-size:11px;color:rgba(255,255,255,.85);font-weight:700">Vendor</th>
+        </tr>
+      </thead>
+      <tbody>${itemRows}</tbody>
+      <tfoot>
+        <tr style="background:#f1f5f9;font-weight:800">
+          <td colspan="2" style="padding:12px;font-size:13px;border-top:2px solid #e2e8f0">TOTAL (${budgets.length} items)</td>
+          <td style="padding:12px;font-size:13px;border-top:2px solid #e2e8f0;color:#6366f1">${fmtMoney(s.totalEst)}</td>
+          <td style="padding:12px;font-size:13px;border-top:2px solid #e2e8f0;color:#10b981">${fmtMoney(s.totalAct)}</td>
+          <td style="padding:12px;font-size:13px;border-top:2px solid #e2e8f0;color:${s.balance<0?'#ef4444':'#10b981'}">${s.balance<0?'− ':'+ '}${fmtMoney(Math.abs(s.balance))}</td>
+          <td colspan="5" style="padding:12px;font-size:13px;border-top:2px solid #e2e8f0;color:#64748b">${s.pct}% overall utilization</td>
+        </tr>
+      </tfoot>
+    </table>
+    </div>`;
+
+  // ── Over budget items highlight ──
+  const overItems = budgets.filter(b=>Number(b.actual_cost)>Number(b.estimated_cost));
+
+const overSec = document.getElementById('reportOverBudgetSection');
+  if(overItems.length) {
+    overSec.style.display='block';
+    document.getElementById('reportOverBudgetContent').innerHTML = overItems.map(item=>{
+      const est=Number(item.estimated_cost)||0, act=Number(item.actual_cost)||0;
+
+const overBy=act-est, overPct=Math.round(overBy/Math.max(est,1)*100);
+      return `<div style="background:#fff5f5;border:1px solid #fca5a5;border-left:5px solid #ef4444;border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-weight:700;font-size:14px;color:#0f172a">${item.description}</div>
+          <div style="font-size:12px;color:#64748b;margin-top:3px">Category: ${getCatMeta(item.category||'misc').label} &nbsp;·&nbsp; Vendor: ${item.vendor||'—'} &nbsp;·&nbsp; Priority: ${item.priority||'—'}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:13px;color:#64748b">Est: ${fmtMoney(est)}</div>
+          <div style="font-size:15px;font-weight:800;color:#ef4444">Act: ${fmtMoney(act)}</div>
+          <div style="font-size:12px;font-weight:700;color:#ef4444">▲ Over by ${fmtMoney(overBy)} (${overPct}%)</div>
+        </div>
+      </div>`;
+    }).join('');
+  } else { overSec.style.display='none'; }
+
+  // ── Payment status summary ──
+  const payGroups={};
+  appConfig.paymentStatuses.forEach(ps=>{ payGroups[ps.label]={count:0,total:0,meta:ps}; });
+  budgets.forEach(b=>{
+    const meta=appConfig.paymentStatuses.find(ps=>ps.value===(b.payment_status||'pending'));
+    if(meta){
+      payGroups[meta.label].count++;
+      payGroups[meta.label].total+=Number(b.actual_cost)||0;
+    }
+  });
+
+const payColors={'⏳ Pending':'#f59e0b','✅ Paid':'#10b981','🔶 Partial':'#fb923c','❌ Cancelled':'#ef4444'};
+  document.getElementById('reportPaymentSummary').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+      ${Object.entries(payGroups).map(([label,data])=>`
+        <div style="background:#f8fafc;border-radius:12px;padding:14px 16px;border:1px solid #e2e8f0;border-top:3px solid ${payColors[label]||'#94a3b8'}">
+          <div style="font-size:14px;font-weight:800;color:#0f172a;margin-bottom:4px">${label}</div>
+          <div style="font-size:22px;font-weight:900;color:${payColors[label]||'#94a3b8'}">${data.count}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:3px">${fmtMoney(data.total)}</div>
+        </div>`).join('')}
+    </div>`;
+
+  // ── Forecast summary ──
+  const forecastSec = document.getElementById('reportForecastSection');
+  if(budgets.length) {
+    forecastSec.style.display='block';
+
+const projOverrun=s.totalAct>s.totalEst?s.totalAct-s.totalEst:0;
+
+const savings=s.totalEst>s.totalAct?s.totalEst-s.totalAct:0;
+
+const riskScore=Math.min(100,Math.round((s.overCount/budgets.length)*100+(s.pct>100?20:0)));
+
+const riskColor=riskScore>50?'#ef4444':riskScore>25?'#f59e0b':'#10b981';
+
+const riskLabel=riskScore>50?'High Risk':riskScore>25?'Medium Risk':'Low Risk';
+
+const perItem = budgets.length>0 ? s.totalAct/budgets.length : 0;
+    document.getElementById('reportForecastContent').innerHTML=`
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+        <div style="background:#f8fafc;border-radius:12px;padding:14px;text-align:center;border:1px solid #e2e8f0;border-top:3px solid ${projOverrun>0?'#ef4444':'#10b981'}">
+          <div style="font-size:11px;color:#64748b;font-weight:600;margin-bottom:6px">Projected Overrun</div>
+          <div style="font-size:18px;font-weight:800;color:${projOverrun>0?'#ef4444':'#10b981'}">${projOverrun>0?fmtMoney(projOverrun):'None'}</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:12px;padding:14px;text-align:center;border:1px solid #e2e8f0;border-top:3px solid #10b981">
+          <div style="font-size:11px;color:#64748b;font-weight:600;margin-bottom:6px">Savings Potential</div>
+          <div style="font-size:18px;font-weight:800;color:#10b981">${fmtMoney(savings)}</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:12px;padding:14px;text-align:center;border:1px solid #e2e8f0;border-top:3px solid ${riskColor}">
+          <div style="font-size:11px;color:#64748b;font-weight:600;margin-bottom:6px">Risk Score</div>
+          <div style="font-size:18px;font-weight:800;color:${riskColor}">${riskScore}/100</div>
+          <div style="font-size:11px;color:${riskColor};font-weight:700">${riskLabel}</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:12px;padding:14px;text-align:center;border:1px solid #e2e8f0;border-top:3px solid #6366f1">
+          <div style="font-size:11px;color:#64748b;font-weight:600;margin-bottom:6px">Avg Cost / Item</div>
+          <div style="font-size:18px;font-weight:800;color:#6366f1">${fmtMoney(perItem)}</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:12px;padding:14px;text-align:center;border:1px solid #e2e8f0;border-top:3px solid #f59e0b">
+          <div style="font-size:11px;color:#64748b;font-weight:600;margin-bottom:6px">Best Performing</div>
+          <div style="font-size:14px;font-weight:800;color:#f59e0b">${getBestItem()}</div>
+        </div>
+        <div style="background:#fff5f5;border-radius:12px;padding:14px;text-align:center;border:1px solid #fca5a5;border-top:3px solid #ef4444">
+          <div style="font-size:11px;color:#64748b;font-weight:600;margin-bottom:6px">Needs Attention</div>
+          <div style="font-size:14px;font-weight:800;color:#ef4444">${getWorstItem()}</div>
+        </div>
+      </div>`;
+  } else { forecastSec.style.display='none'; }
+
+  // ── Chart snapshots ──
+  const chartsSec = document.getElementById('reportChartsSection');
+  if(reportCharts.size > 0) {
+    chartsSec.style.display = 'block';
+
+const chartTitles = {
+      barChart:'Estimated vs Actual by Category',
+      doughnutChart:'Spending Distribution',
+      lineChart:'Cumulative Spending Timeline',
+      horizontalBarChart:'Estimated vs Actual by Item',
+      pieChart:'Actual Cost by Category',
+      varianceChart:'Budget Variance Analysis',
+      paymentChart:'Payment Status Distribution',
+      priorityChart:'Priority Breakdown',
+      forecastChart:'Budget Variance Forecast'
+    };
+    document.getElementById('reportChartsContent').innerHTML=`
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
+        ${[...reportCharts].map(id=>{
+          const canvas=document.getElementById(id);
+
+const dataUrl=canvas?canvas.toDataURL('image/png'):null;
+          return dataUrl
+            ? `<div style="background:#f8fafc;border-radius:12px;padding:14px;border:1px solid #e2e8f0">
+                <div style="font-size:12px;font-weight:700;color:#0f172a;margin-bottom:8px">
+                  <i class="fa-solid fa-chart-bar" style="color:#6366f1;margin-right:6px"></i>${chartTitles[id]||id}
+                </div>
+                <img src="${dataUrl}" style="width:100%;border-radius:8px;border:1px solid #e2e8f0"/>
+              </div>` : '';
+        }).join('')}
+      </div>`;
+  } else { chartsSec.style.display='none'; }
+
+  // ── AI insights ──
+  const insightsSec = document.getElementById('reportInsightsSection');
+  if(lastAIInsights.length) {
+    insightsSec.style.display='block';
+    document.getElementById('reportInsights').innerHTML = lastAIInsights.map(ins=>`
+      <div style="padding:14px 16px;border-left:4px solid ${ins.type==='danger'?'#ef4444':ins.type==='success'?'#10b981':ins.type==='warning'?'#f59e0b':'#3b82f6'};background:${ins.type==='danger'?'#fff5f5':ins.type==='success'?'#f0fdf4':ins.type==='warning'?'#fffbeb':'#eff6ff'};border-radius:8px;margin-bottom:10px">
+        <strong style="font-size:13px;color:#0f172a;display:flex;align-items:center;gap:7px;margin-bottom:4px">
+          <i class="fa-solid ${ins.type==='danger'?'fa-circle-exclamation':ins.type==='warning'?'fa-triangle-exclamation':ins.type==='success'?'fa-circle-check':'fa-circle-info'}" style="color:${ins.type==='danger'?'#ef4444':ins.type==='success'?'#10b981':ins.type==='warning'?'#f59e0b':'#3b82f6'}"></i>
+          ${ins.title}
+        </strong>
+        <span style="font-size:13px;color:#475569">${ins.message}</span>
+      </div>`).join('');
+  } else { insightsSec.style.display='none'; }
+
+  // ── Footer stamp ──
+  document.getElementById('reportStampMeta').innerHTML =
+    `Report for: <strong>${selectedEvent.title}</strong><br>
+     Generated: ${now.toLocaleString()}<br>
+     Total Items: ${budgets.length} &nbsp;·&nbsp; Total Spent: ${fmtMoney(s.totalAct)}`;
+
+  document.getElementById('reportModal').classList.add('show');
+}
+
+function addChartToReport(btn, chartId, chartTitle) {
+  if(reportCharts.has(chartId)) {
+    reportCharts.delete(chartId);
+    btn.classList.remove('added');
+    btn.innerHTML = '<i class="fa-solid fa-plus"></i> Add to Report';
+    showToast(`"${chartTitle}" removed from report.`, 'warning');
+  } else {
+    reportCharts.add(chartId);
+    btn.classList.add('added');
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Added!';
+    showToast(`"${chartTitle}" added to report!`, 'success');
+  }
+}
+
+function closeReportModal() { document.getElementById('reportModal').classList.remove('show'); }
+
+async function downloadPDF() {
+  const {jsPDF} = window.jspdf;
+
+const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+
+const body = document.getElementById('reportBody');
+
+const canvas = await html2canvas(body, {scale:1.5, useCORS:true, backgroundColor:'#ffffff'});
+
+const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+const pageW   = doc.internal.pageSize.getWidth();
+
+const pageH   = doc.internal.pageSize.getHeight();
+
+const margin  = 10;
+
+const usableW = pageW - margin*2;
+
+  // Header
+  doc.setFillColor(13,9,52);
+  doc.rect(0,0,pageW,28,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(16); doc.setFont('helvetica','bold');
+  doc.text('UniConnect — Budget Report', margin, 12);
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.text(selectedEvent.title + ' · ' + formatDate(selectedEvent.event_date), margin, 20);
+  doc.text('Generated: ' + new Date().toLocaleDateString(), pageW-margin, 20, {align:'right'});
+
+  // Content (paginated)
+  let y = 32;
+
+const imgH = (canvas.height * usableW) / canvas.width;
+  if(imgH + y <= pageH) {
+    doc.addImage(imgData,'JPEG',margin,y,usableW,imgH);
+  } else {
+    let srcY = 0;
+    while(srcY < canvas.height) {
+      const remaining = canvas.height - srcY;
+
+const sliceH    = Math.min((pageH-y)*canvas.width/usableW, remaining);
+
+const sliceCanvas = document.createElement('canvas');
+      sliceCanvas.width = canvas.width; sliceCanvas.height = sliceH;
+
+const ctx = sliceCanvas.getContext('2d');
+      ctx.drawImage(canvas, 0, -srcY);
+
+const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.9);
+      doc.addImage(sliceData,'JPEG',margin,y,usableW, sliceH*usableW/canvas.width);
+      srcY += sliceH;
+      if(srcY < canvas.height) { doc.addPage(); y=10; }
+    }
+  }
+
+  // Footer
+  doc.setFontSize(8); doc.setTextColor(100,116,139);
+  doc.text('UniConnect Event Management System — Confidential Budget Report', pageW/2, pageH-5, {align:'center'});
+  doc.save(`Budget_Report_${selectedEvent.title.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.pdf`);
+  showToast('PDF downloaded!','success');
+}
+
+function printReport() { window.print(); }
+
+// ═══════════════════════════════════════════════════════
+// OVERVIEW CHARTS
+// ═══════════════════════════════════════════════════════
+function destroyChart(id) { if(charts[id]){charts[id].destroy();delete charts[id];} }
+
+function groupByCategory() {
+  const groups={};
+  budgets.forEach(b=>{
+    const c=b.category||'misc';
+    if(!groups[c]) groups[c]={est:0,act:0};
+    groups[c].est+=Number(b.estimated_cost)||0;
+    groups[c].act+=Number(b.actual_cost)||0;
+  });
+  return groups;
+}
+
+function renderOverviewCharts() {
+  if(!budgets.length) return;
+
+const groups  = groupByCategory();
+
+const labels  = Object.keys(groups).map(c=>getCatMeta(c).label);
+
+const estVals = Object.values(groups).map(v=>v.est);
+
+const actVals = Object.values(groups).map(v=>v.act);
+
+  destroyChart('barChart');
+  charts['barChart']=new Chart(document.getElementById('barChart').getContext('2d'),{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'Estimated',data:estVals,backgroundColor:'rgba(59,130,246,.7)',borderRadius:6},
+      {label:'Actual',   data:actVals,backgroundColor:'rgba(16,185,129,.7)',borderRadius:6}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'}},
+      scales:{y:{ticks:{callback:v=>'Rs.'+v.toLocaleString()},grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false}}}}
+  });
+
+  destroyChart('doughnutChart');
+  charts['doughnutChart']=new Chart(document.getElementById('doughnutChart').getContext('2d'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data:actVals,backgroundColor:CHART_COLORS,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11}}}}}
+  });
+
+  destroyChart('lineChart');
+  charts['lineChart'] = new Chart(
+  document.getElementById('lineChart').getContext('2d'),
+  {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Estimated Budget',
+          data: cumulativeEst,
+          borderColor: 'rgba(59,130,246,1)',
+          backgroundColor: 'rgba(59,130,246,.2)',
+          tension: 0.4,
+          fill: false
+        },
+        {
+          label: 'Actual Budget',
+          data: cumulativeAct,
+          borderColor: 'rgba(16,185,129,1)',
+          backgroundColor: 'rgba(16,185,129,.2)',
+          tension: 0.4,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top' }
+      }
+    }
+  }
+);
+
+
+
+let runEst=0,runAct=0;
+
+const cumulEst=[],cumulAct=[];
+  budgets.forEach(b=>{runEst+=Number(b.estimated_cost)||0;runAct+=Number(b.actual_cost)||0;cumulEst.push(runEst);cumulAct.push(runAct);});
+  charts['lineChart']=new Chart(document.getElementById('lineChart').getContext('2d'),{
+    type:'line',
+    data:{labels:budgets.map((_,i)=>'Item '+(i+1)),datasets:[
+      {label:'Cumulative Estimated',data:cumulEst,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.1)',fill:true,tension:.4,borderWidth:2},
+      {label:'Cumulative Actual',   data:cumulAct,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,.1)',fill:true,tension:.4,borderWidth:2}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'}},
+      scales:{y:{ticks:{callback:v=>'Rs.'+v.toLocaleString()},grid:{color:'rgba(0,0,0,.04)'}},x:{grid:{display:false}}}}
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// ANALYTICS CHARTS
+// ═══════════════════════════════════════════════════════
+function renderAllCharts() {
+  if(!budgets.length) return;
+
+  destroyChart('horizontalBarChart');
+  charts['horizontalBarChart']=new Chart(document.getElementById('horizontalBarChart').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:budgets.map(b=>b.description.length>20?b.description.slice(0,18)+'…':b.description),
+      datasets:[
+        {label:'Estimated',data:budgets.map(b=>Number(b.estimated_cost)||0),backgroundColor:'rgba(59,130,246,.75)',borderRadius:5},
+        {label:'Actual',   data:budgets.map(b=>Number(b.actual_cost)||0),backgroundColor:'rgba(16,185,129,.75)',borderRadius:5}
+      ]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'}},
+      scales:{x:{ticks:{callback:v=>'Rs.'+v.toLocaleString()}}}}
+  });
+
+const groups2=groupByCategory();
+  destroyChart('pieChart');
+  charts['pieChart']=new Chart(document.getElementById('pieChart').getContext('2d'),{
+    type:'pie',
+    data:{labels:Object.keys(groups2).map(c=>getCatMeta(c).label),datasets:[{data:Object.values(groups2).map(v=>v.act),backgroundColor:CHART_COLORS,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11}}}}}
+  });
+
+const diffs=budgets.map(b=>(Number(b.estimated_cost)||0)-(Number(b.actual_cost)||0));
+  destroyChart('varianceChart');
+  charts['varianceChart']=new Chart(document.getElementById('varianceChart').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:budgets.map(b=>b.description.length>16?b.description.slice(0,14)+'…':b.description),
+      datasets:[
+        {label:'Estimated',data:budgets.map(b=>Number(b.estimated_cost)||0),backgroundColor:'rgba(59,130,246,.7)',borderRadius:5},
+        {label:'Actual',data:budgets.map(b=>Number(b.actual_cost)||0),backgroundColor:'rgba(16,185,129,.7)',borderRadius:5},
+        {label:'Variance (Est–Act)',data:diffs,backgroundColor:diffs.map(d=>d<0?'rgba(239,68,68,.8)':'rgba(245,158,11,.8)'),borderRadius:5}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'}},
+      scales:{y:{ticks:{callback:v=>'Rs.'+v.toLocaleString()},grid:{color:'rgba(0,0,0,.04)'}},x:{grid:{display:false}}}}
+  });
+
+const payMap={};
+  appConfig.paymentStatuses.forEach(s=>{ payMap[s.label]=0; });
+  budgets.forEach(b=>{
+    const meta=appConfig.paymentStatuses.find(s=>s.value===(b.payment_status||'pending'));
+    if(meta) payMap[meta.label]=(payMap[meta.label]||0)+1;
+  });
+  destroyChart('paymentChart');
+  charts['paymentChart']=new Chart(document.getElementById('paymentChart').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:Object.keys(payMap),datasets:[{data:Object.values(payMap),backgroundColor:CHART_COLORS,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right'}}}
+  });
+
+const priMap={};
+  appConfig.priorities.forEach(p=>{ priMap[p.label]=0; });
+  budgets.forEach(b=>{
+    const meta=appConfig.priorities.find(p=>p.value===(b.priority||'medium'));
+    if(meta) priMap[meta.label]=(priMap[meta.label]||0)+1;
+  });
+
+const priColors=appConfig.priorities.map(p=>p.color||'#94a3b8');
+  destroyChart('priorityChart');
+  charts['priorityChart']=new Chart(document.getElementById('priorityChart').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:Object.keys(priMap),datasets:[{data:Object.values(priMap),backgroundColor:priColors,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right'}}}
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// EDIT
+// ═══════════════════════════════════════════════════════
+function openEditPopup(id) {
+  const item=budgets.find(b=>(b.budget_id||b.id)===id);
+  if(!item) return;
+  document.getElementById('editId').value      =id;
+  document.getElementById('editDesc').value    =item.description;
+  document.getElementById('editCat').value     =item.category||'misc';
+  document.getElementById('editEst').value     =Number(item.estimated_cost)||0;
+  document.getElementById('editAct').value     =Number(item.actual_cost)||0;
+  document.getElementById('editVendor').value  =item.vendor||'';
+  document.getElementById('editPay').value     =item.payment_status||appConfig.paymentStatuses[0]?.value||'pending';
+  document.getElementById('editPriority').value=item.priority||'medium';
+  document.getElementById('editNotes').value   =item.notes||'';
+  document.getElementById('editPopup').classList.add('show');
+}
+function closeEditPopup() { document.getElementById('editPopup').classList.remove('show'); }
+
+async function saveEdit() {
+  const id = Number(document.getElementById('editId').value);
+
+const description = document.getElementById('editDesc').value.trim();
+
+  if(!description) { showToast('Description cannot be empty.','warning'); return; }
+  if(!id) { showToast('Invalid item ID.','error'); return; }
+
+  const payload = {
+    organizer_id:   selectedEvent.organizer_id,
+    description:    description,
+    category:       document.getElementById('editCat').value,
+    estimated_cost: Number(document.getElementById('editEst').value) || 0,
+    actual_cost:    Number(document.getElementById('editAct').value) || 0,
+    vendor:         document.getElementById('editVendor').value.trim(),
+    payment_status: document.getElementById('editPay').value,
+    priority:       document.getElementById('editPriority').value,
+    notes:          document.getElementById('editNotes').value.trim()
+  };
+
+  console.log('PUT payload:', payload);
+  console.log('PUT URL:', `${API_BASE}/budgets/${id}`);
+
+  try {
+    const r = await fetch(`${API_BASE}/budgets/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    // Try to parse response regardless of status
+    let res;
+    try { res = await r.json(); } catch(e) { res = { message: `HTTP ${r.status} — ${r.statusText}` }; }
+
+    console.log('PUT response:', r.status, res);
+
+    if(!r.ok || !res.success) {
+      showToast('Update failed: ' + (res.message || `HTTP ${r.status}`), 'error');
+      return;
+    }
+
+    closeEditPopup();
+    await loadBudgetItems();
+    showToast('Budget item updated successfully!', 'success');
+
+  } catch(err) {
+    console.error('saveEdit fetch error:', err);
+    showToast('Connection error: ' + err.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// DELETE
+// ═══════════════════════════════════════════════════════
+function openDeletePopup(id)  { deleteTargetId=id; document.getElementById('deletePopup').classList.add('show'); }
+function closeDeletePopup()   { document.getElementById('deletePopup').classList.remove('show'); deleteTargetId=null; }
+
+async function confirmDelete() {
+  try {
+    const r=await fetch(`${API_BASE}/budgets/${deleteTargetId}?organizer_id=${selectedEvent.organizer_id}`,{method:'DELETE'});
+    if(!r.ok){ const res=await r.json(); showToast('Delete failed: '+(res.message||''),'error'); return; }
+  } catch(err) {
+    showToast('Server unreachable. Could not delete item.','error'); return;
+  }
+  closeDeletePopup();
+  await loadBudgetItems();
+  showToast('Item deleted.','warning');
+}
+
+// ═══════════════════════════════════════════════════════
+// SMART PLANNER
+// ═══════════════════════════════════════════════════════
+let plannerClarification = null;
+
+async function runSmartPlanner() {
+  if (!selectedEvent) {
+    showToast('Please select an event first.', 'warning');
+    return;
+  }
+
+  const eventName = getSelectedEventName();
+
+  if (!eventName) {
+    showToast('Selected event does not have a valid event name.', 'warning');
+    return;
+  }
+
+  const total = Number(document.getElementById('plannerTotal').value) || 0;
+  const attendees = Number(document.getElementById('plannerAttendees').value) || 100;
+
+  if (!total) {
+    showToast('Enter a total budget amount.', 'warning');
+    return;
+  }
+
+  const questionBox = document.getElementById('plannerQuestions');
+  const answers = plannerClarification ? collectPlannerAnswers() : null;
+
+  document.getElementById('plannerResults').classList.remove('hidden');
+  document.getElementById('plannerStats').innerHTML = `
+    <div style="grid-column:1/-1;text-align:center;padding:32px;opacity:.7">
+      <i class="fa-solid fa-brain fa-spin" style="font-size:2rem;color:var(--accent-blue)"></i>
+      <p style="margin-top:12px">AI is analyzing "${eventName}" and generating your budget plan...</p>
+    </div>
+  `;
+  document.getElementById('plannerTable').innerHTML = '';
+
+  try {
+    const result = await generateSmartBudgetPlan({
+      eventName,
+      total,
+      attendees,
+      answers
+    });
+
+    if (result.needs_clarification && result.questions?.length) {
+      plannerClarification = result.questions;
+      renderPlannerQuestions(result.questions);
+      document.getElementById('plannerStats').innerHTML = '';
+      document.getElementById('plannerTable').innerHTML = '';
+      showToast('More details are needed for an accurate plan.', 'warning');
+      return;
+    }
+
+    plannerClarification = null;
+    questionBox.classList.add('hidden');
+    questionBox.innerHTML = '';
+
+    const categories = normalizeCategories(result.categories || []);
+
+    plannerData = {
+      total,
+      attendees,
+      eventName,
+      type: result.event_type || 'Custom Event',
+      categories
+    };
+
+    renderSmartPlannerResult({
+      total,
+      attendees,
+      eventName,
+      eventType: result.event_type || 'Custom Event',
+      details: result.details || 'Budget generated from selected event name.',
+      categories
+    });
+
+  } catch (err) {
+    console.error('Smart planner error:', err);
+    showToast('AI planner failed. Please check your backend AI endpoint.', 'error');
+  }
+}
+
+function getSelectedEventName() {
+  return (
+    selectedEvent.title ||
+    selectedEvent.event_name ||
+    selectedEvent.event_title ||
+    selectedEvent.name ||
+    selectedEvent.eventName ||
+    ''
+  ).trim();
+}
+
+async function generateSmartBudgetPlan({ eventName, total, attendees, answers }) {
+  return generateLocalBudgetPlan({
+    eventName,
+    total,
+    attendees,
+    answers
+  });
+  
+}
+
+function generateLocalBudgetPlan({ eventName, total, attendees, answers }) {
+  const text = [
+    eventName,
+    ...(answers || []).map(a => `${a.question} ${a.answer}`)
+  ].join(" ").toLowerCase();
+
+  if (isVagueEventName(text) && !answers) {
+    return {
+      needs_clarification: true,
+      questions: [
+        "What is the main purpose of this event?",
+        "Will this event need food, equipment, or special staff?",
+        "Is this event indoor, outdoor, or online?"
+      ]
+    };
+  }
+
+  const detected = detectDynamicEventNeeds(text);
+  const categories = buildDynamicCategories(detected, attendees);
+
+  return {
+    needs_clarification: false,
+    event_type: detected.eventType,
+    details: detected.details,
+    categories: normalizeLocalPercentages(categories)
+  };
+}
+function isVagueEventName(text) {
+  const weakSignals = [
+    "event", "program", "function", "activity",
+    "thing", "stuff", "session"
+  ];
+
+  const words = text.split(/\s+/);
+
+  const hasWeakWord = weakSignals.some(w => text.includes(w));
+
+  const isTooShort = words.length <= 3;
+
+  const lacksContext =
+    !text.includes("camp") &&
+    !text.includes("tournament") &&
+    !text.includes("conference") &&
+    !text.includes("workshop") &&
+    !text.includes("festival");
+
+  return isTooShort && (hasWeakWord || lacksContext);
+}
+
+function detectDynamicEventNeeds(text) {
+  const signals = {
+    medical: hasAny(text, ["blood", "health", "medical", "clinic", "donation", "screening", "vaccination", "first aid"]),
+    academic: hasAny(text, ["seminar", "lecture", "workshop", "conference", "research", "quiz", "debate", "training"]),
+    sports: hasAny(text, ["cricket", "football", "basketball", "volleyball", "badminton", "tournament", "match", "marathon", "race"]),
+    cultural: hasAny(text, ["cultural", "dance", "music", "concert", "drama", "theatre", "festival", "talent", "fashion"]),
+    tech: hasAny(text, ["hackathon", "coding", "technology", "tech", "robotics", "ai", "software", "startup", "pitch"]),
+    charity: hasAny(text, ["charity", "fundraiser", "donation", "community", "cleanup", "tree", "awareness", "campaign"]),
+    career: hasAny(text, ["career", "job fair", "networking", "corporate", "business", "expo", "trade"]),
+    ceremony: hasAny(text, ["award", "graduation", "farewell", "welcome", "ceremony", "gala", "anniversary"]),
+    online: hasAny(text, ["online", "virtual", "webinar", "zoom"]),
+    outdoor: hasAny(text, ["outdoor", "ground", "park", "marathon", "cleanup", "walk", "camp"]),
+    premium: hasAny(text, ["gala", "concert", "conference", "summit", "festival", "expo"])
+  };
+
+  let eventType = "Custom Event";
+  let details = "Custom event budget generated from the selected event name and detected requirements.";
+
+  if (signals.medical) {
+    eventType = "Health / Medical Event";
+    details = "Medical or health-focused event requiring safety, staff, supplies, participant care, and logistics.";
+  } else if (signals.tech) {
+    eventType = "Technology Event";
+    details = "Technology event requiring equipment, internet, technical setup, mentors, prizes, and participant support.";
+  } else if (signals.sports) {
+    eventType = "Sports Event";
+    details = "Sports event requiring venue, equipment, officials, awards, refreshments, and medical support.";
+  } else if (signals.cultural) {
+    eventType = "Cultural / Entertainment Event";
+    details = "Entertainment event requiring stage, sound, lighting, performers, decoration, and audience management.";
+  } else if (signals.academic) {
+    eventType = "Academic / Training Event";
+    details = "Academic event requiring speakers, learning materials, venue, equipment, certificates, and refreshments.";
+  } else if (signals.charity) {
+    eventType = "Charity / Community Event";
+    details = "Community-focused event requiring outreach, materials, volunteer support, logistics, and safety.";
+  } else if (signals.career) {
+    eventType = "Career / Business Event";
+    details = "Professional event requiring booths, branding, guest support, registration, promotion, and logistics.";
+  } else if (signals.ceremony) {
+    eventType = "Ceremony / Celebration";
+    details = "Formal celebration requiring venue, decorations, awards, hospitality, photography, and guest management.";
+  }
+
+  return { eventType, details, signals };
+
+  let ambiguityScore = 0;
+
+if (!signals.medical && !signals.tech && !signals.sports && !signals.cultural &&
+    !signals.academic && !signals.charity && !signals.career && !signals.ceremony) {
+  ambiguityScore++;
+}
+if (ambiguityScore > 0) {
+  return {
+    needs_clarification: true,
+    questions: [
+      "What type of audience will attend?",
+      "Will this event require a venue or is it flexible?",
+      "Do you expect formal planning or informal setup?"
+    ]
+  };
+}
+}
+
+function buildDynamicCategories(detected, attendees) {
+  const { signals } = detected;
+
+  let categories = [
+    cat("venue", "Venue & Facilities", 16, "Venue booking, seating, utilities, basic setup"),
+    cat("logistics", "Logistics & Transport", 8, "Transport, loading, delivery, setup movement"),
+    cat("promotion", "Promotion & Branding", 8, "Posters, banners, social media, event branding"),
+    cat("staff", "Staff & Support", 8, "Coordinators, helpers, support workers"),
+    cat("contingency", "Contingency", 5, "Unexpected expenses")
+  ];
+
+  if (signals.medical) {
+    categories.push(
+      cat("medical_supplies", "Medical Supplies", 22, "Testing kits, gloves, blood bags, sanitation, clinical items"),
+      cat("medical_staff", "Medical Staff", 18, "Doctors, nurses, lab assistants, emergency support"),
+      cat("donor_care", "Participant Care", 10, "Refreshments, recovery area, water, comfort items"),
+      cat("safety", "Safety & Compliance", 9, "First aid, hygiene, permissions, emergency planning")
+    );
+  }
+
+  if (signals.academic) {
+    categories.push(
+      cat("speakers", "Speakers / Trainers", 18, "Speaker fees, trainer support, guest honorarium"),
+      cat("learning_materials", "Learning Materials", 13, "Printing, handouts, stationery, worksheets"),
+      cat("av_equipment", "AV & Presentation Equipment", 14, "Projector, microphones, sound, laptop support"),
+      cat("certificates", "Certificates & Tokens", 7, "Certificates, guest gifts, participant tokens")
+    );
+  }
+
+  if (signals.tech) {
+    categories.push(
+      cat("technical_setup", "Technical Setup", 18, "Internet, power, devices, development tools"),
+      cat("mentors", "Mentors & Judges", 12, "Mentor support, judging panel, technical guidance"),
+      cat("prizes", "Prizes & Awards", 14, "Winner prizes, certificates, sponsor gifts"),
+      cat("participant_kits", "Participant Kits", 9, "Badges, stationery, access cards, swag")
+    );
+  }
+
+  if (signals.sports) {
+    categories.push(
+      cat("sports_equipment", "Sports Equipment", 18, "Balls, nets, bats, markers, scoreboards"),
+      cat("officials", "Officials & Referees", 12, "Referees, judges, scorers, timekeepers"),
+      cat("medical_support", "Medical & Safety", 11, "First aid, ambulance support, safety staff"),
+      cat("awards", "Awards & Certificates", 12, "Trophies, medals, certificates")
+    );
+  }
+
+  if (signals.cultural) {
+    categories.push(
+      cat("stage", "Stage & Backdrop", 20, "Stage, backdrop, seating, performance area"),
+      cat("sound_lighting", "Sound & Lighting", 20, "Speakers, microphones, lighting, technicians"),
+      cat("performers", "Performers & Guests", 14, "Artist fees, guest care, costumes support"),
+      cat("decorations", "Decorations & Theme", 10, "Props, flowers, theme materials, visual setup")
+    );
+  }
+
+  if (signals.charity) {
+    categories.push(
+      cat("supplies", "Project Supplies", 20, "Donation materials, cleanup tools, awareness materials"),
+      cat("volunteer_support", "Volunteer Support", 12, "Meals, water, ID tags, volunteer kits"),
+      cat("community_outreach", "Community Outreach", 12, "Notices, local promotion, registration support"),
+      cat("permissions", "Permissions & Safety", 8, "Permits, first aid, sanitation, site safety")
+    );
+  }
+
+  if (signals.career) {
+    categories.push(
+      cat("booths", "Booths & Exhibition Setup", 18, "Company booths, tables, signage, layout"),
+      cat("guest_support", "Guest & Company Support", 12, "Guest hospitality, travel support, welcome packs"),
+      cat("registration", "Registration & Materials", 10, "Badges, forms, schedules, brochures"),
+      cat("networking", "Networking Arrangements", 8, "Refreshment area, meeting spaces, coordination")
+    );
+  }
+
+  if (signals.ceremony) {
+    categories.push(
+      cat("decor", "Decorations & Ambience", 16, "Stage decor, flowers, lighting, ceremonial setup"),
+      cat("awards", "Awards & Gifts", 14, "Trophies, plaques, certificates, gifts"),
+      cat("photography", "Photography & Media", 10, "Photography, video, album, live coverage"),
+      cat("hospitality", "Guest Hospitality", 12, "Refreshments, guest seating, welcome arrangements")
+    );
+  }
+
+  if (signals.online) {
+    categories = categories.filter(c => c.key !== "venue");
+    categories.push(
+      cat("platform", "Online Platform", 18, "Zoom, streaming tools, webinar platform"),
+      cat("digital_support", "Digital Support", 12, "Technical operator, moderation, recording"),
+      cat("digital_materials", "Digital Materials", 8, "E-certificates, slides, online resources")
+    );
+  }
+
+  if (signals.outdoor) {
+    categories.push(
+      cat("tents", "Outdoor Setup", 10, "Tents, temporary shelters, signage, outdoor seating"),
+      cat("weather_safety", "Weather & Safety Backup", 7, "Rain plan, water, shade, safety controls")
+    );
+  }
+
+  if (attendees > 300) {
+    categories.push(cat("crowd_control", "Crowd Management", 8, "Entry flow, security, barriers, ushers"));
+  }
+
+  return mergeSimilarCategories(categories);
+}
+
+function cat(key, label, percentage, notes) {
+  return { key, label, percentage, notes };
+}
+
+function hasAny(text, words) {
+  return words.some(word => text.includes(word));
+}
+
+function mergeSimilarCategories(categories) {
+  const merged = new Map();
+
+  categories.forEach(item => {
+    if (!merged.has(item.key)) {
+      merged.set(item.key, { ...item });
+    } else {
+      const current = merged.get(item.key);
+      current.percentage += item.percentage;
+      current.notes = `${current.notes}; ${item.notes}`;
+    }
+  });
+
+  return [...merged.values()];
+}
+
+function normalizeLocalPercentages(categories) {
+  const total = categories.reduce((sum, c) => sum + c.percentage, 0);
+
+  let normalized = categories.map(c => ({
+    ...c,
+    percentage: Math.max(3, Math.round(c.percentage * 100 / total))
+  }));
+
+  let diff = 100 - normalized.reduce((sum, c) => sum + c.percentage, 0);
+
+  while (diff !== 0) {
+    const target = normalized.reduce((best, item) =>
+      item.percentage > best.percentage ? item : best
+    );
+
+    target.percentage += diff > 0 ? 1 : -1;
+    diff += diff > 0 ? -1 : 1;
+  }
+
+  return normalized
+    .sort((a, b) => b.percentage - a.percentage)
+    .slice(0, 10);
+}
+function parseAiJson(text) {
+  const clean = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+function renderPlannerQuestions(questions) {
+  const box = document.getElementById('plannerQuestions');
+
+  box.innerHTML = `
+    <div class="panel" style="margin-top:14px;background:#faf5ff;border-color:#c4b5fd">
+      <h3 class="panel-title">
+        <i class="fa-solid fa-circle-question" style="color:#7c3aed"></i>
+        More Details Needed
+      </h3>
+
+      ${questions.map((q, i) => `
+        <div style="margin-bottom:12px">
+          <label>${q}</label>
+          <input id="plannerQuestion_${i}" type="text" placeholder="Enter your answer">
+        </div>
+      `).join('')}
+
+      <button class="btn-ai" onclick="runSmartPlanner()">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        Continue Planner
+      </button>
+    </div>
+  `;
+
+  box.classList.remove('hidden');
+}
+
+function collectPlannerAnswers() {
+  return plannerClarification.map((question, i) => ({
+    question,
+    answer: document.getElementById(`plannerQuestion_${i}`)?.value.trim() || ''
+  }));
+}
+
+function normalizeCategories(categories) {
+  if (!categories.length) return [];
+
+  const totalPct = categories.reduce((sum, c) => sum + Number(c.percentage || 0), 0);
+
+  if (!totalPct) return categories;
+
+  const normalized = categories.map(c => ({
+    ...c,
+    percentage: Math.round(Number(c.percentage) * 100 / totalPct)
+  }));
+
+  const diff = 100 - normalized.reduce((sum, c) => sum + c.percentage, 0);
+  normalized[0].percentage += diff;
+
+  return normalized;
+}
+
+function renderSmartPlannerResult({ total, attendees, eventName, eventType, details, categories }) {
+  const perAttendee = Math.round(total / attendees);
+
+  document.getElementById('plannerStats').innerHTML = `
+    <div class="stat-card blue">
+      <div class="stat-icon blue"><i class="fa-solid fa-calendar-check"></i></div>
+      <div class="stat-info">
+        <h3>${eventType}</h3>
+        <p>Detected Event Type</p>
+      </div>
+    </div>
+
+    <div class="stat-card green">
+      <div class="stat-icon green"><i class="fa-solid fa-money-bill-wave"></i></div>
+      <div class="stat-info">
+        <h3>${fmtMoney(total)}</h3>
+        <p>Total Budget</p>
+      </div>
+    </div>
+
+    <div class="stat-card amber">
+      <div class="stat-icon amber"><i class="fa-solid fa-users"></i></div>
+      <div class="stat-info">
+        <h3>${attendees}</h3>
+        <p>Expected Attendees</p>
+      </div>
+    </div>
+
+    <div class="stat-card purple">
+      <div class="stat-icon purple"><i class="fa-solid fa-user"></i></div>
+      <div class="stat-info">
+        <h3>Rs. ${perAttendee.toLocaleString()}</h3>
+        <p>Cost Per Attendee</p>
+      </div>
+    </div>
+
+    <div class="insight-box" style="grid-column:1/-1">
+      <h4><i class="fa-solid fa-lightbulb"></i> AI Event Understanding</h4>
+      <div class="insight-item">
+        <i class="fa-solid fa-check"></i>
+        <span><strong>${eventName}</strong> - ${details}</span>
+      </div>
+    </div>
+  `;
+
+  const labels = categories.map(c => c.label);
+  const values = categories.map(c => Math.round(total * c.percentage / 100));
+
+  destroyChart('plannerPieChart');
+
+  charts['plannerPieChart'] = new Chart(
+    document.getElementById('plannerPieChart').getContext('2d'),
+    {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          backgroundColor: CHART_COLORS,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right' }
+        }
+      }
+    }
+  );
+
+  document.getElementById('plannerTable').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>%</th>
+          <th>Amount</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${categories.map(c => {
+          const amount = Math.round(total * c.percentage / 100);
+
+          return `
+            <tr>
+              <td>
+                <span style="background:var(--info-bg);color:var(--navy-mid);padding:3px 9px;border-radius:8px;font-size:11px;font-weight:700">
+                  ${c.label}
+                </span>
+              </td>
+              <td style="font-weight:700">${c.percentage}%</td>
+              <td style="font-weight:800;color:var(--navy-deep)">${fmtMoney(amount)}</td>
+              <td style="font-size:12px;opacity:.75">${c.notes || '-'}</td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+
+
+function parseAiJson(text) {
+  const clean = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+function renderPlannerQuestions(questions) {
+  const box = document.getElementById('plannerQuestions');
+
+  box.innerHTML = `
+    <div class="panel" style="margin-top:14px">
+      <h3 class="panel-title">
+        <i class="fa-solid fa-circle-question"></i>
+        More Details Needed
+      </h3>
+
+      ${questions.map((q, i) => `
+        <div style="margin-bottom:12px">
+          <label>${q}</label>
+          <input id="plannerQuestion_${i}" type="text" placeholder="Enter your answer">
+        </div>
+      `).join('')}
+
+      <button class="btn-ai" onclick="runSmartPlanner()">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        Generate Planner
+      </button>
+    </div>
+  `;
+
+  box.classList.remove('hidden');
+}
+
+function collectPlannerAnswers() {
+  return plannerClarification.map((question, i) => ({
+    question,
+    answer: document.getElementById(`plannerQuestion_${i}`)?.value.trim() || ''
+  }));
+}
+
+function normalizeCategories(categories) {
+  const totalPct = categories.reduce((sum, c) => sum + Number(c.percentage || 0), 0);
+
+  if (!totalPct) return categories;
+
+  let normalized = categories.map(c => ({
+    ...c,
+    percentage: Math.round(Number(c.percentage) * 100 / totalPct)
+  }));
+
+  const diff = 100 - normalized.reduce((sum, c) => sum + c.percentage, 0);
+  normalized[0].percentage += diff;
+
+  return normalized;
+}
+
+function renderSmartPlannerResult({ total, attendees, eventName, eventType, details, categories }) {
+  const perAttendee = Math.round(total / attendees);
+
+  document.getElementById('plannerStats').innerHTML = `
+    <div class="stat-card blue">
+      <div class="stat-icon blue"><i class="fa-solid fa-calendar-check"></i></div>
+      <div class="stat-info">
+        <h3>${eventType}</h3>
+        <p>Detected Event Type</p>
+      </div>
+    </div>
+
+    <div class="stat-card green">
+      <div class="stat-icon green"><i class="fa-solid fa-money-bill-wave"></i></div>
+      <div class="stat-info">
+        <h3>${fmtMoney(total)}</h3>
+        <p>Total Budget</p>
+      </div>
+    </div>
+
+    <div class="stat-card amber">
+      <div class="stat-icon amber"><i class="fa-solid fa-users"></i></div>
+      <div class="stat-info">
+        <h3>${attendees}</h3>
+        <p>Expected Attendees</p>
+      </div>
+    </div>
+
+    <div class="stat-card purple">
+      <div class="stat-icon purple"><i class="fa-solid fa-user"></i></div>
+      <div class="stat-info">
+        <h3>Rs. ${perAttendee.toLocaleString()}</h3>
+        <p>Cost Per Attendee</p>
+      </div>
+    </div>
+
+    <div class="insight-box" style="grid-column:1/-1">
+      <h4><i class="fa-solid fa-lightbulb"></i> AI Event Understanding</h4>
+      <div class="insight-item">
+        <i class="fa-solid fa-check"></i>
+        <span><strong>${eventName}</strong> - ${details}</span>
+      </div>
+    </div>
+  `;
+
+  const labels = categories.map(c => c.label);
+  const values = categories.map(c => Math.round(total * c.percentage / 100));
+
+  destroyChart('plannerPieChart');
+
+  charts['plannerPieChart'] = new Chart(
+    document.getElementById('plannerPieChart').getContext('2d'),
+    {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          backgroundColor: CHART_COLORS,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right' }
+        }
+      }
+    }
+  );
+
+  document.getElementById('plannerTable').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>%</th>
+          <th>Amount</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${categories.map(c => {
+          const amount = Math.round(total * c.percentage / 100);
+
+          return `
+            <tr>
+              <td>
+                <span style="background:var(--info-bg);color:var(--navy-mid);padding:3px 9px;border-radius:8px;font-size:11px;font-weight:700">
+                  ${c.label}
+                </span>
+              </td>
+              <td style="font-weight:700">${c.percentage}%</td>
+              <td style="font-weight:800;color:var(--navy-deep)">${fmtMoney(amount)}</td>
+              <td style="font-size:12px;opacity:.75">${c.notes || '-'}</td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+// IMPORT PLAN
+// ═══════════════════════════════════════════════════════
+async function importPlanToItems() {
+  if (!selectedEvent) { showToast('Please select an event first.', 'warning'); return; }
+  if (!plannerData) { showToast('Generate a plan first.', 'warning'); return; }
+
+  const { total, categories, alloc } = plannerData;
+
+let imported = 0;
+
+const items = categories
+    ? categories.map(c => ({ key: c.key || c.label, label: c.label, pct: c.percentage, notes: c.notes || '' }))
+    : Object.entries(alloc).map(([key, pct]) => ({ key, label: getCatMeta(key).label, pct, notes: `Auto-generated: ${pct}% of total budget` }));
+
+  for (const item of items) {
+    const payload = {
+      event_id:       selectedEvent.event_id,
+      organizer_id:   selectedEvent.organizer_id,
+      description:    `${item.label} - Budget Allocation`,
+      estimated_cost: Math.round(total * item.pct / 100),
+      actual_cost:    0,
+      category:       item.key,
+      priority:       'medium',
+      vendor:         '',
+      payment_status: appConfig.paymentStatuses[0]?.value || 'pending',
+      notes:          item.notes || `Auto-generated: ${item.pct}% of total budget`
+    };
+    try {
+      const r = await fetch(`${API_BASE}/budgets`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      if (r.ok) imported++;
+    } catch (err) {
+      showToast('Server unreachable during import.', 'error');
+      break;
+    }
+  }
+
+  await loadBudgetItems();
+  showTab('items');
+  showToast(`${imported} budget items imported from planner!`, 'success');
+}
+
+const EVENT_TYPE_SUGGESTIONS = [
+  // Health & Medical
+  'Blood Donation Camp','Health Screening Camp','Vaccination Drive','First Aid Training',
+  'Medical Awareness Camp','Eye Checkup Camp','Dental Checkup Camp','Mental Health Awareness',
+  'Cancer Awareness Walk','Yoga & Wellness Camp',
+  // Academic
+  'Academic Seminar','Research Conference','Science Exhibition','Thesis Defense',
+  'Study Workshop','Guest Lecture','Quiz Competition','Debate Competition',
+  'Award Ceremony','Graduation Ceremony',
+  // Tech
+  'Hackathon','Tech Conference','Coding Bootcamp','Startup Pitch Competition',
+  'AI & ML Summit','Cybersecurity Workshop','App Development Contest','Robotics Competition',
+  // Cultural
+  'Cultural Festival','Music Concert','Dance Performance','Drama & Theatre Show',
+  'Art Exhibition','Photography Exhibition','Film Screening','Poetry Night','Comedy Show',
+  // Sports
+  'Cricket Tournament','Football Tournament','Basketball Tournament','Volleyball Tournament',
+  'Athletics Meet','Swimming Competition','Chess Tournament','Badminton Tournament',
+  'Marathon','Cycling Race',
+  // Corporate & Career
+  'Career Fair','Job Fair','Corporate Conference','Product Launch','Brand Activation',
+  'Networking Event','Team Building Event','Annual General Meeting','Awards Gala','Trade Show',
+  // Community & Social
+  'Charity Fundraiser','Food Drive','Blood Drive','Environmental Cleanup',
+  'Tree Planting Drive','Community Awareness Program','Voter Registration Drive',
+  'Religious Festival','Cultural Parade','Heritage Walk',
+  // Education & Training
+  'Leadership Workshop','Entrepreneurship Summit','Financial Literacy Workshop',
+  'Language Workshop','Professional Development Seminar','Certification Training',
+  // Entertainment
+  'Food Festival','Street Fair','Night Market','Fashion Show','Gaming Tournament',
+  'Talent Show','Open Mic Night','Book Fair','Craft Fair',
+  // Celebrations
+  'Wedding Ceremony','Birthday Celebration','Anniversary Dinner','Farewell Party',
+  'Welcome Party','New Year Gala','Holiday Party','Reunion Event'
+];
+
+function showTypeSuggestions(val) {
+  const box = document.getElementById('typeSuggestions');
+
+const q   = val.trim().toLowerCase();
+
+  // Always show suggestions — filter if typed, show popular if empty
+  const filtered = q
+    ? EVENT_TYPE_SUGGESTIONS.filter(t => t.toLowerCase().includes(q)).slice(0, 12)
+    : EVENT_TYPE_SUGGESTIONS.slice(0, 12);
+
+  if (!filtered.length) { box.style.display = 'none'; return; }
+
+  box.innerHTML = filtered.map(t => `
+    <div onmousedown="selectEventType('${t.replace(/'/g, "\\'")}')"
+         style="padding:9px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #f1f5f9;
+                transition:background .15s"
+         onmouseover="this.style.background='#f5f3ff';this.style.color='#7c3aed'"
+         onmouseout="this.style.background='';this.style.color=''">
+      ${t}
+    </div>`).join('');
+  box.style.display = 'block';
+}
+
+function selectEventType(val) {
+  document.getElementById('plannerType').value = val;
+  hideTypeSuggestions();
+}
+
+function hideTypeSuggestions() {
+  setTimeout(() => {
+    const box = document.getElementById('typeSuggestions');
+    if (box) box.style.display = 'none';
+  }, 150);
+}
+
+// ═══════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════
+initApp();
+
+
+/* ── GOOGLE TRANSLATE ── */
+function doGoogleTranslate(lang) {
+  if (!lang || lang === "en") {
+    /* Save English preference */
+    localStorage.setItem("uc_lang", "en");
+
+    /* Remove the Google Translate cookie so the page stays in English */
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + location.hostname + ";";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + location.hostname + ";";
+
+    /* Also try setting the combo to English first, then reload */
+    const combo = document.querySelector("select.goog-te-combo");
+    if (combo) {
+      combo.value = "en";
+      combo.dispatchEvent(new Event("change"));
+      /* Small delay then reload to fully clear the translation */
+      setTimeout(() => location.reload(), 400);
+    } else {
+      location.reload();
+    }
+    return;
+  }
+
+  /* Save chosen language */
+  localStorage.setItem("uc_lang", lang);
+  _applyTranslate(lang);
+}
+
+function _applyTranslate(lang) {
+  const tryApply = (attempts) => {
+    const combo = document.querySelector("select.goog-te-combo");
+    if (combo) {
+      combo.value = lang;
+      combo.dispatchEvent(new Event("change"));
+    } else if (attempts > 0) {
+      setTimeout(() => tryApply(attempts - 1), 600);
+    }
+  };
+  tryApply(15);
+}
+
+/* Restore saved language on load — but only if it's NOT English */
+document.addEventListener("DOMContentLoaded", () => {
+  const saved  = localStorage.getItem("uc_lang");
+  const picker = document.getElementById("langSelect");
+
+  /* Clear any stale GT cookie if saved language is English */
+  if (!saved || saved === "en") {
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + location.hostname + ";";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + location.hostname + ";";
+    if (picker) picker.value = "en";
+    return;
+  }
+
+  /* Restore non-English language */
+  if (picker) picker.value = saved;
+  setTimeout(() => _applyTranslate(saved), 2000);
+});
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile – UniConnect</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --navy-deep:    #0d0934;
+    --navy-mid:     #1e1b4b;
+    --navy-light:   #312e81;
+    --accent-blue:  #3b82f6;
+    --accent-teal:  #0ea5e9;
+    --bg-body:      #f3f4f6;
+    --surface:      #ffffff;
+    --surface-alt:  #f8fafc;
+    --text-main:    #1e293b;
+    --text-muted:   #64748b;
+    --text-light:   #94a3b8;
+    --success:      #10b981;
+    --success-bg:   #d1fae5;
+    --warning:      #f59e0b;
+    --warning-bg:   #fef3c7;
+    --danger:       #ef4444;
+    --danger-bg:    #fee2e2;
+    --info:         #3b82f6;
+    --info-bg:      #dbeafe;
+    --purple:       #8b5cf6;
+    --purple-bg:    #ede9fe;
+    --shadow-sm:    0 1px 2px 0 rgba(0,0,0,.05);
+    --shadow-md:    0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
+    --shadow-lg:    0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05);
+    --border:       #e2e8f0;
+    --trans-fast:   0.2s ease;
+    --trans-smooth: 0.3s cubic-bezier(.4,0,.2,1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+    background-image:
+        radial-gradient(at 0% 0%,   hsla(220,65%,95%,1) 0, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(195,60%,95%,1) 0, transparent 50%);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+}
+
+.container { display: flex; width: 100%; min-height: 100vh; }
+
+/* === SIDEBAR === */
+.sidebar{width:260px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;z-index:50;box-shadow:4px 0 24px rgba(0,0,0,.02)}
+.logo-area{height:72px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);padding:0 20px;background:#fff}
+.logo-area img{max-width:130px;height:auto;object-fit:contain}
+.logo-text{font-size:19px;font-weight:800;color:var(--navy-deep);letter-spacing:-.03em}
+.logo-text span{color:var(--accent-blue)}
+.sidebar-user{display:flex;align-items:center;gap:10px;margin:18px 16px 8px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:12px;transition:var(--trans-fast)}
+.sidebar-user:hover{border-color:var(--accent-blue);box-shadow:var(--shadow-sm)}
+.sidebar-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--navy-deep),var(--accent-blue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;overflow:hidden}
+.sidebar-avatar img{width:100%;height:100%;object-fit:cover}
+.sidebar-user-info{line-height:1.4;overflow:hidden}
+.sidebar-user-info .sname{font-weight:600;color:var(--text-main);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user-info .srole{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:var(--info-bg);color:var(--accent-blue);padding:2px 7px;border-radius:99px;display:inline-block;margin-top:2px}
+.nav-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-light);padding:0 24px;margin:10px 0 3px}
+.menu{list-style:none;display:flex;flex-direction:column;gap:2px;padding:0 12px}
+.menu li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:var(--trans-fast);color:#050d33;font-weight:500;font-size:14px;position:relative}
+.menu li i{width:18px;font-size:14px;text-align:center;transition:var(--trans-fast)}
+.menu li:hover{background:var(--surface-alt);color:var(--navy-deep)}
+.menu li.active{background:var(--navy-deep);color:#fff;box-shadow:0 4px 12px rgba(13,9,52,.3)}
+.menu li.active i{color:#fff}
+.menu-badge{position:absolute;right:10px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:99px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+
+/* === LANGUAGE PICKER === */
+.sidebar-lang{padding:10px 16px;margin:4px 0}
+.sidebar-lang label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;padding-left:2px}
+.lang-select-wrap{position:relative;display:flex;align-items:center}
+.lang-select-wrap i{position:absolute;left:11px;color:var(--accent-blue);font-size:14px;pointer-events:none;z-index:1}
+.sidebar-lang select{width:100%;padding:10px 12px 10px 34px;border-radius:10px;border:1.5px solid var(--border);background:#f8fafc;color:var(--text-main);font-size:13px;font-weight:600;cursor:pointer;outline:none;font-family:inherit;transition:var(--trans-fast);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.sidebar-lang select:hover{border-color:var(--accent-blue);background:#fff}
+.sidebar-lang select:focus{border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(59,130,246,.15);background:#fff}
+
+.sidebar-logout{display:flex;align-items:center;gap:10px;margin:8px 16px 20px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--danger);font-weight:500;font-size:13px;transition:var(--trans-fast);background:transparent;border:1px solid transparent}
+.sidebar-logout:hover{background:var(--danger-bg);border-color:#fecaca}
+
+/* MAIN */
+.main { flex: 1; padding: 32px; overflow-y: auto; }
+
+/* TOPBAR */
+.topbar {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 32px; gap:16px; flex-wrap:wrap;
+}
+.topbar-left h2 { font-size: 28px; font-weight: 800; color: var(--navy-deep); margin-bottom: 4px; letter-spacing: -0.02em; }
+.topbar-left p  { color: var(--text-muted); font-size: 15px; }
+
+.topbar-user {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--surface); padding: 8px 12px 8px 8px;
+    border-radius: 50px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+}
+.topbar-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--navy-light);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 14px; overflow: hidden;
+}
+.topbar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.topbar-user-info { display: flex; flex-direction: column; line-height: 1.2; padding-right: 8px; }
+.tname  { font-weight: 700; color: var(--text-main); font-size: 14px; }
+.tmeta  { font-size: 12px; color: var(--text-muted); }
+
+/* PROFILE HERO */
+.profile-hero {
+    background: linear-gradient(135deg, var(--navy-deep), var(--navy-light));
+    border-radius: 24px;
+    padding: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 40px -10px rgba(13,9,52,.35);
+}
+.profile-hero::before {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 240px; height: 240px; border-radius: 50%;
+    background: rgba(59,130,246,.12); pointer-events: none;
+}
+.profile-hero::after {
+    content: '';
+    position: absolute; bottom: -40px; left: 100px;
+    width: 160px; height: 160px; border-radius: 50%;
+    background: rgba(255,255,255,.04); pointer-events: none;
+}
+
+.hero-left { display: flex; align-items: center; gap: 24px; position: relative; z-index: 1; }
+
+.avatar-ring {
+    position: relative;
+    width: 108px; height: 108px; flex-shrink: 0;
+}
+.avatar-ring::before {
+    content: '';
+    position: absolute; inset: -4px;
+    border-radius: 50%;
+    border: 3px solid rgba(59,130,246,.6);
+    animation: ringPulse 2.5s ease-in-out infinite;
+}
+@keyframes ringPulse {
+    0%, 100% { transform: scale(1); opacity: .8; }
+    50%       { transform: scale(1.06); opacity: .4; }
+}
+.hero-avatar {
+    width: 108px; height: 108px; border-radius: 50%;
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 40px; font-weight: 800;
+    overflow: hidden; border: 4px solid rgba(255,255,255,.2);
+    cursor: pointer; transition: var(--trans-smooth);
+}
+.hero-avatar:hover { transform: scale(1.05); border-color: rgba(255,255,255,.5); }
+.hero-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.avatar-upload-hint {
+    position: absolute; bottom: 4px; right: 4px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent-blue); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; border: 2px solid #fff;
+    cursor: pointer; transition: var(--trans-fast); z-index: 2;
+}
+.avatar-upload-hint:hover { background: #1d4ed8; transform: scale(1.1); }
+
+.hero-info { color: #fff; }
+.hero-info h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+.hero-info .email-line { color: rgba(255,255,255,.7); font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.hero-info .badges { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-badge {
+    padding: 5px 14px; border-radius: 99px;
+    font-size: 12px; font-weight: 700;
+    background: rgba(255,255,255,.15); color: #fff;
+    border: 1px solid rgba(255,255,255,.2);
+    display: flex; align-items: center; gap: 6px;
+}
+.hero-badge.role { background: rgba(59,130,246,.3); border-color: rgba(59,130,246,.5); }
+
+.hero-right { position: relative; z-index: 1; }
+.edit-profile-btn {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff; color: var(--navy-deep);
+    border: none; padding: 13px 24px; border-radius: 14px;
+    font-weight: 700; font-size: 14px; cursor: pointer;
+    transition: var(--trans-smooth); box-shadow: 0 4px 16px rgba(0,0,0,.2);
+    font-family: 'Inter', sans-serif;
+}
+.edit-profile-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+
+/* DETAIL CARDS */
+.details-section { margin-bottom: 32px; }
+.section-label {
+    font-size: 13px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text-muted);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.detail-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 18px 20px;
+    box-shadow: var(--shadow-sm); transition: var(--trans-smooth);
+    display: flex; align-items: flex-start; gap: 14px;
+}
+.detail-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--accent-blue); }
+
+.detail-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+}
+.detail-icon.blue   { background: var(--info-bg);    color: var(--info);    }
+.detail-icon.green  { background: var(--success-bg); color: var(--success); }
+.detail-icon.amber  { background: var(--warning-bg); color: var(--warning); }
+.detail-icon.purple { background: var(--purple-bg);  color: var(--purple);  }
+.detail-icon.teal   { background: #ccfbf1;           color: #0d9488;        }
+.detail-icon.rose   { background: #ffe4e6;            color: #f43f5e;        }
+
+.detail-content label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--text-light); margin-bottom: 4px; }
+.detail-content p     { font-size: 15px; font-weight: 600; color: var(--text-main); line-height: 1.3; }
+
+/* BIO CARD */
+.bio-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px 22px;
+    box-shadow: var(--shadow-sm); margin-bottom: 28px;
+}
+.bio-card .bio-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-light); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.bio-card .bio-text  { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+
+/* INTERESTS CARD */
+.interests-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 22px 24px;
+    box-shadow: var(--shadow-sm); margin-bottom: 28px;
+}
+.interests-head { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom: 14px; }
+.interests-head h3 { font-size: 17px; font-weight: 700; color: var(--navy-deep); display:flex; align-items:center; gap:8px; }
+.interests-head p { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+.interests-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.interest-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 16px; border-radius: 99px;
+    font-size: 13px; font-weight: 600;
+    border: 1.5px solid var(--border); background: var(--surface-alt);
+    color: var(--text-muted); cursor: pointer; transition: var(--trans-fast);
+    user-select: none;
+}
+.interest-chip i { font-size: 11px; }
+.interest-chip:hover { border-color: var(--accent-blue); color: var(--accent-blue); transform: translateY(-1px); }
+.interest-chip.selected {
+    background: linear-gradient(135deg, var(--navy-deep), var(--accent-blue));
+    color: #fff; border-color: transparent;
+    box-shadow: 0 4px 12px rgba(59,130,246,.25);
+}
+.interest-chip.selected:hover { color: #fff; }
+.interests-footer { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-top: 14px; border-top: 1px solid var(--border); }
+.interests-count { font-size: 12.5px; color: var(--text-muted); font-weight:600; }
+.interests-count b { color: var(--navy-deep); }
+.btn-save-interests {
+    padding: 10px 22px; border-radius: 12px; border: none;
+    background: var(--navy-deep); color: #fff;
+    font-weight: 700; font-size: 13px; cursor: pointer;
+    transition: var(--trans-fast); display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 12px rgba(13,9,52,.2); font-family: 'Inter', sans-serif;
+}
+.btn-save-interests:hover { background: var(--navy-mid); transform: translateY(-1px); }
+.btn-save-interests:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+/* MY REGISTRATIONS */
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap:wrap; gap:10px;}
+.section-header h3 { font-size: 20px; font-weight: 700; color: var(--navy-deep); letter-spacing: -0.01em; }
+
+.event-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; margin-bottom: 40px; }
+.event-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
+    box-shadow: var(--shadow-sm); transition: var(--trans-smooth);
+}
+.event-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: var(--accent-blue); }
+.event-card img { width: 100%; height: 180px; object-fit: cover; }
+.event-content { padding: 18px 20px; }
+.event-content h3 { font-size: 15px; font-weight: 700; color: var(--navy-deep); margin-bottom: 10px; }
+.event-meta { display: flex; flex-direction: column; gap: 5px; }
+.event-meta span { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+.event-meta span i { color: var(--accent-blue); width: 14px; }
+.reg-status-chip{font-size:9px;padding:2px 9px;border-radius:99px;font-weight:700;text-transform:uppercase;display:inline-block;margin-top:8px;}
+.reg-status-chip.confirmed{background:var(--success-bg);color:var(--success)}
+.reg-status-chip.pending{background:var(--warning-bg);color:var(--warning)}
+.reg-status-chip.cancelled{background:var(--danger-bg);color:var(--danger)}
+
+.empty-box { padding: 40px 20px; text-align: center; color: var(--text-muted); background: var(--surface-alt); border-radius: 16px; border: 1px dashed var(--border); }
+.empty-box i { font-size: 32px; display: block; margin-bottom: 12px; color: var(--text-light); }
+
+/* EDIT MODAL */
+.modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 999;
+}
+
+.modal-box {
+    width: 100%; max-width: 860px;
+    background: #fff; border-radius: 28px;
+    overflow: hidden;
+    display: grid; grid-template-columns: 260px 1fr;
+    box-shadow: 0 24px 60px rgba(0,0,0,.18);
+    max-height: 94vh;
+    position: relative;
+}
+
+.modal-panel-left {
+    background: linear-gradient(175deg, var(--navy-deep), var(--navy-mid));
+    padding: 32px 24px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 20px;
+    position: relative; overflow: hidden;
+}
+.modal-panel-left::before {
+    content: '';
+    position: absolute; top: -50px; right: -50px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: rgba(59,130,246,.12); pointer-events: none;
+}
+
+.modal-avatar-wrap { position: relative; }
+.modal-avatar-wrap .m-avatar {
+    width: 100px; height: 100px; border-radius: 50%;
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 36px; font-weight: 800;
+    overflow: hidden; border: 4px solid rgba(255,255,255,.2);
+}
+.modal-avatar-wrap .m-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.m-upload-btn {
+    position: absolute; bottom: 2px; right: 2px;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--accent-blue); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; border: 2px solid #fff;
+    cursor: pointer; transition: var(--trans-fast);
+}
+.m-upload-btn:hover { background: #1d4ed8; }
+
+.modal-panel-left h3 { color: #fff; font-size: 16px; font-weight: 700; text-align: center; }
+.modal-panel-left p  { color: rgba(255,255,255,.6); font-size: 12px; text-align: center; line-height: 1.5; }
+
+.locked-info-list { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.locked-item {
+    background: rgba(255,255,255,.08); border-radius: 12px;
+    padding: 12px 14px; border: 1px solid rgba(255,255,255,.1);
+}
+.locked-item .l-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: rgba(255,255,255,.5); margin-bottom: 4px; }
+.locked-item .l-value { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.9); }
+
+.modal-panel-right {
+    padding: 28px 30px;
+    overflow-y: auto; max-height: 94vh;
+    display: flex; flex-direction: column; gap: 20px;
+}
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; }
+.modal-header h2 { font-size: 22px; font-weight: 800; color: var(--navy-deep); }
+.modal-close {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--surface-alt); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: var(--trans-fast); font-size: 15px; color: var(--text-muted);
+}
+.modal-close:hover { background: var(--navy-deep); color: #fff; border-color: var(--navy-deep); }
+
+.form-section-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .8px; color: var(--text-light);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.form-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid .full { grid-column: 1 / -1; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 13px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+.form-group label i { font-size: 12px; color: var(--accent-blue); }
+
+.input-wrap { position: relative; display: flex; align-items: center; }
+.input-wrap > .input-icon {
+    position: absolute; left: 13px;
+    color: var(--text-light); font-size: 13px; pointer-events: none; z-index: 1;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 11px 14px 11px 38px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-alt);
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+    appearance: none;
+}
+.form-group textarea { padding-top: 11px; min-height: 80px; resize: vertical; }
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--accent-blue);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+}
+
+.pw-strength-bar { height: 4px; border-radius: 99px; background: var(--border); margin-top: 6px; overflow: hidden; }
+.pw-strength-fill { height: 100%; border-radius: 99px; transition: width .3s, background .3s; width: 0; }
+.pw-strength-text { font-size: 12px; font-weight: 600; margin-top: 4px; }
+.pw-weak   { color: var(--danger);  }
+.pw-medium { color: var(--warning); }
+.pw-strong { color: var(--success); }
+
+.modal-footer {
+    padding-top: 16px; border-top: 1px solid var(--border);
+    display: flex; gap: 12px; justify-content: flex-end;
+}
+.btn-cancel-modal {
+    padding: 11px 24px; border-radius: 12px; border: 1.5px solid var(--border);
+    background: var(--surface-alt); color: var(--text-main);
+    font-weight: 600; font-size: 14px; cursor: pointer;
+    transition: var(--trans-fast); font-family: 'Inter', sans-serif;
+}
+.btn-cancel-modal:hover { background: #e2e8f0; }
+.btn-save {
+    padding: 11px 28px; border-radius: 12px; border: none;
+    background: var(--navy-deep); color: #fff;
+    font-weight: 700; font-size: 14px; cursor: pointer;
+    transition: var(--trans-fast); display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 12px rgba(13,9,52,.2); font-family: 'Inter', sans-serif;
+}
+.btn-save:hover { background: var(--navy-mid); transform: translateY(-1px); }
+.btn-save:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+/* TOAST */
+.toast {
+    position: fixed; top: 24px; right: 24px;
+    background: var(--navy-deep); color: #fff;
+    padding: 14px 20px; border-radius: 14px;
+    font-size: 14px; font-weight: 600;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.2);
+    z-index: 9999; opacity: 0; transform: translateY(-12px);
+    transition: opacity .3s, transform .3s;
+    max-width: 360px;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success .toast-icon { color: var(--success); }
+.toast.error   .toast-icon { color: var(--danger);  }
+.toast.info    .toast-icon { color: var(--accent-blue); }
+
+.loading-shimmer {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px; height: 18px; width: 80%;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+.hidden { display: none !important; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+@media(max-width:1100px){
+    .sidebar { width: 80px; }
+    .sb-name, .sb-role, .nav-item span, .sb-logout span, .nav-label, .sidebar-lang label, .sidebar-lang select { display: none; }
+    .sb-profile { justify-content: center; padding: 10px; }
+    .nav-item { justify-content: center; padding: 14px; }
+    .logo-area img { display: none; }
+    .logo-area::before { content: '\f19d'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 24px; color: var(--navy-deep); }
+}
+@media(max-width:900px){
+    .container { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; align-items: center; padding: 10px 20px; border-bottom: 1px solid var(--border); border-right: none; overflow-x: auto; flex-shrink: 0; }
+    .logo-area, .sb-profile, .sidebar-lang { display: none; }
+    .nav-section { display: flex; flex-direction: row; width: 100%; padding:0; }
+    .nav-label { display: none; }
+    .sb-footer { display: none; }
+    .nav-item { padding: 8px 12px; margin-bottom:0; white-space:nowrap; }
+    .main { padding: 20px; }
+    .modal-box { grid-template-columns: 1fr; max-height: 95vh; overflow-y: auto; }
+    .modal-panel-left { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+    .topbar { flex-direction: column; align-items: flex-start; gap: 16px; }
+}
+@media(max-width:600px){
+    .main { padding: 16px; }
+    .profile-hero { flex-direction: column; }
+    .details-grid { grid-template-columns: 1fr 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .full { grid-column: 1; }
+    .event-grid { grid-template-columns: 1fr; }
+    .modal-box { grid-template-columns: 1fr; }
+    .modal-panel-left { padding: 24px; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <img src="images/UClogo.png" alt="UniConnect" onerror="this.style.display='none';document.getElementById('logoText').style.display='block'">
+    <span class="logo-text" id="logoText" style="display:none">Uni<span>Connect</span></span>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebarAvatar">--</div>
+    <div class="sidebar-user-info">
+      <div class="sname" id="sidebarName">Loading…</div>
+      <div class="srole">Student</div>
+    </div>
+  </div>
+  <span class="nav-label">Main Menu</span>
+  <ul class="menu" id="mainMenu">
+   <li onclick="window.location.href='Userdashboard.html'"><i class="fa-solid fa-user"></i><span>Dashboard</span></li>
+     <li class="active"><i class="fa-solid fa-house"></i><span>My Profile</span></li>
+    
+    <li onclick="window.location.href='Allevents.html'"><i class="fa-solid fa-calendar-days"></i><span>Browse Events</span></li>
+    <li onclick="window.location.href='Myactivities.html'">
+      <i class="fa-solid fa-ticket"></i><span>Activity Log</span>
+      <span class="menu-badge" id="regBadge" style="display:none">0</span>
+    </li>
+  </ul>
+  <span class="nav-label" style="margin-top:6px">Account</span>
+  <ul class="menu">
+    <li onclick="window.location.href='NotificationsPart.html'">
+      <i class="fa-solid fa-bell"></i><span>Notifications</span>
+      <span class="menu-badge" id="notificationCount" style="display:none">0</span>
+    </li>
+    <li><i class="fa-solid fa-gear"></i><span>Settings</span></li>
+  </ul>
+  <div class="sidebar-lang">
+    <label for="langSelect">🌐 Language</label>
+    <div class="lang-select-wrap">
+      <i class="fa-solid fa-globe"></i>
+      <select id="langSelect" onchange="doGoogleTranslate(this.value)">
+        <option value="en">English</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+        <option value="si">සිංහල (Sinhala)</option>
+      </select>
+    </div>
+  </div>
+  <div class="sidebar-logout" onclick="logout()">
+    <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+    <header class="topbar">
+        <div class="topbar-left">
+            <h2>My Profile</h2>
+            <p>Manage your account details, interests and registrations</p>
+        </div>
+        <div class="topbar-user">
+            <div class="topbar-avatar" id="topbarAvatar">--</div>
+            <div class="topbar-user-info">
+                <div class="tname" id="topbarName">Loading…</div>
+                <div class="tmeta">Student Portal</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="profile-hero">
+        <div class="hero-left">
+            <div class="avatar-ring">
+                <div class="hero-avatar" id="heroAvatar" onclick="document.getElementById('quickImageInput').click()">
+                    <span id="heroInitials">S</span>
+                </div>
+                <div class="avatar-upload-hint" onclick="document.getElementById('quickImageInput').click()" title="Change photo">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
+            </div>
+            <div class="hero-info">
+                <h1 id="heroName">Loading…</h1>
+                <div class="email-line">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span id="heroEmail">—</span>
+                </div>
+                <div class="badges">
+                    <span class="hero-badge role"><i class="fa-solid fa-graduation-cap"></i> Student</span>
+                    <span class="hero-badge" id="heroBadgeUni"><i class="fa-solid fa-university"></i> —</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-right">
+            <button class="edit-profile-btn" onclick="openEditModal()">
+                <i class="fa-solid fa-pen-to-square"></i>
+                Edit Profile
+            </button>
+        </div>
+    </div>
+
+    <div class="details-section">
+        <div class="section-label"><i class="fa-solid fa-circle-info" style="color:var(--accent-blue)"></i> Personal Information</div>
+        <div class="details-grid" id="detailsGrid">
+            <div class="detail-card"><div class="detail-icon blue"><i class="fa-solid fa-id-card"></i></div><div class="detail-content"><label>User ID</label><div class="loading-shimmer"></div></div></div>
+            <div class="detail-card"><div class="detail-icon green"><i class="fa-solid fa-envelope"></i></div><div class="detail-content"><label>Email Address</label><div class="loading-shimmer"></div></div></div>
+            <div class="detail-card"><div class="detail-icon amber"><i class="fa-solid fa-phone"></i></div><div class="detail-content"><label>Contact Number</label><div class="loading-shimmer"></div></div></div>
+            <div class="detail-card"><div class="detail-icon purple"><i class="fa-solid fa-user"></i></div><div class="detail-content"><label>Full Name</label><div class="loading-shimmer"></div></div></div>
+        </div>
+    </div>
+
+    <div class="details-section">
+        <div class="section-label"><i class="fa-solid fa-building-columns" style="color:var(--accent-teal)"></i> Institution Details</div>
+        <div class="details-grid" id="institutionGrid">
+            <div class="detail-card"><div class="detail-icon teal"><i class="fa-solid fa-university"></i></div><div class="detail-content"><label>University</label><div class="loading-shimmer"></div></div></div>
+            <div class="detail-card"><div class="detail-icon purple"><i class="fa-solid fa-building"></i></div><div class="detail-content"><label>Faculty</label><div class="loading-shimmer"></div></div></div>
+            <div class="detail-card"><div class="detail-icon rose"><i class="fa-solid fa-sitemap"></i></div><div class="detail-content"><label>Department</label><div class="loading-shimmer"></div></div></div>
+        </div>
+    </div>
+
+    <div class="bio-card" id="bioCard">
+        <div class="bio-label"><i class="fa-solid fa-quote-left" style="color:var(--accent-blue)"></i> About Me</div>
+        <div class="bio-text" id="bioText">—</div>
+    </div>
+
+    <!-- ===== MY INTERESTS ===== -->
+    <div class="interests-card">
+        <div class="interests-head">
+            <div>
+                <h3><i class="fa-solid fa-wand-magic-sparkles" style="color:#d97706"></i> My Interests</h3>
+                <p>Select topics you care about — we'll use these to recommend events that match you.</p>
+            </div>
+        </div>
+        <div class="interests-grid" id="interestsGrid">
+            <div class="loading-shimmer" style="width:90px;height:34px;border-radius:99px;display:inline-block"></div>
+            <div class="loading-shimmer" style="width:110px;height:34px;border-radius:99px;display:inline-block"></div>
+            <div class="loading-shimmer" style="width:80px;height:34px;border-radius:99px;display:inline-block"></div>
+            <div class="loading-shimmer" style="width:130px;height:34px;border-radius:99px;display:inline-block"></div>
+        </div>
+        <div class="interests-footer">
+            <div class="interests-count"><b id="interestsSelectedCount">0</b> interest<span id="interestsPlural">s</span> selected</div>
+            <button class="btn-save-interests" id="saveInterestsBtn" onclick="saveInterests()">
+                <i class="fa-solid fa-floppy-disk"></i> Save Interests
+            </button>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <h3>My Registrations</h3>
+        <button class="view-btn" style="border:none;padding:9px 18px;border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;color:#fff;background:var(--navy-deep);box-shadow:0 4px 12px rgba(13,9,52,.15)" onclick="window.location.href='Myregistrations_Student.html'">View All →</button>
+    </div>
+    <div class="event-grid" id="eventGrid">
+        <div class="empty-box" style="grid-column:1/-1">
+            <i class="fa-solid fa-calendar-days"></i>Loading registrations…
+        </div>
+    </div>
+
+</main>
+</div>
+
+<input type="file" id="quickImageInput" accept="image/*" style="display:none">
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-box">
+
+        <div class="modal-panel-left">
+            <div class="modal-avatar-wrap">
+                <div class="m-avatar" id="modalAvatar">
+                    <span id="modalInitials">S</span>
+                </div>
+                <div class="m-upload-btn" onclick="document.getElementById('editImageInput').click()" title="Upload photo">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
+            </div>
+            <input type="file" id="editImageInput" accept="image/*" style="display:none">
+
+            <h3 id="modalNameDisplay">Your Name</h3>
+            <p>Upload a photo from your computer. It will be saved to your profile.</p>
+
+            <div class="locked-info-list" style="margin-top:8px;">
+                <div class="locked-item">
+                    <div class="l-label">University</div>
+                    <div class="l-value" id="lockedUni">—</div>
+                </div>
+                <div class="locked-item">
+                    <div class="l-label">Role</div>
+                    <div class="l-value" id="lockedRole">Student</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-panel-right">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <div class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+
+            <div>
+                <div class="form-section-label">Basic Information</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user"></i> Full Name</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-user input-icon"></i>
+                            <input type="text" id="editName" placeholder="Your full name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-envelope"></i> Email Address</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                            <input type="email" id="editEmail" placeholder="your@email.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-phone"></i> Contact Number</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-phone input-icon"></i>
+                            <input type="text" id="editContact" placeholder="+94 7X XXX XXXX">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-building"></i> Faculty</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-building input-icon"></i>
+                            <input type="text" id="editFaculty" placeholder="Faculty name">
+                        </div>
+                    </div>
+                    <div class="form-group full">
+                        <label><i class="fa-solid fa-sitemap"></i> Department</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-sitemap input-icon"></i>
+                            <input type="text" id="editDepartment" placeholder="Department name">
+                        </div>
+                    </div>
+                    <div class="form-group full">
+                        <label><i class="fa-solid fa-comment"></i> Bio</label>
+                        <div class="input-wrap" style="align-items:flex-start;">
+                            <i class="fa-solid fa-comment input-icon" style="top:14px;position:absolute;left:13px;"></i>
+                            <textarea id="editBio" placeholder="Tell others a bit about yourself…" style="padding-left:38px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="form-section-label">Change Password</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-lock"></i> New Password</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="editPassword" placeholder="Leave blank to keep current" oninput="checkPwStrength()">
+                        </div>
+                        <div class="pw-strength-bar"><div class="pw-strength-fill" id="pwFill"></div></div>
+                        <div class="pw-strength-text" id="pwText"></div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-lock-open"></i> Confirm Password</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-lock-open input-icon"></i>
+                            <input type="password" id="editPasswordConfirm" placeholder="Repeat new password" oninput="checkPwMatch()">
+                        </div>
+                        <div class="pw-strength-text" id="pwMatchText"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancel-modal" onclick="closeModal()">Cancel</button>
+                <button class="btn-save" id="saveBtn" onclick="saveProfile()">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Changes
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="toast" id="toast">
+    <i class="fa-solid toast-icon" id="toastIcon"></i>
+    <span id="toastMsg">Message</span>
+</div>
+
+<script>
+const BASE_URL  = "http://localhost:3000";
+const API_BASE  = `${BASE_URL}/api/users`;
+
+const token  = sessionStorage.getItem("token");
+const userId = sessionStorage.getItem("user_id");
+
+if (!token || !userId) {
+    window.location.href = "Login.html";
+}
+
+let currentUser = null;
+let allInterests = [];      // [{interest_id, interest_name}]
+let selectedInterestIds = new Set();
+
+/* ── HELPERS ──────────────────────────────────────── */
+function makeInitials(n) {
+    if (!n) return "--";
+    return n.trim().split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase();
+}
+function imgSrc(path) {
+    if (!path) return null;
+    if (path.startsWith("http")) return path;
+    return `${BASE_URL}${path}`;
+}
+function safeSet(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.innerText = val ?? "—";
+}
+function authHeaders(extra) {
+    return Object.assign({ "Authorization": "Bearer " + token }, extra || {});
+}
+function logout() {
+    sessionStorage.clear();
+    window.location.href = "Login.html";
+}
+
+/* ── TOAST ────────────────────────────────────────── */
+let toastTimer;
+function showToast(msg, type = "info") {
+    const t  = document.getElementById("toast");
+    const ic = document.getElementById("toastIcon");
+    document.getElementById("toastMsg").innerText = msg;
+    t.className = `toast ${type} show`;
+    ic.className = `fa-solid toast-icon fa-${
+        type === "success" ? "circle-check" :
+        type === "error"   ? "circle-xmark" : "circle-info"
+    }`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 3500);
+}
+
+/* ── RENDER PROFILE ───────────────────────────────── */
+function renderProfile() {
+    const user = currentUser;
+    const name = user.full_name || "—";
+    const src  = imgSrc(user.profile_image);
+
+    safeSet("heroName",     name);
+    safeSet("heroEmail",    user.email || "—");
+    safeSet("heroInitials", makeInitials(name));
+    safeSet("heroBadgeUni", `🏛 ${user.university || user.university_name || "—"}`);
+
+    const heroAv = document.getElementById("heroAvatar");
+    heroAv.innerHTML = src
+        ? `<img src="${src}" onerror="this.parentElement.innerHTML='${makeInitials(name)}'">`
+        : makeInitials(name);
+
+    safeSet("sidebarName", name);
+    safeSet("topbarName",  name);
+
+    const sa = document.getElementById("sidebarAvatar");
+    if (sa) sa.innerHTML = src
+        ? `<img src="${src}" onerror="this.parentElement.innerText='${makeInitials(name)}'">`
+        : makeInitials(name);
+
+    const ta = document.getElementById("topbarAvatar");
+    if (ta) ta.innerHTML = src
+        ? `<img src="${src}" onerror="this.parentElement.innerText='${makeInitials(name)}'">`
+        : makeInitials(name);
+
+    document.getElementById("detailsGrid").innerHTML = `
+        <div class="detail-card">
+            <div class="detail-icon blue"><i class="fa-solid fa-id-badge"></i></div>
+            <div class="detail-content"><label>User ID</label><p>${user.user_id || "—"}</p></div>
+        </div>
+        <div class="detail-card">
+            <div class="detail-icon green"><i class="fa-solid fa-envelope"></i></div>
+            <div class="detail-content"><label>Email Address</label><p>${user.email || "—"}</p></div>
+        </div>
+        <div class="detail-card">
+            <div class="detail-icon amber"><i class="fa-solid fa-phone"></i></div>
+            <div class="detail-content"><label>Contact Number</label><p>${user.contact_number || "—"}</p></div>
+        </div>
+        <div class="detail-card">
+            <div class="detail-icon purple"><i class="fa-solid fa-user"></i></div>
+            <div class="detail-content"><label>Full Name</label><p>${user.full_name || "—"}</p></div>
+        </div>`;
+
+    document.getElementById("institutionGrid").innerHTML = `
+        <div class="detail-card">
+            <div class="detail-icon teal"><i class="fa-solid fa-university"></i></div>
+            <div class="detail-content"><label>University</label><p>${user.university || user.university_name || "—"}</p></div>
+        </div>
+        <div class="detail-card">
+            <div class="detail-icon purple"><i class="fa-solid fa-building"></i></div>
+            <div class="detail-content"><label>Faculty</label><p>${user.faculty_name || "—"}</p></div>
+        </div>
+        <div class="detail-card">
+            <div class="detail-icon rose"><i class="fa-solid fa-sitemap"></i></div>
+            <div class="detail-content"><label>Department</label><p>${user.department_name || "—"}</p></div>
+        </div>`;
+
+    safeSet("bioText", user.profile_bio || "No bio added yet. Click Edit Profile to add one.");
+}
+
+/* ── LOAD PROFILE ─────────────────────────────────── */
+async function loadProfile() {
+    try {
+        const res  = await fetch(`${API_BASE}/${encodeURIComponent(userId)}`, { headers: authHeaders() });
+        const data = await res.json();
+
+        if (!data.success) {
+            showToast(data.message || "Failed to load profile", "error");
+            return;
+        }
+
+        currentUser = data.data;
+        renderProfile();
+        loadRegistrations();
+
+    } catch (err) {
+        showToast("Failed to load profile", "error");
+        console.error("loadProfile error:", err);
+    }
+}
+
+/* ── MY REGISTRATIONS ─────────────────────────────── */
+function formatDate(d) {
+    if (!d) return "—";
+    return String(d).split("T")[0];
+}
+async function loadRegistrations() {
+    try {
+        const res  = await fetch(`${BASE_URL}/api/registrations/student/${userId}`, { headers: authHeaders() });
+        const data = await res.json();
+        const regs = Array.isArray(data) ? data : (data.registrations || data.data || []);
+        renderRegistrations(regs);
+    } catch (err) {
+        console.error("loadRegistrations error:", err);
+        const grid = document.getElementById("eventGrid");
+        if (grid) grid.innerHTML = `<div class="empty-box" style="grid-column:1/-1"><i class="fa-solid fa-triangle-exclamation"></i>Could not load registrations.</div>`;
+    }
+}
+function renderRegistrations(regs) {
+    const grid = document.getElementById("eventGrid");
+    if (!regs || !regs.length) {
+        grid.innerHTML = `<div class="empty-box" style="grid-column:1/-1"><i class="fa-solid fa-calendar-xmark"></i>You haven't registered for any events yet.</div>`;
+        return;
+    }
+    grid.innerHTML = regs.slice(0, 6).map(r => {
+        const image = r.image_url
+            ? `${BASE_URL}${r.image_url}`
+            : `https://picsum.photos/seed/reg${r.event_id}/400/250`;
+        const status = (r.status || "pending").toLowerCase();
+        const title = r.event_title || r.title || "—";
+        return `
+        <div class="event-card">
+            <img src="${image}" alt="${title}"
+                 onerror="this.src='https://picsum.photos/seed/reg${r.event_id}/400/250'">
+            <div class="event-content">
+                <h3>${title}</h3>
+                <div class="event-meta">
+                    <span><i class="fa-solid fa-calendar"></i> ${formatDate(r.event_date)}</span>
+                    <span><i class="fa-solid fa-location-dot"></i> ${r.venue || "—"}</span>
+                </div>
+                <span class="reg-status-chip ${status}">${r.status || "pending"}</span>
+            </div>
+        </div>`;
+    }).join("");
+}
+
+/* ── INTERESTS ────────────────────────────────────── */
+async function loadInterests() {
+    try {
+        const [allRes, mineRes] = await Promise.all([
+            fetch(`${BASE_URL}/api/interests`, { headers: authHeaders() }),
+            fetch(`${BASE_URL}/api/recommendations/${userId}/interests`, { headers: authHeaders() })
+        ]);
+
+        const allData  = await allRes.json();
+        const mineData = await mineRes.json();
+
+        allInterests = allData.interests || allData.data || [];
+        const mine    = mineData.interests || mineData.data || [];
+
+        selectedInterestIds = new Set(mine.map(i => Number(i.interest_id)));
+
+        renderInterests();
+    } catch (err) {
+        console.error("loadInterests error:", err);
+        const grid = document.getElementById("interestsGrid");
+        if (grid) grid.innerHTML = `<div class="empty-box" style="grid-column:1/-1"><i class="fa-solid fa-triangle-exclamation"></i>Could not load interests.</div>`;
+    }
+}
+
+function renderInterests() {
+    const grid = document.getElementById("interestsGrid");
+    if (!grid) return;
+
+    if (!allInterests.length) {
+        grid.innerHTML = `<div class="empty-box" style="grid-column:1/-1">
+            <i class="fa-solid fa-tags"></i>No interest categories available yet.
+        </div>`;
+        updateInterestsCount();
+        return;
+    }
+
+    grid.innerHTML = allInterests.map(i => {
+        const id = Number(i.interest_id);
+        const selected = selectedInterestIds.has(id) ? "selected" : "";
+        return `<div class="interest-chip ${selected}" data-id="${id}" onclick="toggleInterest(${id})">
+            <i class="fa-solid ${selected ? 'fa-check' : 'fa-plus'}"></i> ${i.interest_name}
+        </div>`;
+    }).join("");
+
+    updateInterestsCount();
+}
+
+function toggleInterest(id) {
+    if (selectedInterestIds.has(id)) selectedInterestIds.delete(id);
+    else selectedInterestIds.add(id);
+    renderInterests();
+}
+
+function updateInterestsCount() {
+    const count = selectedInterestIds.size;
+    safeSet("interestsSelectedCount", count);
+    const pl = document.getElementById("interestsPlural");
+    if (pl) pl.innerText = count === 1 ? "" : "s";
+}
+
+async function saveInterests() {
+    const btn = document.getElementById("saveInterestsBtn");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving…`;
+
+    try {
+        const res  = await fetch(`${API_BASE}/${userId}/interests`, {
+            method: "PUT",
+            headers: authHeaders({ "Content-Type": "application/json" }),
+            body: JSON.stringify({ interest_ids: Array.from(selectedInterestIds) })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+            showToast(data.message || "Could not save interests", "error");
+        } else {
+            showToast("Interests updated! Your recommendations will refresh.", "success");
+        }
+    } catch (err) {
+        console.error("saveInterests error:", err);
+        showToast("Server error while saving interests", "error");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Interests`;
+    }
+}
+
+/* ── OPEN / CLOSE MODAL ───────────────────────────── */
+function openEditModal() {
+    if (!currentUser) return;
+
+    document.getElementById("editName").value           = currentUser.full_name      || "";
+    document.getElementById("editEmail").value          = currentUser.email          || "";
+    document.getElementById("editContact").value        = currentUser.contact_number || "";
+    document.getElementById("editFaculty").value        = currentUser.faculty_name   || "";
+    document.getElementById("editDepartment").value     = currentUser.department_name || "";
+    document.getElementById("editBio").value            = currentUser.profile_bio    || "";
+    document.getElementById("editPassword").value       = "";
+    document.getElementById("editPasswordConfirm").value = "";
+    document.getElementById("pwFill").style.width       = "0";
+    document.getElementById("pwText").innerText         = "";
+    document.getElementById("pwMatchText").innerText    = "";
+
+    const ma  = document.getElementById("modalAvatar");
+    const src = imgSrc(currentUser.profile_image);
+    ma.innerHTML = src
+        ? `<img src="${src}" onerror="this.parentElement.innerHTML='${makeInitials(currentUser.full_name)}'">`
+        : makeInitials(currentUser.full_name);
+
+    safeSet("modalNameDisplay", currentUser.full_name);
+    safeSet("lockedUni",  currentUser.university || currentUser.university_name || "—");
+    safeSet("lockedRole", "Student");
+
+    document.getElementById("editModal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("editModal").style.display = "none";
+}
+
+window.addEventListener("click", e => {
+    if (e.target === document.getElementById("editModal")) closeModal();
+});
+
+/* ── PASSWORD STRENGTH ────────────────────────────── */
+function checkPwStrength() {
+    const pw   = document.getElementById("editPassword").value;
+    const fill = document.getElementById("pwFill");
+    const text = document.getElementById("pwText");
+    if (!pw) { fill.style.width = "0"; text.innerText = ""; return; }
+    const strong = pw.length >= 8 && /[A-Z]/.test(pw) && /[0-9]/.test(pw) && /[^A-Za-z0-9]/.test(pw);
+    const medium = pw.length >= 6 && (/[A-Z]/.test(pw) || /[0-9]/.test(pw));
+    if (strong)      { fill.style.width = "100%"; fill.style.background = "var(--success)"; text.innerText = "Strong"; text.className = "pw-strength-text pw-strong"; }
+    else if (medium) { fill.style.width = "60%";  fill.style.background = "var(--warning)"; text.innerText = "Medium"; text.className = "pw-strength-text pw-medium"; }
+    else             { fill.style.width = "25%";  fill.style.background = "var(--danger)";  text.innerText = "Weak";   text.className = "pw-strength-text pw-weak";   }
+}
+
+function checkPwMatch() {
+    const pw1 = document.getElementById("editPassword").value;
+    const pw2 = document.getElementById("editPasswordConfirm").value;
+    const mt  = document.getElementById("pwMatchText");
+    if (!pw2) { mt.innerText = ""; return; }
+    if (pw1 === pw2) { mt.innerText = "✓ Passwords match";       mt.className = "pw-strength-text pw-strong"; }
+    else             { mt.innerText = "✗ Passwords do not match"; mt.className = "pw-strength-text pw-weak";   }
+}
+
+/* ── LIVE AVATAR PREVIEW ──────────────────────────── */
+document.getElementById("editImageInput").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const src = ev.target.result;
+        document.getElementById("modalAvatar").innerHTML  = `<img src="${src}">`;
+        document.getElementById("heroAvatar").innerHTML   = `<img src="${src}">`;
+        const sa = document.getElementById("sidebarAvatar"); if (sa) sa.innerHTML = `<img src="${src}">`;
+        const ta = document.getElementById("topbarAvatar");  if (ta) ta.innerHTML = `<img src="${src}">`;
+    };
+    reader.readAsDataURL(file);
+});
+
+document.getElementById("quickImageInput").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    document.getElementById("editImageInput").files = dt.files;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const src = ev.target.result;
+        document.getElementById("heroAvatar").innerHTML  = `<img src="${src}">`;
+        const sa = document.getElementById("sidebarAvatar"); if (sa) sa.innerHTML = `<img src="${src}">`;
+        const ta = document.getElementById("topbarAvatar");  if (ta) ta.innerHTML = `<img src="${src}">`;
+        openEditModal();
+    };
+    reader.readAsDataURL(file);
+});
+
+/* ── SAVE PROFILE ─────────────────────────────────── */
+async function saveProfile() {
+    const pw1 = document.getElementById("editPassword").value;
+    const pw2 = document.getElementById("editPasswordConfirm").value;
+    if (pw1 && pw1 !== pw2) { showToast("Passwords do not match", "error"); return; }
+
+    const btn = document.getElementById("saveBtn");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving…`;
+
+    try {
+        const formData = new FormData();
+        formData.append("full_name",       document.getElementById("editName").value);
+        formData.append("email",           document.getElementById("editEmail").value);
+        formData.append("faculty_name",    document.getElementById("editFaculty").value);
+        formData.append("department_name", document.getElementById("editDepartment").value);
+        formData.append("contact_number",  document.getElementById("editContact").value);
+        formData.append("profile_bio",     document.getElementById("editBio").value);
+        if (pw1) formData.append("password", pw1);
+        const imageFile = document.getElementById("editImageInput").files[0];
+        if (imageFile) formData.append("profile_image", imageFile);
+
+        const res  = await fetch(`${API_BASE}/${userId}`, {
+            method: "PUT",
+            headers: authHeaders(),
+            body: formData
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+            showToast(data.message || "Update failed", "error");
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Changes`;
+            return;
+        }
+
+        btn.innerHTML = `<i class="fa-solid fa-check"></i> Saved!`;
+        showToast("Profile updated successfully!", "success");
+        closeModal();
+        await loadProfile();
+
+        // keep sidebar name fresh on dashboard too
+        if (currentUser && currentUser.full_name) {
+            sessionStorage.setItem("username", currentUser.full_name);
+        }
+
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Changes`;
+        }, 2000);
+
+    } catch (err) {
+        console.error("Save error:", err);
+        showToast("Server error. Please try again.", "error");
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Changes`;
+    }
+}
+
+/* ── GOOGLE TRANSLATE ── */
+function doGoogleTranslate(lang){
+  if(!lang||lang==="en"){
+    localStorage.setItem("uc_lang","en");
+    document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain="+location.hostname+";";
+    document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=."+location.hostname+";";
+    const combo=document.querySelector("select.goog-te-combo");
+    if(combo){combo.value="en";combo.dispatchEvent(new Event("change"));setTimeout(()=>location.reload(),400);}
+    else{location.reload();}
+    return;
+  }
+  localStorage.setItem("uc_lang",lang);_applyTranslate(lang);
+}
+function _applyTranslate(lang){
+  const tryApply=(attempts)=>{
+    const combo=document.querySelector("select.goog-te-combo");
+    if(combo){combo.value=lang;combo.dispatchEvent(new Event("change"));}
+    else if(attempts>0){setTimeout(()=>tryApply(attempts-1),600);}
+  };
+  tryApply(15);
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  const saved=localStorage.getItem("uc_lang");const picker=document.getElementById("langSelect");
+  if(!saved||saved==="en"){
+    document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain="+location.hostname+";";
+    document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=."+location.hostname+";";
+    if(picker)picker.value="en";return;
+  }
+  if(picker)picker.value=saved;setTimeout(()=>_applyTranslate(saved),2000);
+});
+
+/* ── INIT ─────────────────────────────────────────── */
+loadProfile();
+loadInterests();
+</script>
+</body>
+</html>

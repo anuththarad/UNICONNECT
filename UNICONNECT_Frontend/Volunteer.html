@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect - Volunteer Management</title>
+<script src="uc-translate.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0a0820;--ink-mid:#1a1740;--ink-light:#2d2a6e;
+  --blue:#4f6ef7;--blue-soft:#eef1ff;--blue-glow:rgba(79,110,247,.15);
+  --teal:#06b6d4;--emerald:#10b981;--amber:#f59e0b;--rose:#f43f5e;--purple:#8b5cf6;
+  --bg:#f0f2ff;--surface:#ffffff;--surface2:#f7f8ff;--border:#e4e7f5;
+  --txt:#0f172a;--muted:#64748b;--light:#94a3b8;
+  --sh-sm:0 1px 3px rgba(10,8,32,.06);--sh-md:0 4px 16px rgba(10,8,32,.09);--sh-lg:0 12px 40px rgba(10,8,32,.13);
+  --r-sm:10px;--r-md:16px;--r-lg:22px;--ease:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Figtree',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;overflow-x:hidden;}
+
+.sidebar{width:272px;background:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;z-index:100;overflow-y:auto;border-right:1px solid var(--border);box-shadow:0 0 30px rgba(15,23,42,.04);}
+.logo-area{height:80px;display:flex;align-items:center;justify-content:center;padding:16px 20px;border-bottom:1px solid var(--border);}
+.logo-area img{width:150px;max-width:100%;height:auto;object-fit:contain;}
+.logo-text{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:#0f172a;}
+.logo-text span{color:#1e3a8a;}
+.sb-profile{display:flex;align-items:center;gap:12px;margin:18px 14px 16px;padding:14px;background:linear-gradient(135deg,#0f172a,#1e3a8a);border-radius:16px;box-shadow:0 8px 20px rgba(15,23,42,.2);}
+.sb-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#60a5fa,#38bdf8);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0;}
+.sb-name{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}
+.sb-role{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#bfdbfe;margin-top:2px;}
+.nav-section{padding:0 12px;}
+.nav-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;padding:16px 12px 6px;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;cursor:pointer;color:#334155;font-weight:600;font-size:14px;transition:.2s;position:relative;margin-bottom:4px;text-decoration:none;}
+.nav-item i{width:18px;font-size:15px;text-align:center;color:#475569;transition:.2s;}
+.nav-item:hover{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;}
+.nav-item:hover i{color:#fff;}
+.nav-item.active{background:linear-gradient(135deg,#0f172a,#1e40af);color:#fff;box-shadow:0 6px 16px rgba(30,58,138,.2);}
+.nav-item.active i{color:#fff;}
+.nav-badge{margin-left:auto;background:#ef4444;color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+.sb-footer{margin-top:auto;padding:16px 14px;border-top:1px solid var(--border);}
+.sb-logout{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;cursor:pointer;color:#475569;font-size:14px;font-weight:600;transition:.2s;}
+.sb-logout:hover{background:#fee2e2;color:#b91c1c;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:#d0d7f0;border-radius:4px;}
+.sidebar-lang{padding:10px 16px;margin:4px 0;}
+.lang-select-wrap{position:relative;display:flex;align-items:center;}
+.lang-select-wrap i{position:absolute;left:11px;color:var(--blue);font-size:14px;pointer-events:none;z-index:1;}
+.sidebar-lang select{width:100%;padding:10px 12px 10px 34px;border-radius:10px;border:1.5px solid var(--border);background:#f8fafc;color:var(--txt);font-size:13px;font-weight:600;cursor:pointer;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.main{flex:1;padding:28px 32px;overflow-y:auto;min-height:100vh;}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+.page-header h2{font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:var(--ink);}
+.page-header p{font-size:13px;color:var(--muted);margin-top:2px;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;margin-bottom:20px;box-shadow:var(--sh-sm);}
+.panel-title{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.panel-title i{color:var(--blue);}
+input,select,textarea{width:100%;padding:11px 13px;border-radius:var(--r-sm);border:1.5px solid var(--border);font-family:'Figtree',sans-serif;font-size:13px;color:var(--txt);background:var(--surface2);outline:none;transition:.2s var(--ease);}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px var(--blue-glow);}
+.btn{display:inline-flex;align-items:center;gap:7px;border:none;padding:10px 18px;border-radius:var(--r-sm);font-family:'Figtree',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:.2s var(--ease);}
+.btn:disabled{opacity:.65;cursor:not-allowed;transform:none!important;}
+.btn-primary{background:linear-gradient(135deg,var(--ink),var(--ink-light));color:#fff;box-shadow:0 4px 14px rgba(10,8,32,.2);}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 22px rgba(10,8,32,.28);}
+.btn-secondary{background:var(--surface2);color:var(--ink);border:1px solid var(--border);}
+.btn-secondary:hover:not(:disabled){background:var(--border);}
+.btn-success{background:#d1fae5;color:#065f46;}
+.btn-success:hover:not(:disabled){background:#a7f3d0;}
+.btn-danger{background:#fee2e2;color:#b91c1c;}
+.btn-danger:hover:not(:disabled){background:#fecaca;}
+.btn-warning{background:#fef3c7;color:#92400e;}
+.btn-warning:hover:not(:disabled){background:#fde68a;}
+.btn-info{background:#dbeafe;color:#1e40af;}
+.btn-info:hover:not(:disabled){background:#bfdbfe;}
+.btn-sm{padding:7px 12px;font-size:12px;border-radius:8px;}
+.btn-xs{padding:5px 9px;font-size:11px;border-radius:7px;}
+.verify-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px;}
+.info-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;}
+.info-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:3px;}
+.info-val{font-size:13px;font-weight:700;color:var(--ink);}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;}
+.stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;}
+.stat-num{font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:var(--ink);}
+.stat-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:2px;}
+.stat-card.s-blue{border-left:4px solid var(--blue);}
+.stat-card.s-green{border-left:4px solid var(--emerald);}
+.stat-card.s-amber{border-left:4px solid var(--amber);}
+.stat-card.s-purple{border-left:4px solid var(--purple);}
+.event-feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;}
+.event-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sh-sm);transition:.25s var(--ease);}
+.event-card:hover{transform:translateY(-4px);box-shadow:var(--sh-lg);border-color:rgba(79,110,247,.3);}
+.event-img-wrap{position:relative;height:140px;overflow:hidden;}
+.event-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+.event-card:hover .event-img-wrap img{transform:scale(1.06);}
+.ev-badge{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:99px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#fff;}
+.ev-badge.upcoming{background:linear-gradient(135deg,#f59e0b,#d97706);}
+.ev-badge.live{background:linear-gradient(135deg,#10b981,#059669);}
+.ev-badge.done{background:linear-gradient(135deg,#64748b,#475569);}
+.vol-count-pill{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.92);backdrop-filter:blur(4px);color:var(--ink);font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;display:flex;align-items:center;gap:4px;}
+.event-body{padding:14px;flex:1;display:flex;flex-direction:column;}
+.event-body h3{font-family:'Sora',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.3;}
+.event-meta-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-bottom:3px;}
+.event-meta-row i{color:var(--blue);width:12px;}
+.vol-list{display:flex;flex-direction:column;gap:10px;}
+.vol-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;display:flex;align-items:center;gap:14px;transition:.2s var(--ease);}
+.vol-card:hover{background:#fff;box-shadow:var(--sh-md);border-color:rgba(79,110,247,.25);}
+.vol-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0;}
+.vol-info{flex:1;min-width:0;}
+.vol-name{font-weight:700;font-size:13px;color:var(--ink);}
+.vol-uni{font-size:11px;color:var(--muted);margin-top:1px;}
+.vol-task{font-size:11px;color:var(--blue);margin-top:3px;font-weight:600;}
+.vol-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;}
+.pill.approved{background:#d1fae5;color:#065f46;}
+.pill.pending{background:#fef3c7;color:#92400e;}
+.pill.rejected{background:#fee2e2;color:#b91c1c;}
+.empty-box{padding:36px 20px;text-align:center;color:var(--muted);background:var(--surface2);border-radius:var(--r-md);border:1px dashed var(--border);}
+.empty-box i{display:block;font-size:28px;margin-bottom:10px;color:var(--light);}
+.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
+.toolbar input[type=text]{max-width:240px;padding:8px 12px;font-size:12px;}
+.toolbar select{max-width:160px;padding:8px 10px;font-size:12px;}
+.modal-overlay{position:fixed;inset:0;background:rgba(10,8,32,.5);backdrop-filter:blur(4px);z-index:8000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.25s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{background:#fff;border-radius:24px;box-shadow:0 24px 60px rgba(10,8,32,.2);padding:26px;width:460px;max-width:94vw;transform:scale(.95) translateY(8px);transition:.25s;}
+.modal-overlay.open .modal-box{transform:scale(1) translateY(0);}
+.modal-title{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.modal-title i{color:var(--blue);}
+.modal-row{margin-bottom:14px;}
+.modal-row label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:5px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
+
+/* ── CHAT MODAL ── */
+.chat-overlay{position:fixed;inset:0;background:rgba(10,8,32,.55);backdrop-filter:blur(6px);z-index:9000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s;}
+.chat-overlay.open{opacity:1;pointer-events:all;}
+.chat-box{background:#fff;border-radius:24px;box-shadow:0 28px 64px rgba(10,8,32,.25);width:480px;max-width:95vw;height:600px;max-height:90vh;display:flex;flex-direction:column;transform:scale(.93) translateY(16px);transition:.3s cubic-bezier(.34,1.56,.64,1);overflow:hidden;}
+.chat-overlay.open .chat-box{transform:scale(1) translateY(0);}
+.chat-header{display:flex;align-items:center;gap:12px;padding:14px 18px;background:linear-gradient(135deg,#0f172a,#1e3a8a);flex-shrink:0;}
+.chat-header-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0;}
+.chat-header-info{flex:1;}
+.chat-header-name{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:#fff;}
+.chat-header-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px;}
+.chat-close{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;}
+.chat-close:hover{background:rgba(255,255,255,.25);}
+.chat-messages{flex:1;overflow-y:auto;padding:16px 16px 8px;display:flex;flex-direction:column;gap:8px;background:#f0f2ff;}
+.chat-day-label{text-align:center;font-size:11px;font-weight:600;color:var(--muted);padding:4px 12px;background:rgba(255,255,255,.7);border-radius:99px;align-self:center;margin:6px 0;}
+.msg{display:flex;flex-direction:column;max-width:75%;}
+.msg.sent{align-self:flex-end;align-items:flex-end;}
+.msg.received{align-self:flex-start;align-items:flex-start;}
+.bubble{padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.5;word-break:break-word;}
+.msg.sent .bubble{background:linear-gradient(135deg,#1e3a8a,#2d52c0);color:#fff;border-bottom-right-radius:4px;}
+.msg.received .bubble{background:#fff;color:var(--txt);border:1px solid var(--border);border-bottom-left-radius:4px;box-shadow:var(--sh-sm);}
+.msg-meta{font-size:10px;color:var(--light);margin-top:3px;padding:0 2px;display:flex;align-items:center;gap:4px;}
+.msg-sender-name{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:3px;padding:0 2px;}
+.chat-input-area{display:flex;gap:8px;padding:12px 14px;background:#fff;border-top:1px solid var(--border);flex-shrink:0;align-items:flex-end;}
+.chat-input-wrap{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:20px;display:flex;align-items:center;padding:8px 14px;gap:8px;transition:.2s;}
+.chat-input-wrap:focus-within{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px var(--blue-glow);}
+.chat-input{flex:1;border:none;background:transparent;font-family:'Figtree',sans-serif;font-size:13px;color:var(--txt);outline:none;resize:none;max-height:80px;line-height:1.5;}
+.chat-send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1e3a8a,#4f6ef7);border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0;}
+.chat-send-btn:hover{transform:scale(1.08);box-shadow:0 4px 12px rgba(79,110,247,.4);}
+.sys-msg{align-self:center;font-size:11px;color:var(--muted);background:rgba(255,255,255,.8);border:1px solid var(--border);border-radius:99px;padding:4px 12px;max-width:85%;text-align:center;}
+.chat-loading{align-self:center;font-size:12px;color:var(--muted);padding:8px;}
+
+/* reply badge on chat button */
+.reply-dot{position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;background:#ef4444;border:2px solid #fff;}
+
+.toast{position:fixed;bottom:24px;right:24px;background:#fff;border:1px solid var(--border);border-left:4px solid var(--emerald);border-radius:12px;padding:12px 16px;box-shadow:0 12px 36px rgba(10,8,32,.15);display:flex;align-items:center;gap:9px;z-index:9999;font-size:13px;font-weight:600;color:var(--ink);transform:translateX(140%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:300px;}
+.toast.show{transform:translateX(0);}
+.toast i{font-size:15px;color:var(--emerald);}
+.toast.error{border-left-color:var(--rose);}
+.toast.error i{color:var(--rose);}
+.hidden{display:none;}
+.tracker-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;flex-wrap:wrap;gap:8px;}
+.tracker-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--ink);}
+.tracker-meta{font-size:12px;color:var(--muted);margin-top:3px;}
+.av-0{background:linear-gradient(135deg,#4f6ef7,#06b6d4);}
+.av-1{background:linear-gradient(135deg,#10b981,#059669);}
+.av-2{background:linear-gradient(135deg,#f59e0b,#d97706);}
+.av-3{background:linear-gradient(135deg,#8b5cf6,#6d28d9);}
+.av-4{background:linear-gradient(135deg,#f43f5e,#be123c);}
+.del-icon{width:52px;height:52px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-size:20px;color:#dc2626;margin:0 auto 12px;}
+@media(max-width:1060px){
+  .sidebar{width:68px;}
+  .sb-info,.nav-item span,.sb-logout span,.nav-label,.sb-name,.sb-role{display:none;}
+  .sb-profile{justify-content:center;padding:10px;}
+  .nav-item{justify-content:center;padding:12px;}
+  .logo-area{justify-content:center;padding:16px 0;}
+  .sb-logout{justify-content:center;padding:12px;}
+}
+@media(max-width:768px){.main{padding:16px;}.event-feed{grid-template-columns:1fr;}.stats-row{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo-area">
+    <img src="images/UClogo.png" alt="UniConnect" onerror="this.style.display='none';document.getElementById('lt').style.display='block'">
+    <span class="logo-text" id="lt" style="display:none">Uni<span>Connect</span></span>
+  </div>
+  <div class="sb-profile">
+    <div class="sb-avatar av-0" id="sbAvatar">??</div>
+    <div>
+      <div class="sb-name" id="sbName">Organizer</div>
+      <div class="sb-role">Organizer</div>
+    </div>
+  </div>
+  <div class="sidebar-lang">
+    <div class="lang-select-wrap">
+      <i class="fa-solid fa-globe"></i>
+      <select id="langSelect" onchange="doGoogleTranslate(this.value)">
+        <option value="en">English</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+        <option value="si">සිංහල (Sinhala)</option>
+      </select>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Main</div>
+    <a class="nav-item" href="OrganizerDash.html"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a class="nav-item" href="HomePage.html"><i class="fa-solid fa-arrow-left"></i><span>Back to Home</span></a>
+    <div class="nav-label" style="margin-top:10px">Create</div>
+    <a class="nav-item" href="Event.html"><i class="fa-solid fa-circle-plus"></i><span>Create Event</span></a>
+    <a class="nav-item" href="Allevents.html"><i class="fa-solid fa-calendar-days"></i><span>Browse Events</span></a>
+    <div class="nav-label" style="margin-top:10px">Manage</div>
+    <a class="nav-item" href="Budget.html"><i class="fa-solid fa-wallet"></i><span>Budget Management</span></a>
+    <a class="nav-item active" href="Volunteer.html"><i class="fa-solid fa-hands-helping"></i><span>Volunteer Management</span></a>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <div>
+      <h2><i class="fa-solid fa-hands-helping" style="color:var(--blue);margin-right:8px"></i>Volunteer Management</h2>
+      <p>Review applications, approve volunteers, assign tasks, and chat directly with them</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><i class="fa-solid fa-id-badge"></i> Organizer Verification</div>
+    <div class="verify-row">
+      <input id="organizerId" type="number" placeholder="Enter your Organizer ID to get started…">
+      <button class="btn btn-primary" id="verifyBtn" onclick="loadOrganizer()">
+        <i class="fa-solid fa-check-circle"></i> Verify
+      </button>
+    </div>
+  </div>
+
+  <div id="organizerInfo" class="panel hidden">
+    <div class="panel-title"><i class="fa-solid fa-circle-user"></i> Organizer Details</div>
+    <div class="info-grid">
+      <div class="info-item"><div class="info-label">Full Name</div><div class="info-val" id="oName">—</div></div>
+      <div class="info-item"><div class="info-label">Email</div><div class="info-val" id="oEmail">—</div></div>
+      <div class="info-item"><div class="info-label">University</div><div class="info-val" id="oUniversity">—</div></div>
+      <div class="info-item"><div class="info-label">Department</div><div class="info-val" id="oDepartment">—</div></div>
+    </div>
+    <button class="btn btn-primary" id="loadEventsBtn" onclick="loadEvents()">
+      <i class="fa-solid fa-calendar-days"></i> Load My Events
+    </button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><i class="fa-solid fa-calendar-days"></i> Your Events</div>
+    <div id="eventFeed" class="event-feed">
+      <div class="empty-box" style="grid-column:1/-1">
+        <i class="fa-solid fa-calendar-xmark"></i>
+        <p>Verify your organizer ID above to load your events.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="trackerSection" class="panel hidden">
+    <div class="tracker-header">
+      <div>
+        <div class="tracker-title" id="selectedEventTitle">Event</div>
+        <div class="tracker-meta" id="selectedEventInfo">—</div>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="closeTracker()"><i class="fa-solid fa-xmark"></i> Close</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card s-blue"><div class="stat-num" id="stTotal">0</div><div class="stat-lbl">Total</div></div>
+      <div class="stat-card s-green"><div class="stat-num" id="stApproved">0</div><div class="stat-lbl">Approved</div></div>
+      <div class="stat-card s-amber"><div class="stat-num" id="stPending">0</div><div class="stat-lbl">Pending</div></div>
+      <div class="stat-card s-purple"><div class="stat-num" id="stRejected">0</div><div class="stat-lbl">Rejected</div></div>
+    </div>
+    <div class="toolbar">
+      <input type="text" id="searchInput" placeholder="🔍 Search name…" oninput="renderVolunteers()">
+      <select id="filterStatus" onchange="renderVolunteers()">
+        <option value="">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </div>
+    <div id="volList" class="vol-list"></div>
+  </div>
+</main>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle" id="toastIcon"></i><span id="toastMsg">Done!</span></div>
+
+<!-- TASK MODAL -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal-box">
+    <div class="modal-title"><i class="fa-solid fa-pen-to-square"></i> Edit Task & Role</div>
+    <div class="modal-row"><label>Assigned Task</label><input id="mTask" type="text" placeholder="e.g. Registration desk…"></div>
+    <div class="modal-row"><label>Role</label><input id="mRole" type="text" placeholder="e.g. Coordinator…"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()"><i class="fa-solid fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box" style="text-align:center">
+    <div class="del-icon"><i class="fa-solid fa-trash"></i></div>
+    <div class="modal-title" style="justify-content:center">Remove Volunteer?</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px">This will permanently remove <strong id="delVolName">this volunteer</strong> from the event.</p>
+    <div class="modal-actions" style="justify-content:center">
+      <button class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()"><i class="fa-solid fa-trash"></i> Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT MODAL -->
+<div class="chat-overlay" id="chatOverlay">
+  <div class="chat-box">
+    <div class="chat-header">
+      <div class="chat-header-avatar" id="chatAvatar">AB</div>
+      <div class="chat-header-info">
+        <div class="chat-header-name" id="chatName">Volunteer</div>
+        <div class="chat-header-sub" id="chatSub">Volunteer · Event</div>
+      </div>
+      <button class="chat-close" onclick="closeChat()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading messages…</div>
+    </div>
+    <div class="chat-input-area">
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="chatInput" rows="1" placeholder="Type a message…" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+      </div>
+      <button class="chat-send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API   = "http://localhost:3000/api";
+const token = localStorage.getItem("token");
+
+/* ── State ── */
+let user = null, events = [], volunteers = [], currentEventId = null;
+let editingVolId = null, deletingVolId = null, chatVolId = null;
+/* unread reply counts per volunteer_id, loaded when tracker opens */
+let unreadReplies = {};
+
+/* ── DOM Ready ── */
+document.addEventListener("DOMContentLoaded", () => {
+  const uname   = localStorage.getItem("username");
+  const sbName  = document.getElementById("sbName");
+  const sbAv    = document.getElementById("sbAvatar");
+  if (uname && sbName) sbName.innerText  = uname;
+  if (uname && sbAv)   sbAv.innerText    = initials(uname);
+
+  const saved  = localStorage.getItem("uc_lang");
+  const picker = document.getElementById("langSelect");
+  if (!saved || saved === "en") {
+    clearGTCookie();
+    if (picker) picker.value = "en";
+  } else {
+    if (picker) picker.value = saved;
+    setTimeout(() => _applyTranslate(saved), 2000);
+  }
+
+  document.getElementById("chatOverlay").addEventListener("click", e => {
+    if (e.target === document.getElementById("chatOverlay")) closeChat();
+  });
+});
+
+/* ── Helpers ── */
+function logout() { localStorage.clear(); window.location.href = "Login.html"; }
+function initials(n) { return n ? n.trim().split(" ").map(w=>w[0]).join("").substring(0,2).toUpperCase() : "--"; }
+function avClass(id) { return "av-" + (id % 5); }
+function escHtml(s)  { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>"); }
+function escAttr(s)  { return String(s).replace(/'/g,"\\'").replace(/"/g,"&quot;"); }
+function fmtTime(iso){ if(!iso) return ""; return new Date(iso).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}); }
+function fmtDateTime(iso){ if(!iso) return ""; const d=new Date(iso); return d.toLocaleDateString([],{month:"short",day:"numeric"})+" "+d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}); }
+
+/* ── Toast ── */
+function toast(msg, type="success") {
+  const t = document.getElementById("toast");
+  document.getElementById("toastMsg").innerText = msg;
+  document.getElementById("toastIcon").className = type==="error" ? "fas fa-times-circle" : "fas fa-check-circle";
+  t.className = "toast" + (type==="error" ? " error" : "");
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3500);
+}
+
+function openModal(id)  { document.getElementById(id).classList.add("open"); }
+function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+
+/* ══════════════════════════════════════════
+   STEP 1 — LOAD ORGANIZER
+══════════════════════════════════════════ */
+async function loadOrganizer() {
+  const id  = document.getElementById("organizerId").value.trim();
+  if (!id) { toast("Please enter an Organizer ID.", "error"); return; }
+  const btn = document.getElementById("verifyBtn");
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying…';
+  btn.disabled  = true;
+  try {
+    const res  = await fetch(`${API}/users/${id}`);
+    const data = await res.json();
+    if (!data.success) { toast(data.message || "User not found.", "error"); return; }
+    user = data.data;
+    document.getElementById("oName").innerText       = user.full_name      || "—";
+    document.getElementById("oEmail").innerText      = user.email          || "—";
+    document.getElementById("oUniversity").innerText = user.university      || "—";
+    document.getElementById("oDepartment").innerText = user.department_name || "—";
+    const sbName = document.getElementById("sbName");
+    const sbAv   = document.getElementById("sbAvatar");
+    if (sbName) sbName.innerText = user.full_name || "Organizer";
+    if (sbAv)   sbAv.innerText   = initials(user.full_name);
+    document.getElementById("organizerInfo").classList.remove("hidden");
+    toast("Organizer verified successfully.");
+  } catch (e) {
+    toast("Network error: " + e.message, "error");
+  } finally {
+    btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Verify';
+    btn.disabled  = false;
+  }
+}
+
+/* ══════════════════════════════════════════
+   STEP 2 — LOAD EVENTS
+══════════════════════════════════════════ */
+async function loadEvents() {
+  if (!user) return;
+  const btn = document.getElementById("loadEventsBtn");
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading…';
+  btn.disabled  = true;
+  try {
+    const res  = await fetch(`${API}/users/${user.user_id}/events`);
+    const data = await res.json();
+    if (!data.success) { toast(data.message || "Could not load events.", "error"); return; }
+    events = data.data || [];
+    renderEvents();
+    toast(`Loaded ${events.length} event(s).`);
+  } catch (e) {
+    toast("Network error: " + e.message, "error");
+  } finally {
+    btn.innerHTML = '<i class="fa-solid fa-calendar-days"></i> Load My Events';
+    btn.disabled  = false;
+  }
+}
+
+function renderEvents() {
+  const feed  = document.getElementById("eventFeed");
+  if (!events.length) {
+    feed.innerHTML = `<div class="empty-box" style="grid-column:1/-1"><i class="fa-solid fa-calendar-xmark"></i><p>No events found.</p></div>`;
+    return;
+  }
+  const today = new Date().toISOString().split("T")[0];
+  feed.innerHTML = events.map(e => {
+    const img = e.image_url ? `http://localhost:3000${e.image_url}` : `https://picsum.photos/seed/${e.event_id}/400/220`;
+    const d   = e.event_date ? e.event_date.split("T")[0] : "No Date";
+    const cls = d < today ? "done" : d === today ? "live" : "upcoming";
+    const lbl = d < today ? "Completed" : d === today ? "Live Now" : "Upcoming";
+    return `
+    <div class="event-card">
+      <div class="event-img-wrap">
+        <img src="${img}" alt="${escHtml(e.title)}" onerror="this.src='https://picsum.photos/seed/${e.event_id}/400/220'">
+        <div class="ev-badge ${cls}">${lbl}</div>
+        <div class="vol-count-pill" id="vc_${e.event_id}"><i class="fa-solid fa-users"></i> …</div>
+      </div>
+      <div class="event-body">
+        <h3>${escHtml(e.title)}</h3>
+        <div class="event-meta-row"><i class="fa-solid fa-calendar"></i>${d}</div>
+        <div class="event-meta-row"><i class="fa-solid fa-location-dot"></i>${escHtml(e.venue||"—")}</div>
+        <button class="btn btn-primary" style="margin-top:10px;width:100%;justify-content:center" onclick="openEvent(${e.event_id})">
+          <i class="fa-solid fa-users"></i> Manage Volunteers
+        </button>
+      </div>
+    </div>`;
+  }).join("");
+  events.forEach(e => loadVolCount(e.event_id));
+}
+
+async function loadVolCount(eventId) {
+  try {
+    const res  = await fetch(`${API}/volunteers/event/${eventId}`);
+    const data = await res.json();
+    const el   = document.getElementById(`vc_${eventId}`);
+    if (el) el.innerHTML = `<i class="fa-solid fa-users"></i> ${data.success ? data.data.length : 0}`;
+  } catch {}
+}
+
+/* ══════════════════════════════════════════
+   STEP 3 — OPEN TRACKER
+══════════════════════════════════════════ */
+async function openEvent(id) {
+  const ev = events.find(e => e.event_id == id);
+  if (!ev) return;
+  currentEventId = id;
+  document.getElementById("selectedEventTitle").innerText = ev.title;
+  document.getElementById("selectedEventInfo").innerText  = `${ev.category||"General"} · ${ev.venue||"—"}`;
+  document.getElementById("trackerSection").classList.remove("hidden");
+  document.getElementById("trackerSection").scrollIntoView({behavior:"smooth",block:"start"});
+  await fetchVolunteers(id);
+  /* load unread reply counts for this organizer from this event */
+  await loadUnreadReplies();
+}
+
+function closeTracker() {
+  document.getElementById("trackerSection").classList.add("hidden");
+  currentEventId = null; volunteers = []; unreadReplies = {};
+}
+
+async function fetchVolunteers(eventId) {
+  document.getElementById("volList").innerHTML = `<div class="empty-box"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading…</p></div>`;
+  try {
+    const res  = await fetch(`${API}/volunteers/event/${eventId}`);
+    const data = await res.json();
+    if (!data.success) { toast(data.message || "Could not load.", "error"); return; }
+    volunteers = data.data || [];
+    updateStats();
+    renderVolunteers();
+  } catch (e) {
+    toast("Network error: " + e.message, "error");
+  }
+}
+
+/* load unread volunteer_message notifs sent TO the organizer */
+async function loadUnreadReplies() {
+  if (!user) return;
+  try {
+    const res  = await fetch(`${API}/messages/unread/${user.user_id}`);
+    const data = await res.json();
+    if (!data.success) return;
+    unreadReplies = {};
+    data.data.forEach(m => {
+      /* sender_id is the volunteer's user_id — map to volunteer_id */
+      const vol = volunteers.find(v => v.user_id == m.sender_id);
+      if (vol && m.event_id == currentEventId) {
+        unreadReplies[vol.volunteer_id] = (unreadReplies[vol.volunteer_id] || 0) + 1;
+      }
+    });
+    renderVolunteers();
+  } catch {}
+}
+
+/* ── Stats ── */
+function updateStats() {
+  document.getElementById("stTotal").innerText    = volunteers.length;
+  document.getElementById("stApproved").innerText = volunteers.filter(v=>(v.status||"").toLowerCase()==="approved").length;
+  document.getElementById("stPending").innerText  = volunteers.filter(v=>(v.status||"").toLowerCase()==="pending").length;
+  document.getElementById("stRejected").innerText = volunteers.filter(v=>(v.status||"").toLowerCase()==="rejected").length;
+}
+
+/* ── Render volunteer list ── */
+function renderVolunteers() {
+  const q      = (document.getElementById("searchInput")?.value || "").toLowerCase();
+  const status = (document.getElementById("filterStatus")?.value || "").toLowerCase();
+  const filtered = volunteers.filter(v => {
+    const name = (v.full_name || v.name || "").toLowerCase();
+    return (!q || name.includes(q)) && (!status || (v.status||"").toLowerCase() === status);
+  });
+  const box = document.getElementById("volList");
+  if (!filtered.length) {
+    box.innerHTML = `<div class="empty-box"><i class="fa-solid fa-user-slash"></i><p>No volunteers found.</p></div>`;
+    return;
+  }
+  box.innerHTML = filtered.map(v => {
+    const name    = v.full_name || v.name || "Unknown";
+    const st      = (v.status || "pending").toLowerCase();
+    const pillCls = st === "approved" ? "approved" : st === "rejected" ? "rejected" : "pending";
+    const task    = v.assigned_task || v.task || "—";
+    const role    = v.role || "Volunteer";
+    const unread  = unreadReplies[v.volunteer_id] || 0;
+    return `
+    <div class="vol-card">
+      <div class="vol-avatar ${avClass(v.volunteer_id)}">${initials(name)}</div>
+      <div class="vol-info">
+        <div class="vol-name">${escHtml(name)}</div>
+        <div class="vol-uni">
+          <i class="fa-solid fa-envelope"></i> ${escHtml(v.email||"—")} &nbsp;·&nbsp;
+          <i class="fa-solid fa-phone"></i> ${escHtml(v.contact_number||v.contact_no||"—")}
+        </div>
+        <div class="vol-uni">
+          <i class="fa-solid fa-graduation-cap"></i> ${escHtml(v.university||"—")} &nbsp;·&nbsp; ${escHtml(role)}
+        </div>
+        <div class="vol-task"><i class="fa-solid fa-wrench" style="font-size:10px"></i> ${escHtml(task)}</div>
+        ${unread > 0 ? `<div style="margin-top:4px;font-size:11px;font-weight:700;color:#ef4444"><i class="fa-solid fa-reply"></i> ${unread} unread repl${unread===1?"y":"ies"}</div>` : ""}
+      </div>
+      <div class="vol-actions">
+        <span class="pill ${pillCls}">${st}</span>
+        ${st === "pending" ? `
+          <button class="btn btn-success btn-xs" onclick="approveVolunteer(${v.volunteer_id})"><i class="fa-solid fa-check"></i> Approve</button>
+          <button class="btn btn-danger btn-xs" onclick="rejectVolunteer(${v.volunteer_id})"><i class="fa-solid fa-xmark"></i> Reject</button>` : ""}
+        <button class="btn btn-warning btn-xs" title="Edit Task" onclick="openTaskModal(${v.volunteer_id})"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-info btn-xs" title="Chat" onclick="openChat(${v.volunteer_id})" style="position:relative">
+          <i class="fa-solid fa-comment-dots"></i>
+          ${unread > 0 ? `<span class="reply-dot"></span>` : ""}
+        </button>
+        <button class="btn btn-danger btn-xs" title="Remove" onclick="openDeleteModal(${v.volunteer_id},'${escAttr(name)}')"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ══════════════════════════════════════════
+   APPROVE / REJECT
+══════════════════════════════════════════ */
+async function approveVolunteer(id) {
+  await patchVolunteer(id, {status:"approved"});
+  await sendStatusNotification(id, "approved");
+  toast("Volunteer approved! Notification sent.");
+  updateStats(); renderVolunteers();
+  await loadVolCount(currentEventId);
+}
+
+async function rejectVolunteer(id) {
+  await patchVolunteer(id, {status:"rejected"});
+  await sendStatusNotification(id, "rejected");
+  toast("Volunteer rejected. Notification sent.");
+  updateStats(); renderVolunteers();
+  await loadVolCount(currentEventId);
+}
+
+/* Regular status notifications (not messages) */
+async function sendStatusNotification(volId, type) {
+  const v  = volunteers.find(v => v.volunteer_id === volId);
+  if (!v) return;
+  const ev = events.find(e => e.event_id == currentEventId);
+  let message;
+  if (type === "approved")
+    message = `🎉 Your volunteer application for "${ev?.title||"the event"}" has been approved!`;
+  else if (type === "rejected")
+    message = `Your volunteer application for "${ev?.title||"the event"}" was not accepted this time.`;
+  else if (type === "task_updated")
+    message = `📋 Your task for "${ev?.title||"the event"}" has been updated. Check your volunteer details.`;
+  const userId = v.user_id || v.volunteer_user_id;
+  if (!userId) return;
+  try {
+    await fetch(`${API}/notifications`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json", Authorization:`Bearer ${token}`},
+      body: JSON.stringify({
+        user_id:  userId,
+        message,
+        type:     "volunteer_" + type,
+        event_id: currentEventId
+      })
+    });
+  } catch (e) { console.warn("Status notif failed:", e); }
+}
+
+/* ── Task Modal ── */
+function openTaskModal(id) {
+  editingVolId = id;
+  const v = volunteers.find(v => v.volunteer_id === id);
+  document.getElementById("mTask").value = v?.assigned_task || "";
+  document.getElementById("mRole").value = v?.role           || "";
+  openModal("taskModal");
+}
+
+async function saveTask() {
+  const task = document.getElementById("mTask").value.trim();
+  const role = document.getElementById("mRole").value.trim();
+  closeModal("taskModal");
+  await patchVolunteer(editingVolId, {assigned_task:task, role});
+  await sendStatusNotification(editingVolId, "task_updated");
+  toast("Task updated. Notification sent.");
+  renderVolunteers();
+}
+
+/* ── Delete ── */
+function openDeleteModal(id, name) {
+  deletingVolId = id;
+  document.getElementById("delVolName").innerText = name;
+  openModal("deleteModal");
+}
+
+async function confirmDelete() {
+  closeModal("deleteModal");
+  if (!deletingVolId) return;
+  try {
+    const res  = await fetch(`${API}/volunteers/${deletingVolId}`, {
+      method:"DELETE", headers:{Authorization:`Bearer ${token}`}
+    });
+    const data = await res.json();
+    if (!data.success) { toast(data.message||"Delete failed.","error"); return; }
+    volunteers = volunteers.filter(v => v.volunteer_id !== deletingVolId);
+    updateStats(); renderVolunteers(); loadVolCount(currentEventId);
+    toast("Volunteer removed.");
+  } catch (e) { toast("Network error: "+e.message,"error"); }
+}
+
+/* ── Patch Volunteer ── */
+async function patchVolunteer(id, payload) {
+  try {
+    const res  = await fetch(`${API}/volunteers/${id}`, {
+      method:"PATCH",
+      headers:{"Content-Type":"application/json",Authorization:`Bearer ${token}`},
+      body:JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!data.success) { toast(data.message||"Update failed.","error"); return; }
+    const idx = volunteers.findIndex(v => v.volunteer_id === id);
+    if (idx !== -1) Object.assign(volunteers[idx], payload);
+  } catch (e) { toast("Network error: "+e.message,"error"); }
+}
+
+/* ══════════════════════════════════════════
+   CHAT — real DB via /api/messages
+══════════════════════════════════════════ */
+async function openChat(volId) {
+  const v = volunteers.find(v => v.volunteer_id === volId);
+  if (!v) return;
+  chatVolId = volId;
+
+  const name    = v.full_name || v.name || "Volunteer";
+  const role    = v.role || "Volunteer";
+  const ev      = events.find(e => e.event_id == currentEventId);
+  const volUserId = v.user_id;
+
+  const avatarEl = document.getElementById("chatAvatar");
+  avatarEl.innerText = initials(name);
+  avatarEl.className = `chat-header-avatar ${avClass(volId)}`;
+  document.getElementById("chatName").innerText = name;
+  document.getElementById("chatSub").innerText  = `${role} · ${ev?.title||"Event"}`;
+
+  /* Show loading */
+  document.getElementById("chatMessages").innerHTML =
+    `<div class="chat-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading messages…</div>`;
+  document.getElementById("chatOverlay").classList.add("open");
+
+  /* Fetch thread from DB */
+  if (user && volUserId) {
+    try {
+      const res  = await fetch(`${API}/messages/thread/${currentEventId}/${user.user_id}/${volUserId}`);
+      const data = await res.json();
+      renderChatMessages(data.success ? data.data : [], volUserId);
+      /* Mark messages sent to organizer as read */
+      await fetch(`${API}/messages/read-thread/${currentEventId}/${user.user_id}`, {
+        method:"PATCH", headers:{Authorization:`Bearer ${token}`}
+      });
+      /* Clear unread badge for this volunteer */
+      delete unreadReplies[volId];
+      renderVolunteers();
+    } catch {
+      renderChatMessages([], volUserId);
+    }
+  } else {
+    renderChatMessages([], null);
+  }
+
+  setTimeout(() => scrollChatToBottom(), 50);
+}
+
+function closeChat() {
+  document.getElementById("chatOverlay").classList.remove("open");
+  chatVolId = null;
+}
+
+function renderChatMessages(messages, volUserId) {
+  const box = document.getElementById("chatMessages");
+  let html  = `<div class="chat-day-label">Conversation</div>
+    <div class="sys-msg">Messages are delivered as notifications to the volunteer's dashboard.</div>`;
+
+  if (!messages.length) {
+    html += `<div class="sys-msg" style="margin-top:12px">No messages yet. Start the conversation below.</div>`;
+  } else {
+    messages.forEach(m => {
+      /* "sent" = organizer sent it (sender_id === organizer's user_id) */
+      const isOrganizer = user && (m.sender_id == user.user_id);
+      const cls  = isOrganizer ? "sent" : "received";
+      const time = fmtDateTime(m.created_at);
+      const senderLabel = isOrganizer ? "You" : (m.sender_name || "Volunteer");
+
+      html += `<div class="msg ${cls}">
+        ${!isOrganizer ? `<div class="msg-sender-name">${escHtml(senderLabel)}</div>` : ""}
+        <div class="bubble">${escHtml(m.text)}</div>
+        <div class="msg-meta">${time}${m.is_read && isOrganizer ? ' · <i class="fa-solid fa-check-double" style="color:#a5b4fc;font-size:9px"></i>' : ''}</div>
+      </div>`;
+    });
+  }
+
+  box.innerHTML = html;
+  scrollChatToBottom();
+}
+
+function scrollChatToBottom() {
+  const box = document.getElementById("chatMessages");
+  box.scrollTop = box.scrollHeight;
+}
+
+function handleChatKey(e) {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 80) + "px";
+}
+
+async function sendMessage() {
+  const inp  = document.getElementById("chatInput");
+  const text = inp.value.trim();
+  if (!text || !chatVolId || !user) return;
+
+  const v         = volunteers.find(v => v.volunteer_id === chatVolId);
+  const volUserId = v?.user_id;
+  if (!volUserId) { toast("Cannot find volunteer user ID.", "error"); return; }
+
+  /* Optimistically add to UI */
+  const msgBox = document.getElementById("chatMessages");
+  const tempDiv = document.createElement("div");
+  tempDiv.className = "msg sent";
+  tempDiv.innerHTML = `<div class="bubble">${escHtml(text)}</div><div class="msg-meta">Sending…</div>`;
+  msgBox.appendChild(tempDiv);
+  scrollChatToBottom();
+
+  inp.value = "";
+  inp.style.height = "auto";
+
+  try {
+    const res = await fetch(`${API}/messages`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json", Authorization:`Bearer ${token}`},
+      body: JSON.stringify({
+        sender_id:    user.user_id,
+        sender_name:  user.full_name || "Organizer",
+        recipient_id: volUserId,
+        event_id:     currentEventId,
+        text
+      })
+    });
+    const data = await res.json();
+    if (!data.success) { toast(data.message || "Send failed.", "error"); }
+    /* Refresh thread to get real timestamp */
+    const threadRes  = await fetch(`${API}/messages/thread/${currentEventId}/${user.user_id}/${volUserId}`);
+    const threadData = await threadRes.json();
+    renderChatMessages(threadData.success ? threadData.data : [], volUserId);
+  } catch (e) {
+    toast("Network error: " + e.message, "error");
+  }
+}
+
+/* ── Google Translate ── */
+function clearGTCookie() {
+  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + location.hostname + ";";
+  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + location.hostname + ";";
+}
+function doGoogleTranslate(lang) {
+  if (!lang || lang === "en") {
+    localStorage.setItem("uc_lang","en"); clearGTCookie();
+    const combo = document.querySelector("select.goog-te-combo");
+    if (combo) { combo.value="en"; combo.dispatchEvent(new Event("change")); setTimeout(()=>location.reload(),400); }
+    else location.reload(); return;
+  }
+  localStorage.setItem("uc_lang", lang); _applyTranslate(lang);
+}
+function _applyTranslate(lang) {
+  const tryApply = (n) => {
+    const combo = document.querySelector("select.goog-te-combo");
+    if (combo) { combo.value=lang; combo.dispatchEvent(new Event("change")); }
+    else if (n>0) setTimeout(()=>tryApply(n-1), 600);
+  };
+  tryApply(15);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect - Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#040c30;--navy2:#1f276f;--navy3:#2d3a8c;--accent:#4f7cff;
+  --white:#fff;--g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;
+  --g400:#9ca3af;--g600:#4b5563;--g900:#111827;
+  --font:'DM Sans',sans-serif;
+}
+html,body{height:100%;font-family:var(--font);background:#eef2fb;color:var(--g900);-webkit-font-smoothing:antialiased}
+
+/* NAVBAR */
+.navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 40px;background:var(--white);border-bottom:1px solid var(--g200);position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo img{height:82px;width:auto;object-fit:contain}
+.logo-fallback{display:flex;align-items:center;gap:8px}
+.logo-icon{width:48px;height:48px;background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:10px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2}
+.logo-name{font-size:19px;font-weight:800;color:var(--navy);letter-spacing:-.3px}
+nav a{margin:0 12px;text-decoration:none;color:var(--g600);font-size:15px;font-weight:500;transition:color .2s}
+nav a:hover{color:var(--navy)}
+.btn-reg{padding:8px 20px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;text-decoration:none;display:inline-block;transition:.25s}
+.btn-reg:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(31,39,111,.3)}
+
+/* PAGE SHELL */
+.page-wrap{min-height:100vh;display:flex;flex-direction:column}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:20px 24px}
+
+/* CARD */
+.main-content{display:grid;grid-template-columns:210px 1fr;width:100%;max-width:1020px;background:var(--white);border-radius:22px;overflow:hidden;box-shadow:0 20px 60px rgba(31,39,111,.18),0 4px 16px rgba(31,39,111,.08)}
+
+/* LEFT HERO */
+.hero{background:linear-gradient(160deg,var(--navy) 0%,var(--navy2) 55%,var(--navy3) 100%);padding:28px 22px;display:flex;flex-direction:column;position:relative;overflow:hidden;animation:heroIn .5s ease both}
+.hero::before{content:'';position:absolute;width:280px;height:280px;border-radius:50%;border:1px solid rgba(255,255,255,.06);top:-90px;right:-90px}
+.hero::after{content:'';position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(79,124,255,.08);bottom:30px;left:-50px}
+.hero-top-tag{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px;position:relative;z-index:1}
+.hero-title{font-family:'DM Serif Display',serif;font-size:30px;color:#fff;line-height:1.2;margin-bottom:8px;position:relative;z-index:1}
+.hero-sub{font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:20px;position:relative;z-index:1}
+.steps{display:flex;flex-direction:column;gap:6px;position:relative;z-index:1}
+.step{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px}
+.step.active{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18)}
+.step.inactive{border:1px solid transparent}
+.snum{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.step.active .snum{background:#fff;color:var(--navy2)}
+.step.inactive .snum{background:rgba(255,255,255,.1);color:rgba(255,255,255,.35)}
+.step.active .stxt{font-size:11.5px;color:#fff;font-weight:500}
+.step.inactive .stxt{font-size:11.5px;color:rgba(255,255,255,.35)}
+.hero-benefits{margin-top:auto;padding-top:18px;display:flex;flex-direction:column;gap:7px;position:relative;z-index:1}
+.brow{display:flex;align-items:center;gap:7px;font-size:10.5px;color:rgba(255,255,255,.45)}
+.brow i{width:22px;height:22px;background:rgba(255,255,255,.07);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(211,230,253,.7);flex-shrink:0}
+
+/* RIGHT FORM */
+.form-col{padding:22px 28px 20px 24px;overflow-y:auto;background:var(--white);animation:slideIn .45s ease both}
+.fh h1{font-size:23px;font-weight:700;color:var(--g900);margin-bottom:2px;letter-spacing:-.3px}
+.fh p{font-size:13px;color:var(--g400);margin-bottom:12px}
+.sep{font-size:11.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--g400);margin:10px 0 8px;display:flex;align-items:center;gap:8px}
+.sep::after{content:'';flex:1;height:1px;background:var(--g200)}
+.ig{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.ig label{font-size:12.5px;font-weight:600;color:var(--g600);letter-spacing:.2px}
+.iw{position:relative;display:flex;align-items:center;background:var(--g50);border:1px solid var(--g200);border-radius:8px;transition:.2s}
+.iw:focus-within{border-color:var(--navy2);background:var(--white);box-shadow:0 0 0 2.5px rgba(31,39,111,.08)}
+.iw i.fi{padding:0 9px;color:var(--g400);font-size:11px;flex-shrink:0}
+.iw input,.iw select{flex:1;border:none;outline:none;background:transparent;font-family:var(--font);font-size:14px;color:var(--g900);padding:9px 8px 9px 0}
+.iw input::placeholder{color:var(--g400);font-size:14px}
+.iw select{padding-right:8px;cursor:pointer;font-size:14px}
+.eye{padding:0 10px;cursor:pointer;color:var(--g400);font-size:11px;flex-shrink:0;transition:color .2s}
+.eye:hover{color:var(--navy2)}
+.roles{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.ropt input{display:none}
+.ropt span{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border:1px solid var(--g200);border-radius:8px;font-size:13px;font-weight:500;color:var(--g600);background:var(--g50);cursor:pointer;transition:.2s;user-select:none}
+.ropt input:checked+span{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-color:transparent}
+.ropt span:hover{border-color:var(--navy2);color:var(--navy2)}
+.ropt input:checked+span:hover{color:#fff}
+.options-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:var(--g600);margin-bottom:12px}
+.options-row label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.options-row input[type=checkbox]{accent-color:var(--navy2)}
+.options-row a{color:var(--navy2);font-weight:600;text-decoration:none}
+.options-row a:hover{text-decoration:underline}
+.err-msg{font-size:11px;color:#ef4444;min-height:14px;margin-top:2px}
+.btn-main{width:100%;padding:10px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border:none;border-radius:8px;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:.25s;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:8px}
+.btn-main:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(31,39,111,.3)}
+.btn-main:active{transform:scale(.99)}
+.btn-main:disabled{opacity:.7;cursor:not-allowed;transform:none;box-shadow:none}
+.reg-cta{text-align:center;font-size:13.5px;color:var(--g400);margin-top:10px}
+.reg-cta a{color:var(--navy2);font-weight:600;text-decoration:none}
+.reg-cta a:hover{text-decoration:underline}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* POPUPS */
+.popup{display:none;position:fixed;inset:0;z-index:9999;justify-content:center;align-items:center;padding:20px;background:rgba(4,12,48,.65);backdrop-filter:blur(10px);animation:fadeIn .3s ease}
+.popup-content{position:relative;width:100%;max-width:440px;background:var(--white);border-radius:24px;border:1px solid var(--g200);overflow:hidden;box-shadow:0 20px 60px rgba(31,39,111,.18);animation:popIn .35s ease}
+.popup-content.success::before{content:'';display:block;height:5px;background:linear-gradient(90deg,var(--navy),var(--navy2),var(--accent))}
+.popup-content.fail::before{content:'';display:block;height:5px;background:linear-gradient(90deg,#c0392b,#e74c3c,#ff8a80)}
+.popup-header{padding:14px 18px 0;display:flex;justify-content:flex-end}
+.popup-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--g200);background:var(--g50);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--g400);transition:.25s;line-height:1}
+.popup-close:hover{background:var(--navy);color:#fff;border-color:var(--navy);transform:rotate(90deg)}
+.popup-body{padding:8px 28px 28px;text-align:center}
+.icon-container{width:76px;height:76px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.success .icon-container{background:linear-gradient(145deg,#D3E6FD,#dfe4f4)}
+.fail .icon-container{background:linear-gradient(145deg,#fce8e8,#fde8e8)}
+.popup-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+.badge-success{background:#eef2ff;color:var(--navy)}
+.badge-fail{background:#fef2f2;color:#c0392b}
+.badge-dot{width:5px;height:5px;border-radius:50%}
+.badge-dot-success{background:var(--navy)}.badge-dot-fail{background:#e74c3c}
+.popup-content h2{font-size:20px;font-weight:700;color:var(--g900);margin-bottom:7px}
+.popup-content p{font-size:13px;color:var(--g400);line-height:1.7}
+.user-chip{display:inline-flex;align-items:center;gap:10px;background:#f5f6fa;border:1px solid #e4e6f0;border-radius:999px;padding:7px 16px 7px 7px;margin:14px 0}
+.user-chip-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy2));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.user-chip span{font-size:13px;font-weight:600;color:var(--navy)}
+.popup-divider{border:none;border-top:1px solid var(--g200);margin:14px 0}
+.popup-actions{display:flex;flex-direction:column;gap:8px}
+.btn-action{width:100%;padding:11px;border-radius:12px;font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;transition:.25s;display:flex;align-items:center;justify-content:center;gap:7px;border:none}
+.btn-continue{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff}
+.btn-continue:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(31,39,111,.28)}
+.btn-back{background:var(--g50);color:var(--g400);border:1px solid var(--g200)}
+.btn-back:hover{background:#eef1ff;border-color:#c7d2fe}
+.btn-danger{background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff}
+.btn-danger:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(231,76,60,.3)}
+
+/* FOOTER */
+.footer{background:var(--white);border-top:1px solid var(--g200);padding:16px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.footer-links{display:flex;gap:16px}
+.footer-links a{font-size:12px;color:#121111;text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--navy)}
+.footer-copy{font-size:12px;color:var(--g400)}
+
+/* ANIMATIONS */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:translateY(24px) scale(.93)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes heroIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+
+/* RESPONSIVE */
+@media(max-width:860px){
+  .main-content{grid-template-columns:1fr}
+  .hero{display:none}
+  .form-col{padding:28px 22px}
+  .navbar{padding:12px 20px}
+  .footer{padding:14px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">
+      <img src="images/UClogo.png" alt="UniConnect" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex';">
+      <div class="logo-fallback" id="logoFallback" style="display:none;">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M2 16l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="logo-name">UniConnect</span>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="#">About Us</a>
+      <a href="#">Contact</a>
+    </nav>
+    <a href="Reg.html" class="btn-reg">Register</a>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <div class="main-content">
+
+      <!-- LEFT HERO -->
+      <div class="hero">
+        <div class="hero-top-tag">Sign In</div>
+        <h2 class="hero-title">Welcome<br>Back.</h2>
+        <p class="hero-sub">Log in to your UniConnect account and pick up where you left off.</p>
+        <div class="steps">
+          <div class="step active"><div class="snum">1</div><div class="stxt">Enter your credentials</div></div>
+          <div class="step inactive"><div class="snum">2</div><div class="stxt">Verify your identity</div></div>
+          <div class="step inactive"><div class="snum">3</div><div class="stxt">Access your dashboard</div></div>
+        </div>
+        <div class="hero-benefits">
+          <div class="brow"><i class="fa-regular fa-calendar"></i>View upcoming events</div>
+          <div class="brow"><i class="fa-regular fa-bell"></i>Check your notifications</div>
+          <div class="brow"><i class="fa-solid fa-chart-line"></i>Track your activities</div>
+          <div class="brow"><i class="fa-regular fa-user"></i>Manage your profile</div>
+        </div>
+      </div>
+
+      <!-- RIGHT FORM -->
+      <div class="form-col">
+        <div class="fh">
+          <h1>Log In to UniConnect</h1>
+          <p>Welcome back - enter your details to continue.</p>
+        </div>
+
+        <form id="loginForm">
+          <div class="sep">Account Role</div>
+          <div class="roles">
+            <label class="ropt"><input type="radio" name="role" value="student" checked><span><i class="fa-solid fa-graduation-cap"></i> Participant</span></label>
+            <label class="ropt"><input type="radio" name="role" value="organizer"><span><i class="fa-solid fa-calendar-plus"></i> Organizer</span></label>
+            <label class="ropt"><input type="radio" name="role" value="admin"><span><i class="fa-solid fa-shield-halved"></i> Admin</span></label>
+          </div>
+
+          <div class="sep">Credentials</div>
+          <div class="ig">
+            <label>Email Address</label>
+            <div class="iw">
+              <i class="fa-regular fa-envelope fi"></i>
+              <input type="email" id="email" placeholder="you@university.edu" required>
+            </div>
+          </div>
+          <div class="ig">
+            <label>Password</label>
+            <div class="iw">
+              <i class="fa-solid fa-lock fi"></i>
+              <input type="password" id="password" placeholder="Enter your password" required>
+              <i class="fa-solid fa-eye eye" onclick="tPw('password',this)"></i>
+            </div>
+          </div>
+          <p id="loginErrorMsg" class="err-msg"></p>
+
+          <div class="options-row">
+            <label><input type="checkbox" id="rememberMe"> Remember me</label>
+            <a href="forgot-password.html">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-main" id="loginBtn">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Log In
+          </button>
+        </form>
+
+        <p class="reg-cta">Don't have an account? <a href="Reg.html">Register here</a></p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p class="footer-copy">© 2026 UniConnect. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms</a>
+      <a href="#">Help Center</a>
+      <a href="#">Contact</a>
+    </div>
+  </footer>
+
+</div>
+
+<!-- SUCCESS POPUP -->
+<div id="loginSuccessPopup" class="popup">
+  <div class="popup-content success">
+    <div class="popup-header"><span class="popup-close" onclick="closePopup('loginSuccessPopup')">✕</span></div>
+    <div class="popup-body">
+      <div class="icon-container">
+        <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+          <circle cx="26" cy="26" r="26" fill="#D3E6FD"/>
+          <path d="M15 27l8 8 14-16" stroke="#1f276f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="popup-badge badge-success"><span class="badge-dot badge-dot-success"></span> Login Successful</span>
+      <h2>Welcome back! 👋</h2>
+      <p>You're signed in. Head to your dashboard to discover and manage events.</p>
+      <div class="user-chip">
+        <div class="user-chip-avatar" id="userInitials">--</div>
+        <span id="popupUserName">Loading...</span>
+      </div>
+      <hr class="popup-divider">
+      <div class="popup-actions">
+        <button onclick="goToDashboard()" class="btn-action btn-continue">Go to dashboard →</button>
+        <button onclick="closePopup('loginSuccessPopup')" class="btn-action btn-back">Stay here</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAIL POPUP -->
+<div id="loginFailPopup" class="popup">
+  <div class="popup-content fail">
+    <div class="popup-header"><span class="popup-close" onclick="closePopup('loginFailPopup')">✕</span></div>
+    <div class="popup-body">
+      <div class="icon-container">
+        <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+          <circle cx="26" cy="26" r="26" fill="#fce8e8"/>
+          <path d="M17 17L35 35M35 17L17 35" stroke="#e74c3c" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="popup-badge badge-fail"><span class="badge-dot badge-dot-fail"></span> Login Failed</span>
+      <h2>Incorrect credentials</h2>
+      <p>The email or password you entered doesn't match our records. Please check and try again.</p>
+      <hr class="popup-divider">
+      <div class="popup-actions">
+        <button onclick="closePopup('loginFailPopup')" class="btn-action btn-danger">Try again</button>
+        <button onclick="window.location.href='forgotPassword.html'" class="btn-action btn-back">Forgot password?</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function tPw(id,icon){
+  const i=document.getElementById(id);
+  if(i.type==='password'){i.type='text';icon.classList.replace('fa-eye','fa-eye-slash')}
+  else{i.type='password';icon.classList.replace('fa-eye-slash','fa-eye')}
+}
+function closePopup(id){document.getElementById(id).style.display='none';document.body.style.overflow='auto'}
+function showPopup(id){document.getElementById(id).style.display='flex';document.body.style.overflow='hidden'}
+
+// ── DASHBOARD REDIRECT ──────────────────────────────────────────────────────
+// Reads from sessionStorage (tab-specific) so each tab keeps its own session.
+function goToDashboard(){
+  const role = sessionStorage.getItem('role');
+  if(role==='organizer') window.location.href='OrganizerDash.html';
+  else if(role==='admin'||role==='super_admin'||role==='superadmin') window.location.href='AdminDashboard.html';
+  else window.location.href='Userdashboard.html';
+}
+
+// ── REMEMBER ME (localStorage only — persists across tabs intentionally) ────
+window.addEventListener('DOMContentLoaded', function(){
+  const savedEmail = localStorage.getItem('remembered_email');
+  const savedPw    = localStorage.getItem('remembered_password');
+  if(savedEmail && savedPw){
+    document.getElementById('email').value    = savedEmail;
+    document.getElementById('password').value = savedPw;
+    document.getElementById('rememberMe').checked = true;
+  }
+});
+
+// ── LOGIN SUBMIT ─────────────────────────────────────────────────────────────
+document.getElementById('loginForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn        = document.getElementById('loginBtn');
+  const email      = document.getElementById('email').value;
+  const password   = document.getElementById('password').value;
+  const rememberMe = document.getElementById('rememberMe').checked;
+  const errorMsg   = document.getElementById('loginErrorMsg');
+  errorMsg.innerText = '';
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Signing in\u2026';
+
+  try {
+    const res  = await fetch('http://localhost:3000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if(data.success){
+      const role = data.user.role;
+
+      // ── SESSION STORAGE (tab-isolated) ──────────────────────────────────
+      // Each browser tab gets its own sessionStorage, so logging in as a
+      // different role in a new tab will NOT overwrite this tab's session.
+      sessionStorage.setItem('token',    data.token);
+      sessionStorage.setItem('user_id',  data.user.user_id);
+      sessionStorage.setItem('username', data.user.name);
+      sessionStorage.setItem('role',     role);
+      sessionStorage.setItem('email',    data.user.email);
+
+      // ── LOCAL STORAGE (shared, only for non-auth convenience data) ───────
+      // We no longer store token/role/user_id in localStorage so that a
+      // second tab logging in as a different role cannot corrupt this session.
+      if(rememberMe){
+        localStorage.setItem('remembered_email',    email);
+        localStorage.setItem('remembered_password', password);
+      } else {
+        localStorage.removeItem('remembered_email');
+        localStorage.removeItem('remembered_password');
+      }
+
+      // Show success popup
+      const name     = data.user.name || 'User';
+      const initials = name.split(' ').map(function(w){ return w[0]; }).join('').substring(0,2).toUpperCase();
+      document.getElementById('popupUserName').innerText = name;
+      document.getElementById('userInitials').innerText  = initials;
+      showPopup('loginSuccessPopup');
+
+    } else {
+      errorMsg.innerText = 'Wrong credentials ❌';
+      showPopup('loginFailPopup');
+    }
+
+  } catch(err){
+    console.error(err);
+    errorMsg.innerText = 'Server not responding';
+    showPopup('loginFailPopup');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Log In';
+  }
+});
+</script>
+</body>
+</html>

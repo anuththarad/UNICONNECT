@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniConnect - Create Event</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0a0820; --ink-mid: #1a1740; --ink-light: #2d2a6e;
+      --blue: #031253; --blue-glow: rgba(79,110,247,.18);
+      --teal: #06b6d4; --emerald: #10b981; --amber: #f59e0b;
+      --rose: #f43f5e; --purple: #8b5cf6;
+      --bg: #f0f2ff; --surface: #ffffff; --surface2: #f7f8ff;
+      --border: #e4e7f5; --txt: #0f172a; --muted: #64748b; --light: #94a3b8;
+      --sh-sm: 0 1px 3px rgba(10,8,32,.06); --sh-md: 0 4px 16px rgba(10,8,32,.09);
+      --sh-lg: 0 12px 40px rgba(10,8,32,.13); --sh-xl: 0 24px 64px rgba(10,8,32,.18);
+      --r-sm: 10px; --r-md: 16px; --r-lg: 22px; --r-xl: 28px;
+      --ease: cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; overflow-x: hidden; }
+    .container { display: flex; width: 100%; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width: 272px; background: #fff; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; flex-shrink: 0; z-index: 100; overflow-y: auto; border-right: 1px solid var(--border); box-shadow: 0 0 30px rgba(15,23,42,.04); }
+    .logo-area { height: 80px; display: flex; align-items: center; justify-content: center; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .logo-area img { width: 150px; max-width: 100%; height: auto; object-fit: contain; }
+    .logo-text { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #0f172a; }
+    .logo-text span { color: #1e3a8a; }
+    .sb-profile { display: flex; align-items: center; gap: 12px; margin: 18px 14px 16px; padding: 14px; background: linear-gradient(135deg,#0f172a,#1e3a8a); border-radius: 16px; box-shadow: 0 8px 20px rgba(15,23,42,.2); }
+    .sb-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg,#60a5fa,#38bdf8); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+    .sb-name { font-size: 14px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+    .sb-role { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #bfdbfe; margin-top: 2px; }
+    .nav-section { padding: 0 12px; }
+    .nav-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #94a3b8; padding: 16px 12px 6px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px; cursor: pointer; color: #334155; font-weight: 600; font-size: 14px; transition: .2s; position: relative; margin-bottom: 4px; text-decoration: none; }
+    .nav-item i { width: 18px; font-size: 15px; text-align: center; color: #475569; transition: .2s; }
+    .nav-item:hover { background: linear-gradient(135deg,#0f172a,#1e3a8a); color: #fff; }
+    .nav-item:hover i { color: #fff; }
+    .nav-item.active { background: linear-gradient(135deg,#0f172a,#1e40af); color: #fff; box-shadow: 0 6px 16px rgba(30,58,138,.2); }
+    .nav-item.active i { color: #fff; }
+    .nav-badge { margin-left: auto; background: #ef4444; color: #fff; font-size: 10px; font-weight: 800; min-width: 18px; height: 18px; border-radius: 99px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+    .sb-footer { margin-top: auto; padding: 16px 14px; border-top: 1px solid var(--border); }
+    .sb-logout { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; cursor: pointer; color: #475569; font-size: 14px; font-weight: 600; transition: .2s; }
+    .sb-logout:hover { background: #fee2e2; color: #b91c1c; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #d0d7f0; border-radius: 4px; }
+
+    .sidebar-lang { padding: 10px 16px; margin: 4px 0; }
+    .lang-select-wrap { position: relative; display: flex; align-items: center; }
+    .lang-select-wrap i { position: absolute; left: 11px; color: #4f6ef7; font-size: 14px; pointer-events: none; z-index: 1; }
+    .sidebar-lang select { width: 100%; padding: 10px 12px 10px 34px; border-radius: 10px; border: 1.5px solid var(--border); background: #f8fafc; color: var(--txt); font-size: 13px; font-weight: 600; cursor: pointer; outline: none; font-family: inherit; transition: .2s; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+
+    /* MAIN */
+    .main { flex: 1; padding: 32px 36px 42px; overflow-y: auto; }
+    .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 28px; }
+    .page-head h1 { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: var(--ink); letter-spacing: -.5px; margin-bottom: 4px; }
+    .page-head p { color: var(--muted); font-size: 14px; }
+    .head-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 10px 14px; box-shadow: var(--sh-sm); color: var(--ink); font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .head-chip i { color: var(--blue); }
+    .content { display: grid; grid-template-columns: minmax(0,2fr) minmax(280px,.9fr); gap: 24px; align-items: start; }
+    .form-section, .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--sh-sm); }
+    .form-section { padding: 26px; }
+    .side-panel { display: flex; flex-direction: column; gap: 20px; }
+    .card { padding: 22px; }
+    h3 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 20px; padding-bottom: 13px; border-bottom: 1px solid var(--border); }
+    h4 { margin: 30px 0 16px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.4px; font-weight: 800; }
+    .field-group { margin-bottom: 16px; }
+    label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 7px; color: var(--txt); }
+    input, textarea, select { width: 100%; padding: 12px 14px; border-radius: var(--r-sm); border: 1.5px solid var(--border); background: var(--surface2); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--txt); transition: .2s var(--ease); outline: none; }
+    input::placeholder, textarea::placeholder { color: var(--light); }
+    input:focus, textarea:focus, select:focus { border-color: #4f6ef7; background: #fff; box-shadow: 0 0 0 3px var(--blue-glow); }
+    .row { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 15px; }
+    .row + .row { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    textarea { min-height: 120px; resize: vertical; }
+    .toggle { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--surface2); }
+    .toggle label { margin: 0; color: var(--txt); }
+    .toggle input[type="checkbox"] { width: 42px; height: 22px; flex-shrink: 0; accent-color: #4f6ef7; cursor: pointer; }
+    .buttons { display: flex; justify-content: flex-end; gap: 12px; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border); }
+    button { padding: 12px 22px; border-radius: var(--r-sm); font-family: 'DM Sans', sans-serif; font-weight: 800; cursor: pointer; transition: .2s var(--ease); border: none; }
+    .cancel { background: var(--surface2); color: var(--ink); border: 1px solid var(--border); }
+    .cancel:hover { background: var(--border); }
+    .publish { background: linear-gradient(135deg,var(--ink),var(--ink-light)); color: white; box-shadow: 0 4px 16px rgba(10,8,32,.25); }
+    .publish:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(10,8,32,.3); }
+    .publish:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    footer { text-align: center; padding: 22px; color: var(--muted); font-size: 13px; background: var(--bg); }
+
+    /* POPUP SYSTEM */
+    .popup-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10,8,32,.65);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 99999;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 20px;
+      opacity: 0; visibility: hidden;
+      transition: opacity .28s var(--ease), visibility .28s var(--ease);
+    }
+    .popup-overlay.show { opacity: 1; visibility: visible; }
+    .popup-card {
+      width: 480px; max-width: 100%;
+      background: #ffffff;
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      box-shadow: 0 32px 80px rgba(10,8,32,.22), 0 8px 24px rgba(10,8,32,.10);
+      overflow: hidden;
+      position: relative;
+      transform: translateY(24px) scale(.93);
+      transition: transform .34s cubic-bezier(.34,1.56,.64,1);
+    }
+    .popup-overlay.show .popup-card { transform: translateY(0) scale(1); }
+
+    .popup-band { height: 5px; width: 100%; }
+    .popup-band.success { background: linear-gradient(90deg,#0a0820,#2d2a6e,#4f6ef7,#06b6d4); }
+    .popup-band.error   { background: linear-gradient(90deg,#7f1d1d,#dc2626,#f97316); }
+    .popup-band.confirm { background: linear-gradient(90deg,#0a0820,#1e3a8a,#4f6ef7,#06b6d4); }
+
+    .popup-body { padding: 30px 30px 26px; }
+
+    .popup-close-btn {
+      position: absolute; top: 16px; right: 16px;
+      width: 34px; height: 34px; border-radius: 10px;
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--muted); font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: .2s ease; z-index: 10; padding: 0;
+    }
+    .popup-close-btn:hover { background: var(--border); color: var(--ink); transform: rotate(90deg) scale(1.1); }
+
+    .popup-icon-wrap {
+      width: 72px; height: 72px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px; position: relative;
+    }
+    .popup-icon-wrap.success { background: linear-gradient(135deg,#dbeafe,#bfdbfe); }
+    .popup-icon-wrap.error   { background: linear-gradient(135deg,#fee2e2,#fecaca); }
+    .popup-icon-wrap.confirm { background: linear-gradient(135deg,#dbeafe,#bfdbfe); }
+    .popup-icon-wrap i { font-size: 28px; }
+    .popup-icon-wrap.success i { color: #1e3a8a; }
+    .popup-icon-wrap.error   i { color: #dc2626; }
+    .popup-icon-wrap.confirm i { color: #1e3a8a; }
+    .popup-icon-wrap::before {
+      content: ''; position: absolute; inset: -7px; border-radius: 50%;
+      animation: popupRing 2.2s ease-out infinite;
+    }
+    .popup-icon-wrap.success::before,
+    .popup-icon-wrap.confirm::before { border: 2px solid rgba(30,58,138,.20); }
+    .popup-icon-wrap.error::before   { border: 2px solid rgba(220,38,38,.18); }
+    @keyframes popupRing {
+      0%   { transform: scale(.88); opacity: 1; }
+      100% { transform: scale(1.55); opacity: 0; }
+    }
+
+    .popup-title { font-family: 'Sora', sans-serif; font-size: 21px; font-weight: 800; color: var(--ink); text-align: center; letter-spacing: -.4px; margin-bottom: 8px; }
+    .popup-msg   { text-align: center; color: var(--muted); font-size: 14px; line-height: 1.65; margin-bottom: 22px; }
+
+    .popup-id-pill {
+      display: flex; align-items: center; gap: 12px;
+      background: linear-gradient(135deg,#eff6ff,#dbeafe);
+      border: 1px solid #bfdbfe; border-radius: 14px;
+      padding: 14px 18px; margin-bottom: 22px;
+    }
+    .popup-id-pill i { font-size: 20px; color: #1e40af; flex-shrink: 0; }
+    .pill-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+    .pill-code  { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: #1e3a8a; }
+
+    /* Confirm review rows */
+    .review-pill {
+      background: linear-gradient(135deg,#f0f4ff,#e8edff);
+      border: 1px solid #c7d2fe; border-radius: 16px;
+      padding: 16px 18px; margin-bottom: 18px;
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .review-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; font-size: 13px; padding: 9px 0;
+    }
+    .review-row:not(:last-child) { border-bottom: 1px solid rgba(99,102,241,.14); }
+    .r-label { display: flex; align-items: center; gap: 7px; color: #64748b; font-weight: 600; font-size: 12.5px; flex-shrink: 0; }
+    .r-label i { color: #4f6ef7; width: 14px; font-size: 13px; text-align: center; }
+    .r-val { font-weight: 700; color: #0f172a; font-size: 13px; text-align: right; word-break: break-word; max-width: 220px; }
+    .r-val.id-badge { font-family: 'Sora', sans-serif; font-size: 13px; color: #1e3a8a; background: #dbeafe; padding: 2px 10px; border-radius: 99px; }
+
+    .warn-note {
+      display: flex; align-items: flex-start; gap: 9px;
+      background: #fffbeb; border: 1px solid #fde68a; border-radius: 11px;
+      padding: 11px 14px; margin-bottom: 22px;
+      font-size: 12.5px; color: #92400e; line-height: 1.55;
+    }
+    .warn-note i { color: #d97706; flex-shrink: 0; margin-top: 1px; font-size: 13px; }
+
+    .popup-actions { display: flex; gap: 10px; }
+    .popup-btn-primary {
+      flex: 1; padding: 13px 16px; border-radius: 14px;
+      background: linear-gradient(135deg,#0a0820,#2d2a6e); color: #fff;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 800;
+      border: none; cursor: pointer; transition: .22s var(--ease);
+      box-shadow: 0 8px 22px rgba(10,8,32,.22);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .popup-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(10,8,32,.28); }
+    .popup-btn-primary:active { transform: scale(.98); }
+    .popup-btn-primary.danger { background: linear-gradient(135deg,#7f1d1d,#dc2626); box-shadow: 0 8px 22px rgba(220,38,38,.20); }
+    .popup-btn-primary.danger:hover { box-shadow: 0 14px 30px rgba(220,38,38,.28); }
+    .popup-btn-secondary {
+      padding: 13px 18px; border-radius: 14px;
+      background: var(--surface2); color: var(--ink);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+      border: 1.5px solid var(--border); cursor: pointer; transition: .2s var(--ease);
+      display: flex; align-items: center; gap: 7px; white-space: nowrap;
+    }
+    .popup-btn-secondary:hover { background: var(--border); }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d0d7f0; border-radius: 6px; }
+
+    @media(max-width:1060px) {
+      .sidebar { width: 72px; }
+      .sb-info, .nav-item span, .sb-logout span, .nav-label, .sidebar-lang label { display: none; }
+      .sb-profile { justify-content: center; padding: 10px; }
+      .nav-item { justify-content: center; padding: 12px; }
+      .logo-area { justify-content: center; padding: 16px 0; }
+      .logo-area img { width: 44px; }
+      .sb-logout { justify-content: center; padding: 12px; }
+      .content { grid-template-columns: 1fr; }
+    }
+    @media(max-width:760px) {
+      .main { padding: 22px 18px 34px; }
+      .page-head { flex-direction: column; align-items: flex-start; }
+      .row, .row + .row { grid-template-columns: 1fr; gap: 0; }
+      .buttons { flex-direction: column; }
+      .popup-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo-area">
+      <img src="images/UClogo.png" alt="UniConnect" onerror="this.style.display='none';document.getElementById('lt').style.display='block'">
+      <span class="logo-text" id="lt" style="display:none">Uni<span>Connect</span></span>
+    </div>
+
+    <div class="sidebar-lang">
+      <div class="lang-select-wrap">
+        <i class="fa-solid fa-globe"></i>
+        <select id="langSelect" onchange="doGoogleTranslate(this.value)">
+          <option value="en">English</option>
+          <option value="ta">தமிழ் (Tamil)</option>
+          <option value="si">සිංහල (Sinhala)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Main</div>
+      <a class="nav-item" href="OrganizerDash.html"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+      <a class="nav-item" href="HomePage.html"><i class="fa-solid fa-wallet"></i><span>Back to Home</span></a>
+      <div class="nav-label" style="margin-top:10px">Create</div>
+      <a class="nav-item active" href="Event.html"><i class="fa-solid fa-circle-plus"></i><span>Create Event</span></a>
+      <a class="nav-item" href="Allevents.html"><i class="fa-solid fa-calendar-days"></i><span>Browse Events</span></a>
+      <div class="nav-label" style="margin-top:10px">Manage</div>
+      <a class="nav-item" href="Budget.html"><i class="fa-solid fa-wallet"></i><span>Budget Management</span></a>
+      <a class="nav-item" href="Volunteer.html"><i class="fa-solid fa-hands-helping"></i><span>Volunteer Management</span></a>
+    </div>
+    <div class="sb-footer">
+      <div class="sb-logout" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="page-head">
+      <div><h1>Create Your Event</h1></div>
+      <div class="head-chip"><i class="fa-solid fa-calendar-plus"></i> Event setup</div>
+    </div>
+
+    <form id="eventForm" class="content">
+      <div class="form-section">
+        <h3>Event Information</h3>
+        <div class="field-group">
+          <label>Event Title</label>
+          <input type="text" name="title" placeholder="e.g. Annual Science Fair 2026" required>
+        </div>
+        <div class="field-group">
+          <label>Event Description</label>
+          <textarea name="description" placeholder="Describe the purpose and highlights of your event..."></textarea>
+        </div>
+        <div class="field-group">
+          <label>University</label>
+          <input type="text" name="university" placeholder="Enter Your University Name" required>
+        </div>
+        <div class="field-group">
+          <label>Department</label>
+          <input type="text" name="department_name" placeholder="Computing" required>
+        </div>
+        <div class="toggle">
+          <label>Allow Other Departments</label>
+          <input type="checkbox" name="allow_other_departments" value="1">
+        </div>
+        <div class="toggle">
+          <label>Allow Ticket Booking</label>
+          <input type="checkbox" id="allowTickets" name="allow_ticket_booking" value="1">
+        </div>
+        <div class="toggle">
+          <label>Allow Payments</label>
+          <input type="checkbox" id="allowPayments" name="allow_payments" value="1">
+        </div>
+        <div id="ticketSection" style="display:none;margin-top:18px">
+          <div class="field-group">
+            <label>Ticket Type</label>
+            <select name="ticket_type">
+              <option value="Free">Free</option>
+              <option value="Paid">Paid</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Ticket Price (LKR)</label>
+            <input type="number" name="ticket_price" placeholder="500" min="0">
+          </div>
+          <div class="field-group">
+            <label>Total Tickets</label>
+            <input type="number" name="ticket_quantity" placeholder="100" min="1">
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Category</label>
+          <input list="categoryList" name="category" placeholder="Select or type category..." required>
+          <datalist id="categoryList">
+            <option value="Academic"><option value="Workshop"><option value="Seminar">
+            <option value="Conference"><option value="Research Presentation">
+            <option value="Sports"><option value="Tournament"><option value="Fitness"><option value="Esports">
+            <option value="Cultural"><option value="Music"><option value="Dance">
+            <option value="Drama"><option value="Art Exhibition">
+            <option value="Online Event"><option value="Webinar"><option value="Virtual Meetup"><option value="Live Stream">
+            <option value="Career Fair"><option value="Networking"><option value="Startup Pitch"><option value="Entrepreneurship">
+            <option value="Party"><option value="Community Service"><option value="Fundraising">
+            <option value="Hackathon"><option value="Coding Competition"><option value="AI / ML Event">
+          </datalist>
+        </div>
+        <div class="row">
+          <div class="field-group"><label>Date</label><input type="date" name="date" required></div>
+          <div class="field-group"><label>Start Time</label><input type="time" name="start_time" step="1"></div>
+          <div class="field-group"><label>End Time</label><input type="time" name="end_time" step="1"></div>
+        </div>
+        <div class="row">
+          <div class="field-group"><label>Venue</label><input type="text" name="venue" placeholder="Hall B / Zoom Link"></div>
+          <div class="field-group"><label>Attendee Capacity</label><input type="number" name="capacity" placeholder="0 = Unlimited" min="0"></div>
+        </div>
+        <h4>Additional Details</h4>
+        <div class="field-group"><label>Tags</label><input type="text" name="tags" placeholder="Tech, Career, Networking"></div>
+        <div class="field-group"><label>Requirements</label><textarea name="requirements" placeholder="What should participants bring?"></textarea></div>
+        <div class="buttons">
+          <button type="reset" class="cancel">Cancel</button>
+          <button type="submit" class="publish" id="publishBtn">
+            <i class="fa-solid fa-rocket" style="margin-right:7px"></i>Create Event
+          </button>
+        </div>
+      </div>
+
+      <div class="side-panel">
+        <div class="card">
+          <h3>Event Settings</h3>
+          <div class="field-group">
+            <label>Visibility</label>
+            <select name="visibility">
+              <option value="Public">Public (Everyone)</option>
+              <option value="Private">Private (Invite Only)</option>
+            </select>
+          </div>
+          <div class="toggle"><label>Need Volunteers?</label><input type="checkbox" name="needs_volunteers" value="1" checked></div>
+          <div class="toggle"><label>Allow Registration</label><input type="checkbox" name="allow_reg" value="1" checked></div>
+          <div class="toggle"><label>Send Notifications</label><input type="checkbox" name="notifications" value="1" checked></div>
+        </div>
+        <div class="card">
+          <h3>Organizer Info</h3>
+          <div class="field-group"><label>Organizer Name</label><input type="text" name="organizer_name" placeholder="John Doe"></div>
+          <div class="field-group"><label>Organizer ID</label><input type="number" name="organizer_id" placeholder="Enter Your User ID" required></div>
+          <div class="field-group"><label>Contact Email</label><input type="email" name="email" placeholder="organizer@uni.edu"></div>
+        </div>
+      </div>
+    </form>
+  </main>
+</div>
+
+<footer><p>© 2026 UniConnect. All Rights Reserved.</p></footer>
+
+<!-- ══════════════════════════════════════
+     CONFIRM POPUP
+     ══════════════════════════════════════ -->
+<div id="confirmPopup" class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="popup-card">
+    <button class="popup-close-btn" id="closeConfirmPopup" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="popup-band confirm"></div>
+    <div class="popup-body">
+      <div class="popup-icon-wrap confirm">
+        <i class="fa-solid fa-calendar-check"></i>
+      </div>
+      <div class="popup-title" id="confirmTitle">Ready to publish?</div>
+      <div class="popup-msg">Review your event details before making it live for attendees.</div>
+
+      <div class="review-pill">
+        <div class="review-row">
+          <span class="r-label"><i class="fa-solid fa-heading"></i> Title</span>
+          <span class="r-val" id="cfTitle">—</span>
+        </div>
+        <div class="review-row">
+          <span class="r-label"><i class="fa-solid fa-tag"></i> Category</span>
+          <span class="r-val" id="cfCategory">—</span>
+        </div>
+        <div class="review-row">
+          <span class="r-label"><i class="fa-solid fa-calendar"></i> Date</span>
+          <span class="r-val" id="cfDate">—</span>
+        </div>
+        <div class="review-row">
+          <span class="r-label"><i class="fa-solid fa-clock"></i> Time</span>
+          <span class="r-val" id="cfTime">—</span>
+        </div>
+        <div class="review-row">
+          <span class="r-label"><i class="fa-solid fa-location-dot"></i> Venue</span>
+          <span class="r-val" id="cfVenue">—</span>
+        </div>
+        <div class="review-row">
+          <span class="r-label"><i class="fa-solid fa-university"></i> University</span>
+          <span class="r-val" id="cfUniversity">—</span>
+        </div>
+        <div class="review-row">
+          <span class="r-label"><i class="fa-solid fa-user"></i> Organizer ID</span>
+          <span class="r-val id-badge" id="cfOrgId">—</span>
+        </div>
+      </div>
+
+      <div class="warn-note">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>Make sure your <strong>Organizer ID</strong> is correct — it links this event to your account and cannot be changed after publishing.</span>
+      </div>
+
+      <div class="popup-actions">
+        <button class="popup-btn-secondary" id="confirmCancelBtn">
+          <i class="fa-solid fa-arrow-left"></i> Go back
+        </button>
+        <button class="popup-btn-primary" id="confirmProceedBtn">
+          <i class="fa-solid fa-rocket"></i> Confirm & Publish
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SUCCESS POPUP
+     ══════════════════════════════════════ -->
+<div id="successPopup" class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+  <div class="popup-card">
+    <button class="popup-close-btn" id="closeSuccessPopup" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="popup-band success"></div>
+    <div class="popup-body">
+      <div class="popup-icon-wrap success"><i class="fa-solid fa-calendar-check"></i></div>
+      <div class="popup-title" id="successTitle">Event Created!</div>
+      <div class="popup-msg" id="successMsg">Your event has been published and is now visible to attendees.</div>
+      <div class="popup-id-pill" id="successIdPill">
+        <i class="fa-solid fa-ticket"></i>
+        <div>
+          <div class="pill-label">Event Reference ID</div>
+          <div class="pill-code" id="successEventCode">UCE000</div>
+        </div>
+      </div>
+      <div class="popup-actions">
+        <button class="popup-btn-secondary" id="successStayBtn">
+          <i class="fa-solid fa-plus"></i> Create Another
+        </button>
+        <button class="popup-btn-primary" id="successGoBtn">
+          View Event <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ERROR POPUP
+     ══════════════════════════════════════ -->
+<div id="errorPopup" class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="errorTitle">
+  <div class="popup-card">
+    <button class="popup-close-btn" id="closeErrorPopup" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="popup-band error"></div>
+    <div class="popup-body">
+      <div class="popup-icon-wrap error"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div class="popup-title" id="errorTitle">Creation Failed</div>
+      <div class="popup-msg" id="errorMsg">Something went wrong. Please check your details and try again.</div>
+      <div class="popup-actions">
+        <button class="popup-btn-primary danger" id="errorDismissBtn">
+          <i class="fa-solid fa-rotate-right"></i> Try Again
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* ── Sidebar profile ── */
+  const storedName      = localStorage.getItem("username") || "Organizer";
+  const sidebarNameEl   = document.getElementById("sidebarName");
+  const sidebarAvatarEl = document.getElementById("sidebarAvatar");
+  if (sidebarNameEl)   sidebarNameEl.innerText = storedName;
+  if (sidebarAvatarEl) sidebarAvatarEl.innerText = storedName.trim().split(" ").map(w=>w[0]).join("").substring(0,2).toUpperCase() || "--";
+
+  /* ── Ticket section toggle ── */
+  const allowTicketsChk = document.getElementById("allowTickets");
+  const ticketSection   = document.getElementById("ticketSection");
+  allowTicketsChk.addEventListener("change", () => {
+    ticketSection.style.display = allowTicketsChk.checked ? "block" : "none";
+  });
+
+  /* ── Popup refs ── */
+  const confirmPopup  = document.getElementById("confirmPopup");
+  const successPopup  = document.getElementById("successPopup");
+  const errorPopup    = document.getElementById("errorPopup");
+  const successMsg    = document.getElementById("successMsg");
+  const errorMsg      = document.getElementById("errorMsg");
+  let createdEventId  = null;
+  let pendingSubmit   = false;
+
+  const openPopup  = el => el.classList.add("show");
+  const closePopup = el => el.classList.remove("show");
+
+  /* ── Close buttons ── */
+  document.getElementById("closeConfirmPopup").addEventListener("click", () => closePopup(confirmPopup));
+  document.getElementById("closeSuccessPopup").addEventListener("click", () => closePopup(successPopup));
+  document.getElementById("closeErrorPopup").addEventListener("click",   () => closePopup(errorPopup));
+  document.getElementById("errorDismissBtn").addEventListener("click",   () => closePopup(errorPopup));
+
+  /* ── Backdrop click to close ── */
+  [confirmPopup, successPopup, errorPopup].forEach(pop => {
+    pop.addEventListener("click", e => { if (e.target === pop) closePopup(pop); });
+  });
+
+  /* ── Escape key to close ── */
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") [confirmPopup, successPopup, errorPopup].forEach(closePopup);
+  });
+
+  /* ── Confirm popup: Go back ── */
+  document.getElementById("confirmCancelBtn").addEventListener("click", () => {
+    closePopup(confirmPopup);
+  });
+
+  /* ── Confirm popup: Proceed to actual submit ── */
+  document.getElementById("confirmProceedBtn").addEventListener("click", () => {
+    closePopup(confirmPopup);
+    pendingSubmit = true;
+    document.getElementById("eventForm").requestSubmit();
+  });
+
+  /* ── Success popup buttons ── */
+  document.getElementById("successStayBtn").addEventListener("click", () => {
+    closePopup(successPopup);
+    document.getElementById("eventForm").reset();
+    ticketSection.style.display = "none";
+    createdEventId = null;
+  });
+  document.getElementById("successGoBtn").addEventListener("click", () => {
+    if (createdEventId) window.location.href = "Eventpage.html?id=" + createdEventId;
+    else closePopup(successPopup);
+  });
+
+  /* ── Helpers ── */
+  function formatTime(val) {
+    if (!val || !val.trim()) return null;
+    return val.length === 5 ? val + ":00" : val;
+  }
+  function fmtTimeDisplay(t) {
+    if (!t) return "—";
+    try {
+      const [h, m] = t.split(":");
+      const d = new Date(); d.setHours(+h, +m);
+      return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+    } catch(_) { return t; }
+  }
+  function fmtDateDisplay(d) {
+    if (!d) return "—";
+    try { return new Date(d + "T00:00:00").toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" }); }
+    catch(_) { return d; }
+  }
+
+  /* ── FORM SUBMIT ── */
+  const form = document.getElementById("eventForm");
+  const btn  = document.getElementById("publishBtn");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const raw = Object.fromEntries(new FormData(form).entries());
+
+    /* Step 1 — show confirm popup (first attempt) */
+    if (!pendingSubmit) {
+      document.getElementById("cfTitle").textContent      = raw.title      || "—";
+      document.getElementById("cfCategory").textContent   = raw.category   || "—";
+      document.getElementById("cfDate").textContent       = fmtDateDisplay(raw.date);
+      document.getElementById("cfVenue").textContent      = raw.venue      || "—";
+      document.getElementById("cfUniversity").textContent = raw.university || "—";
+      document.getElementById("cfOrgId").textContent      = raw.organizer_id || "—";
+      const start = fmtTimeDisplay(raw.start_time);
+      const end   = fmtTimeDisplay(raw.end_time);
+      document.getElementById("cfTime").textContent = (raw.start_time || raw.end_time)
+        ? (start + (raw.end_time ? " – " + end : "")) : "—";
+      openPopup(confirmPopup);
+      return;
+    }
+
+    /* Step 2 — user confirmed, do the actual API call */
+    pendingSubmit = false;
+    btn.disabled  = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:7px"></i>Creating…';
+
+    try {
+      if (!raw.title || !raw.date || !raw.organizer_id) {
+        errorMsg.innerText = "Please fill in all required fields: Title, Date, and Organizer ID.";
+        openPopup(errorPopup);
+        return;
+      }
+
+      const payload = {
+        title:                   raw.title.trim(),
+        description:             raw.description ? raw.description.trim() : "",
+        category:                raw.category    ? raw.category.trim()    : "General",
+        event_date:              raw.date,
+        start_time:              formatTime(raw.start_time),
+        end_time:                formatTime(raw.end_time),
+        venue:                   raw.venue            ? raw.venue.trim()            : "",
+        capacity:                raw.capacity         ? parseInt(raw.capacity)      : 0,
+        visibility:              raw.visibility       || "Public",
+        user_id:                 parseInt(raw.organizer_id),
+        needs_volunteers:        raw.needs_volunteers ? 1 : 0,
+        university:              raw.university       ? raw.university.trim()       : "",
+        department_name:         raw.department_name  ? raw.department_name.trim()  : "",
+        allow_other_departments: raw.allow_other_departments ? 1 : 0,
+        allow_registration:      raw.allow_reg        ? 1 : 0,
+        allow_ticket_booking:    raw.allow_ticket_booking ? 1 : 0,
+        allow_payments:          raw.allow_payments   ? 1 : 0,
+        ticket_type:             raw.ticket_type      || "Free",
+        ticket_price:            raw.ticket_price     ? parseFloat(raw.ticket_price) : 0,
+        ticket_quantity:         raw.ticket_quantity  ? parseInt(raw.ticket_quantity) : 0
+      };
+
+      const response = await fetch("http://localhost:3000/api/events", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to create event");
+
+      if (data.success) {
+        createdEventId = data.eventId;
+        document.getElementById("successEventCode").innerText = "UCE" + createdEventId;
+        successMsg.innerText = "Your event has been published and is now visible to attendees.";
+        form.reset();
+        ticketSection.style.display = "none";
+        openPopup(successPopup);
+      } else {
+        throw new Error(data.message || "Failed to create event");
+      }
+
+    } catch (err) {
+      console.error(err);
+      errorMsg.innerText = err.message || "An unexpected error occurred. Please try again.";
+      openPopup(errorPopup);
+    } finally {
+      btn.disabled  = false;
+      btn.innerHTML = '<i class="fa-solid fa-rocket" style="margin-right:7px"></i>Create Event';
+    }
+  });
+
+  /* ── Language (stub — wire to your UCTranslate if needed) ── */
+  function doGoogleTranslate(lang) {
+    if (typeof UCTranslate !== "undefined") UCTranslate.set(lang);
+  }
+
+  /* ── Logout ── */
+  window.logout = function() {
+    sessionStorage.clear();
+    localStorage.removeItem("token");
+    window.location.href = "Login.html";
+  };
+
+});
+</script>
+</body>
+</html>

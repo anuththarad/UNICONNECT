@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniConnect | One Platform. Endless Opportunities.</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --primary-blue: #2563eb;
+            --primary-green: #22c55e;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --bg-light: #f9fafb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 6%;
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-gray);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a.active, nav ul li a:hover {
+            color: var(--primary-green);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .search-bar {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar input {
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 50px;
+            width: 250px;
+            background: #f3f4f6;
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-gray);
+        }
+
+        .btn-login {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn-signup {
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+            padding: 4rem 6%;
+            gap: 4rem;
+            background: linear-gradient(to right, #ffffff, #f0fdf4);
+        }
+
+        .hero-content {
+            flex: 1;
+        }
+
+        .badge-tag {
+            display: inline-flex;
+            align-items: center;
+            background: #dcfce7;
+            color: var(--primary-green);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .badge-tag span {
+            margin-right: 0.5rem;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: #111827;
+        }
+
+        .hero-content h1 span.blue { color: var(--primary-blue); }
+        .hero-content h1 span.green { color: var(--primary-green); }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .btn-get-started {
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn-explore {
+            background: white;
+            color: var(--text-dark);
+            padding: 1rem 2rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .social-proof {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .student-avatars {
+            display: flex;
+        }
+
+        .student-avatars img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid white;
+            margin-left: -12px;
+        }
+
+        .student-avatars img:first-child { margin-left: 0; }
+
+        .social-proof p {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        .hero-image {
+            flex: 1;
+            position: relative;
+        }
+
+        .hero-image img.main-img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Feature Section */
+        .features {
+            padding: 5rem 6%;
+            text-align: center;
+            background-color: white;
+        }
+
+        .features h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .features > p {
+            color: var(--text-gray);
+            margin-bottom: 4rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem 1.5rem;
+            border-radius: 16px;
+            border: 1px solid #f3f4f6;
+            text-align: left;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .blue-icon { background: #eff6ff; color: #3b82f6; }
+        .green-icon { background: #f0fdf4; color: #22c55e; }
+        .orange-icon { background: #fffbeb; color: #f59e0b; }
+        .purple-icon { background: #f5f3ff; color: #8b5cf6; }
+        .pink-icon { background: #fff1f2; color: #ec4899; }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-card p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Profile image in nav bar update */
+        .nav-user-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="images/UClogo.png" alt="UniConnect Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">Events</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Features</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="nav-right">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search events, workshops, seminars...">
+            </div>
+            <a href="#" class="btn-login">Login</a>
+            <a href="#" class="btn-signup">Sign Up</a>
+            <img src="images/100.jpg" alt="Profile" class="nav-user-img">
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge-tag">
+                <span>●</span> Your Campus, Your Connection
+            </div>
+            <h1>One Platform.<br>Endless <span class="green">Opportunities.</span></h1>
+            <p>Join events, manage your schedule, volunteer and connect with your campus community.</p>
+            
+            <div class="hero-btns">
+                <a href="#" class="btn-get-started">Get Started &rarr;</a>
+                <a href="#" class="btn-explore">Explore Events <i class="fa-regular fa-calendar"></i></a>
+            </div>
+
+            <div class="social-proof">
+                <div class="student-avatars">
+                    <img src="https://i.pravatar.cc/150?u=1" alt="Student">
+                    <img src="https://i.pravatar.cc/150?u=2" alt="Student">
+                    <img src="https://i.pravatar.cc/150?u=3" alt="Student">
+                    <img src="https://i.pravatar.cc/150?u=4" alt="Student">
+                </div>
+                <p>Join <span style="color: var(--primary-blue); font-weight: bold;">5,000+</span> students already connected</p>
+            </div>
+        </div>
+
+        <div class="hero-image">
+            <img src="ChatGPT Image Apr 26, 2026, 11_43_49 AM.jpg" alt="Students with laptop" class="main-img">
+        </div>
+    </section>
+
+    <section class="features">
+        <h2>Everything you need in one place</h2>
+        <p>Powerful features to simplify your campus life</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon-box blue-icon">
+                    <i class="fa-regular fa-calendar"></i>
+                </div>
+                <h3>Discover Events</h3>
+                <p>Find events, workshops, seminars and activities happening on campus.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-box green-icon">
+                    <i class="fa-solid fa-calendar-day"></i>
+                </div>
+                <h3>Smart Schedule</h3>
+                <p>Organize your time and never miss an important event.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-box orange-icon">
+                    <i class="fa-regular fa-address-card"></i>
+                </div>
+                <h3>Easy Registration</h3>
+                <p>Register for events in just a few clicks.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-box purple-icon">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+                <h3>Stay Updated</h3>
+                <p>Get notifications and updates about events you care about.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-box pink-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <h3>Get Involved</h3>
+                <p>Volunteer, participate and make a difference on campus.</p>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

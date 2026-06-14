@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect - Admin Panel</title>
+<script src="/js/i18n.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════════════
+   RESET & DESIGN TOKENS
+════════════════════════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --sidebar-w:240px;
+  --topbar-h:62px;
+  --r:8px;--r-lg:12px;--r-xl:18px;
+
+  /* Topbar – pure white */
+  --tb-bg:#ffffff;
+  --tb-border:#e5e7eb;
+  --tb-text:#111827;
+  --tb-muted:#6b7280;
+  --tb-hover:#f3f4f6;
+  --tb-input:#f9fafb;
+
+  /* Sidebar – white */
+  --sb-bg:#ffffff;
+  --sb-border:#e5e7eb;
+  --sb-text:#374151;
+  --sb-muted:#9ca3af;
+  --sb-hover:#f5f5ff;
+  --sb-active-bg:#eef2ff;
+  --sb-active-txt:#4f46e5;
+  --sb-active-bar:#4f46e5;
+
+  /* Content area – light grey */
+  --bg:#f1f5f9;
+  --surface:#ffffff;
+  --surface2:#f8fafc;
+  --surface3:#f1f5f9;
+  --border:#e2e8f0;
+  --border2:#cbd5e1;
+  --text:#0f172a;
+  --muted:#64748b;
+  --muted2:#94a3b8;
+
+  /* Brand */
+  --accent:#4f46e5;
+  --accent2:#6366f1;
+  --accent-lt:#eef2ff;
+  --green:#059669;--green-lt:#d1fae5;
+  --amber:#d97706;--amber-lt:#fef3c7;
+  --red:#dc2626;--red-lt:#fee2e2;
+  --teal:#0d9488;--teal-lt:#ccfbf1;
+  --pink:#db2777;
+  --blue:#2563eb;--blue-lt:#dbeafe;
+
+  --font:'Inter',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex;flex-direction:column;font-size:14px}
+
+/* ════════ TOPBAR ════════ */
+.topbar{
+  height:var(--topbar-h);background:var(--tb-bg);
+  border-bottom:1px solid var(--tb-border);
+  display:flex;align-items:center;padding:0 20px;gap:12px;
+  position:relative;z-index:200;flex-shrink:0;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+}
+
+.language-picker select {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+}
+.language-picker select:hover {
+  border-color: #888;
+}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0;min-width:196px}
+.logo img{height:76px;width:auto;object-fit:contain}
+.logo-fallback{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#fff;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(79,70,229,.3);
+}
+.logo-text{font-size:15px;font-weight:800;letter-spacing:-0.5px;color:var(--tb-text)}
+.logo-badge{
+  font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  background:#fef2f2;color:#dc2626;border:1px solid #fecaca;
+  padding:2px 7px;border-radius:99px;margin-left:1px;
+}
+.topbar-divider{width:1px;height:22px;background:var(--tb-border);flex-shrink:0;margin:0 2px}
+.search-bar{
+  flex:1;max-width:360px;display:flex;align-items:center;gap:8px;
+  background:var(--tb-input);border:1px solid var(--tb-border);
+  border-radius:var(--r);padding:0 13px;height:37px;transition:.2s;
+}
+.search-bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.1);background:#fff}
+.search-bar i{color:var(--tb-muted);font-size:13px;flex-shrink:0}
+.search-bar input{flex:1;border:none;outline:none;background:none;font-family:var(--font);font-size:13px;color:var(--tb-text)}
+.search-bar input::placeholder{color:var(--tb-muted)}
+.search-kbd{
+  font-size:10px;color:var(--tb-muted);background:#fff;
+  border:1px solid var(--tb-border);padding:1px 6px;border-radius:5px;
+  font-family:var(--mono);white-space:nowrap;flex-shrink:0;
+  box-shadow:0 1px 0 #e5e7eb;
+}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:5px}
+.tb-btn{
+  width:36px;height:36px;border-radius:var(--r);
+  border:1px solid var(--tb-border);background:transparent;
+  color:var(--tb-muted);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;transition:.15s;position:relative;
+}
+.tb-btn:hover{color:var(--tb-text);background:var(--tb-hover);border-color:#d1d5db}
+.notif-pip{
+  position:absolute;top:6px;right:6px;width:8px;height:8px;
+  border-radius:50%;background:#ef4444;border:2px solid var(--tb-bg);
+}
+.tb-user{
+  display:flex;align-items:center;gap:8px;
+  background:transparent;border:1px solid var(--tb-border);
+  padding:5px 11px 5px 5px;border-radius:99px;cursor:pointer;transition:.15s;margin-left:3px;
+}
+.tb-user:hover{background:var(--tb-hover);border-color:#d1d5db}
+.tb-ava{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#4f46e5,#ec4899);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.tb-info{display:flex;flex-direction:column}
+.tb-name{font-size:12.5px;font-weight:600;line-height:1.3;color:var(--tb-text)}
+.tb-role{font-size:10px;color:var(--tb-muted);font-weight:500}
+
+/* ════════ SHELL ════════ */
+.shell{display:flex;flex:1;min-height:0}
+
+/* ════════ SIDEBAR ════════ */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--sb-bg);border-right:1px solid var(--sb-border);
+  display:flex;flex-direction:column;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:#e5e7eb transparent;
+}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:99px}
+.sb-section{padding:16px 12px 4px}
+.sb-label{
+  font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--sb-muted);padding:0 10px;margin-bottom:4px;
+}
+.nav{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;border-radius:var(--r);
+  font-size:13px;font-weight:500;color:var(--sb-text);
+  cursor:pointer;transition:.13s;position:relative;
+  border:1px solid transparent;user-select:none;
+}
+.nav:hover{background:var(--sb-hover);color:var(--accent)}
+.nav.active{
+  background:var(--sb-active-bg);color:var(--sb-active-txt);
+  border-color:#c7d2fe;font-weight:600;
+}
+.nav.active::before{
+  content:'';position:absolute;left:0;top:20%;bottom:20%;
+  width:3px;background:var(--sb-active-bar);border-radius:0 3px 3px 0;
+}
+.nav i{width:17px;text-align:center;font-size:13px;flex-shrink:0}
+.nav-pill{
+  margin-left:auto;font-size:9px;font-weight:700;
+  padding:1px 7px;border-radius:99px;
+}
+.pill-red{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.pill-acc{background:#eef2ff;color:#4f46e5;border:1px solid #c7d2fe}
+.pill-green{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+
+.sb-footer{margin-top:auto;padding:12px;border-top:1px solid var(--sb-border)}
+.sb-status{
+  display:flex;align-items:center;gap:9px;
+  padding:10px 11px;border-radius:var(--r);
+  background:#f0fdf4;border:1px solid #bbf7d0;font-size:12px;
+}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#16a34a;animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.sb-status-info b{display:block;font-size:12px;font-weight:600;color:#15803d}
+.sb-status-info span{font-size:10.5px;color:#166534}
+
+/* ════════ MAIN AREA ════════ */
+.main{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.main::-webkit-scrollbar{width:5px}
+.main::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.section{padding:28px 30px;animation:fadeUp .22s ease}
+.section.hidden{display:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ════════ PAGE HEADER ════════ */
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:26px;gap:12px;flex-wrap:wrap}
+.ph-left h1{font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--text)}
+.ph-left p{font-size:12.5px;color:var(--muted);margin-top:3px}
+.ph-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ════════ BUTTONS ════════ */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 17px;border:none;border-radius:var(--r);
+  font-family:var(--font);font-size:12.5px;font-weight:600;
+  cursor:pointer;transition:.15s;white-space:nowrap;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{
+  background:var(--accent);color:#fff;
+  box-shadow:0 1px 3px rgba(79,70,229,.4),0 4px 10px rgba(79,70,229,.2);
+}
+.btn-primary:hover{background:#4338ca}
+.btn-ghost{background:#fff;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);background:var(--surface2)}
+.btn-danger{background:var(--red-lt);color:var(--red);border:1px solid #fecaca}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-success{background:var(--green-lt);color:var(--green);border:1px solid #a7f3d0}
+.btn-success:hover{background:var(--green);color:#fff}
+.btn-sm{padding:6px 12px;font-size:11.5px}
+
+.icon-btn{
+  width:33px;height:33px;border-radius:var(--r);
+  background:#fff;border:1px solid var(--border);
+  color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;transition:.14s;
+}
+.icon-btn:hover{color:var(--text);border-color:var(--border2);background:var(--surface2)}
+.icon-btn.red:hover{background:var(--red-lt);color:var(--red);border-color:#fecaca}
+.icon-btn.green:hover{background:var(--green-lt);color:var(--green);border-color:#a7f3d0}
+.icon-btn.amber:hover{background:var(--amber-lt);color:var(--amber);border-color:#fcd34d}
+
+/* ════════ STAT CARDS ════════ */
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
+.stat{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:18px;transition:.2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.stat:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.stat-icon{
+  width:38px;height:38px;border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.ico-acc{background:var(--accent-lt);color:var(--accent)}
+.ico-green{background:var(--green-lt);color:var(--green)}
+.ico-amber{background:var(--amber-lt);color:var(--amber)}
+.ico-teal{background:var(--teal-lt);color:var(--teal)}
+.ico-red{background:var(--red-lt);color:var(--red)}
+.ico-blue{background:var(--blue-lt);color:var(--blue)}
+.stat-delta{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px}
+.delta-up{background:var(--green-lt);color:var(--green)}
+.delta-dn{background:var(--red-lt);color:var(--red)}
+.delta-neu{background:#f3f4f6;color:var(--muted2)}
+.stat-val{font-size:28px;font-weight:800;line-height:1;letter-spacing:-0.5px;margin-bottom:4px;color:var(--text)}
+.stat-lbl{font-size:11.5px;color:var(--muted);font-weight:500}
+.prog-bar{height:3px;border-radius:99px;background:var(--surface3);margin-top:10px;overflow:hidden}
+.prog-fill{height:100%;border-radius:99px;transition:.5s ease}
+
+/* ════════ GRID LAYOUTS ════════ */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g3-1{display:grid;grid-template-columns:3fr 1fr;gap:16px}
+.g2-1{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+
+/* ════════ CARD ════════ */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.card-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:15px 18px;border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+.card-head h3{font-size:13.5px;font-weight:700;color:var(--text)}
+.card-body{padding:16px 18px}
+
+/* ════════ BADGE ════════ */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.5px}
+.b-acc{background:var(--accent-lt);color:var(--accent)}
+.b-green{background:var(--green-lt);color:var(--green)}
+.b-red{background:var(--red-lt);color:var(--red)}
+.b-amber{background:var(--amber-lt);color:var(--amber)}
+.b-teal{background:var(--teal-lt);color:var(--teal)}
+.b-gray{background:#f3f4f6;color:var(--muted2)}
+.b-blue{background:var(--blue-lt);color:var(--blue)}
+
+/* ════════ TABLE ════════ */
+.tbl-wrap{overflow-x:auto}
+.tbl-toolbar{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;
+  background:var(--surface2);
+}
+.search-box{
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--r);padding:7px 12px;transition:.2s;
+}
+.search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 2px rgba(79,70,229,.1)}
+.search-box i{color:var(--muted);font-size:12px}
+.search-box input{border:none;outline:none;background:none;font-family:var(--font);font-size:13px;color:var(--text);width:200px}
+.search-box input::placeholder{color:var(--muted)}
+.filters{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto}
+.ftab{
+  padding:6px 13px;border-radius:var(--r);border:1px solid var(--border);
+  background:#fff;color:var(--muted);font-family:var(--font);
+  font-size:11.5px;font-weight:600;cursor:pointer;transition:.13s;
+}
+.ftab:hover,.ftab.active{background:var(--accent-lt);color:var(--accent);border-color:#c7d2fe}
+
+table{width:100%;border-collapse:collapse}
+th{
+  padding:10px 15px;text-align:left;font-size:10px;
+  font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  color:var(--muted);background:#f8fafc;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+td{
+  padding:12px 15px;font-size:12.5px;color:var(--text);
+  border-bottom:1px solid var(--border);vertical-align:middle;
+}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.user-cell{display:flex;align-items:center;gap:11px}
+.ava{
+  width:34px;height:34px;border-radius:var(--r);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;
+}
+.ava-org{background:linear-gradient(135deg,#4f46e5,#7c3aed)}
+.ava-stu{background:linear-gradient(135deg,#059669,#0d9488)}
+.ava-adm{background:linear-gradient(135deg,#dc2626,#db2777)}
+.u-name{font-weight:600;font-size:13px;color:var(--text)}
+.u-sub{font-size:11px;color:var(--muted)}
+.act-row{display:flex;gap:4px}
+.mono{font-family:var(--mono);font-size:11px}
+
+/* ════════ STATUS DOT ════════ */
+.sdot{display:inline-flex;align-items:center;gap:5px;font-size:12px}
+.sdot::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sdot.active::before{background:var(--green)}
+.sdot.inactive::before{background:var(--muted)}
+.sdot.suspended::before{background:var(--red)}
+.sdot.pending::before{background:var(--amber)}
+
+/* ════════ LOG LIST ════════ */
+.log-list{display:flex;flex-direction:column;gap:1px}
+.log-item{display:flex;align-items:flex-start;gap:11px;padding:10px 12px;border-radius:var(--r);transition:.13s}
+.log-item:hover{background:var(--surface2)}
+.log-dot{width:30px;height:30px;border-radius:var(--r);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px}
+.ld-u{background:var(--accent-lt);color:var(--accent)}
+.ld-e{background:var(--green-lt);color:var(--green)}
+.ld-w{background:var(--amber-lt);color:var(--amber)}
+.ld-d{background:var(--red-lt);color:var(--red)}
+.ld-s{background:var(--teal-lt);color:var(--teal)}
+.log-info h5{font-size:12.5px;font-weight:600;color:var(--text)}
+.log-info p{font-size:11px;color:var(--muted);margin-top:2px}
+.log-time{font-size:10px;color:var(--muted);margin-left:auto;white-space:nowrap;margin-top:2px}
+
+/* ════════ PENDING ITEMS ════════ */
+.pend-item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 12px;border-radius:var(--r);
+  border:1px solid var(--border);margin-bottom:6px;
+  background:var(--surface2);transition:.14s;
+}
+.pend-item:hover{border-color:var(--border2);background:#fff}
+.pend-info{flex:1;min-width:0}
+.pend-info h5{font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.pend-info p{font-size:11px;color:var(--muted)}
+.pend-btns{display:flex;gap:4px;flex-shrink:0}
+.mini-ok,.mini-no{
+  width:30px;height:30px;border-radius:var(--r);
+  border:none;cursor:pointer;font-size:12px;
+  display:flex;align-items:center;justify-content:center;transition:.14s;
+}
+.mini-ok{background:var(--green-lt);color:var(--green)}
+.mini-ok:hover{background:var(--green);color:#fff}
+.mini-no{background:var(--red-lt);color:var(--red)}
+.mini-no:hover{background:var(--red);color:#fff}
+
+/* ════════ EVENTS GRID ════════ */
+.ev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.ev-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);overflow:hidden;transition:.2s;
+  display:flex;flex-direction:column;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.ev-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.ev-thumb{
+  height:130px;background:linear-gradient(135deg,var(--accent-lt),#e0e7ff);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;color:#c7d2fe;position:relative;overflow:hidden;
+}
+.ev-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.ev-info{padding:13px 14px;flex:1;display:flex;flex-direction:column;gap:4px}
+.ev-title{font-size:13px;font-weight:700;line-height:1.35;color:var(--text)}
+.ev-meta{font-size:11px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.ev-meta span{display:flex;align-items:center;gap:4px}
+.ev-foot{padding:10px 14px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
+
+/* ════════ PANELS ════════ */
+.panels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;gap:14px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.panel-hdr{display:flex;align-items:center;gap:12px;padding-bottom:4px}
+.panel-ico{width:38px;height:38px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.pi-acc{background:var(--accent-lt);color:var(--accent)}
+.pi-green{background:var(--green-lt);color:var(--green)}
+.pi-amber{background:var(--amber-lt);color:var(--amber)}
+.pi-teal{background:var(--teal-lt);color:var(--teal)}
+.pi-red{background:var(--red-lt);color:var(--red)}
+.panel-hdr h3{font-size:14px;font-weight:700;color:var(--text)}
+.panel-hdr p{font-size:11.5px;color:var(--muted);margin-top:1px}
+
+/* ════════ FORM ELEMENTS ════════ */
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.fi{
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--r);padding:9px 12px;
+  font-family:var(--font);font-size:13px;color:var(--text);
+  width:100%;outline:none;transition:.2s;
+}
+.fi:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+textarea.fi{resize:vertical;min-height:80px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* TOGGLE */
+.toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 13px;border-radius:var(--r);
+  background:var(--surface2);border:1px solid var(--border);transition:.14s;
+}
+.toggle-row:hover{border-color:var(--border2);background:#fff}
+.tr-left{display:flex;flex-direction:column;gap:1px}
+.tr-left h5{font-size:12.5px;font-weight:600;color:var(--text)}
+.tr-left p{font-size:11px;color:var(--muted)}
+.toggle{display:inline-block;width:40px;height:22px;flex-shrink:0}
+.toggle input{display:none}
+.slider{
+  display:block;width:40px;height:22px;border-radius:99px;
+  background:#e5e7eb;border:1px solid #d1d5db;
+  cursor:pointer;position:relative;transition:.25s;
+}
+.slider::after{
+  content:'';position:absolute;left:3px;top:50%;transform:translateY(-50%);
+  width:16px;height:16px;border-radius:50%;background:#fff;transition:.25s;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.toggle input:checked+.slider{background:var(--accent);border-color:var(--accent)}
+.toggle input:checked+.slider::after{background:#fff;left:21px}
+
+/* COLOR PICKER */
+.color-row{display:flex;align-items:center;gap:8px}
+.color-row input[type=color]{
+  width:38px;height:38px;border-radius:var(--r);
+  border:1px solid var(--border);background:#fff;cursor:pointer;padding:3px;
+}
+
+/* PRESET PILLS */
+.preset-pills{display:flex;flex-wrap:wrap;gap:7px}
+.preset-pill{
+  padding:7px 14px;border-radius:99px;border:1px solid var(--border);
+  background:#fff;color:var(--muted);
+  font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:.14s;
+}
+.preset-pill:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lt)}
+
+/* BANNER PREVIEW */
+.banner-prev{
+  border-radius:var(--r);height:90px;
+  background:linear-gradient(135deg,#0d0934,#312e81);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:16px;text-align:center;gap:5px;
+}
+.banner-prev h3{font-size:15px;font-weight:700;color:#fff}
+.banner-prev p{font-size:11.5px;color:rgba(255,255,255,.7)}
+
+/* ════════ ANNOUNCEMENTS ════════ */
+.ann-list{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.ann-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 13px;border-radius:var(--r);
+  background:var(--surface2);border:1px solid var(--border);
+}
+.ann-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ann-dot.urgent{background:#ef4444;box-shadow:0 0 6px #ef4444}
+.ann-dot.info{background:var(--accent)}
+.ann-txt{flex:1;font-size:12.5px;color:var(--text)}
+.ann-del{
+  width:24px;height:24px;border-radius:var(--r);border:none;
+  background:transparent;color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:11px;transition:.13s;
+}
+.ann-del:hover{background:var(--red-lt);color:var(--red)}
+
+/* ════════ ID SEARCH ════════ */
+.id-search{
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:12px 16px;margin-bottom:16px;transition:.2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.id-search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+.id-search i{color:var(--accent);font-size:16px}
+.id-search input{flex:1;border:none;outline:none;background:none;font-family:var(--font);font-size:14px;color:var(--text)}
+.id-search input::placeholder{color:var(--muted)}
+.id-search button{
+  padding:8px 17px;border:none;border-radius:var(--r);
+  background:var(--accent);color:#fff;
+  font-family:var(--font);font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s;
+}
+.id-search button:hover{background:#4338ca}
+
+/* ════════ LOADING / EMPTY ════════ */
+.loading{text-align:center;padding:32px;color:var(--muted);font-size:13px}
+.loading i{display:block;font-size:22px;margin-bottom:10px;color:var(--accent)}
+.empty{
+  text-align:center;padding:36px 20px;color:var(--muted);font-size:13px;
+  background:var(--surface2);border-radius:var(--r-lg);border:1px dashed var(--border2);
+}
+.empty i{display:block;font-size:26px;margin-bottom:10px;color:var(--border2)}
+
+/* ════════ MINI CHART ════════ */
+.mini-chart{display:flex;align-items:flex-end;gap:3px;height:50px;margin-top:10px}
+.bar-seg{flex:1;border-radius:3px 3px 0 0;min-height:4px;transition:.4s ease}
+
+/* ════════ MODAL ════════ */
+.overlay{
+  position:fixed;inset:0;background:rgba(15,23,42,.5);
+  backdrop-filter:blur(8px);display:none;
+  align-items:center;justify-content:center;z-index:1000;padding:20px;
+}
+.overlay.open{display:flex}
+.modal{
+  width:100%;max-width:430px;background:#fff;
+  border:1px solid var(--border);border-radius:var(--r-xl);
+  overflow:hidden;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.15),0 4px 16px rgba(0,0,0,.08);
+  animation:modIn .22s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes modIn{from{opacity:0;transform:scale(.93) translateY(14px)}to{opacity:1;transform:none}}
+.modal-bar{height:3px;background:linear-gradient(90deg,var(--accent),var(--pink))}
+.modal-head{padding:26px 24px 14px;text-align:center}
+.modal-icon{
+  width:60px;height:60px;border-radius:var(--r-lg);margin:0 auto 16px;
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+}
+.mi-s{background:var(--green-lt);color:var(--green)}
+.mi-d{background:var(--red-lt);color:var(--red)}
+.mi-i{background:var(--accent-lt);color:var(--accent)}
+.mi-w{background:var(--amber-lt);color:var(--amber)}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:8px;color:var(--text)}
+.modal-text{font-size:13px;color:var(--muted);line-height:1.6}
+.modal-body{padding:0 24px 24px}
+.modal-actions{display:flex;gap:8px;margin-top:18px}
+.modal-close{
+  position:absolute;top:14px;right:14px;
+  width:30px;height:30px;border-radius:var(--r);
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--muted);cursor:pointer;font-size:12px;
+  display:flex;align-items:center;justify-content:center;transition:.14s;
+}
+.modal-close:hover{background:var(--red-lt);color:var(--red);border-color:#fecaca}
+.prof-head{padding:24px;text-align:center;border-bottom:1px solid var(--border)}
+.prof-ava{
+  width:64px;height:64px;border-radius:var(--r-xl);margin:0 auto 13px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:700;color:#fff;
+}
+.prof-body{padding:18px 24px 24px}
+.prof-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid #f3f4f6;font-size:13px;
+}
+.prof-row:last-child{border-bottom:none}
+.prof-row label{color:var(--muted);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+
+/* ════════ TOAST ════════ */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:13px 18px;
+  display:flex;align-items:center;gap:11px;
+  box-shadow:0 10px 40px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);
+  z-index:2000;font-size:13px;font-weight:600;max-width:290px;color:var(--text);
+  transform:translateX(130%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+.toast.show{transform:translateX(0)}
+.toast-bar{position:absolute;bottom:0;left:0;right:0;height:2.5px;border-radius:0 0 var(--r-lg) var(--r-lg)}
+
+/* ════════ RESPONSIVE ════════ */
+@media(max-width:1280px){.stats-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:960px){
+  :root{--sidebar-w:190px}
+  .g3,.g3-1{grid-template-columns:1fr 1fr}
+}
+@media(max-width:720px){
+  :root{--sidebar-w:54px}
+  .nav span,.sb-label,.nav-pill{display:none}
+  .nav{justify-content:center;padding:10px 0}
+  .nav.active::before{display:none}
+  .g2,.g3,.g2-1,.g3-1{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<!--
+  ADMIN DASHBOARD — i18n updated
+  ─────────────────────────────────────────────────────────────────────────────
+  Changes made:
+    1. <script src="/js/i18n.js"> added (see comment at top of <head> — paste
+       this into your real <head> block)
+    2. data-i18n attributes added to every static text node
+    3. data-i18n-placeholder added to search inputs
+    4. Language picker already present — left intact
+    5. Locale-init script added before </body>
+  ─────────────────────────────────────────────────────────────────────────────
+  NOTE: This file contains only the <body> markup you shared.
+        In your real file, add the following line inside <head>:
+            <script src="/js/i18n.js"></script>
+        And paste the locale-init <script> block just before </body>.
+-->
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast">
+  <i id="toastIcon" class="fas fa-check-circle" style="color:var(--green)"></i>
+  <div><div id="toastMsg" data-i18n="common.done">Done.</div></div>
+  <div class="toast-bar" id="toastBar" style="background:var(--green)"></div>
+</div>
+
+<!-- ── GENERIC MODAL ── -->
+<div class="overlay" id="globalModal">
+  <div class="modal">
+    <div class="modal-bar"></div>
+    <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-head">
+      <div class="modal-icon" id="mIcon"><i class="fa-solid fa-circle-info"></i></div>
+      <div class="modal-title" id="mTitle" data-i18n="common.message">Message</div>
+      <div class="modal-text"  id="mText"></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-actions" id="mActions">
+        <button class="btn btn-primary" style="flex:1" onclick="closeModal()" data-i18n="common.ok">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PROFILE MODAL ── -->
+<div class="overlay" id="profileModal">
+  <div class="modal" style="max-width:470px">
+    <div class="modal-bar"></div>
+    <button class="modal-close" onclick="closeProfile()"><i class="fa-solid fa-xmark"></i></button>
+    <div id="profileContent"></div>
+  </div>
+</div>
+
+<!-- ════════════ TOPBAR ════════════ -->
+<header class="topbar">
+  <a class="logo" href="#">
+    <img src="Images/UClogo.png" alt="UniConnect" id="logoImg"
+         onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'">
+    <div class="logo-fallback" id="logoFallback" style="display:none">UC</div>
+    <span class="logo-text" data-i18n="brand.name">UniConnect</span>
+    <span class="logo-badge"><i class="fa-solid fa-crown" style="font-size:8px"></i> <span data-i18n="roles.admin">Admin</span></span>
+  </a>
+
+  <div class="topbar-divider"></div>
+
+  <div class="language-picker">
+    <select id="language-picker" onchange="i18n.change(this.value)">
+      <option value="en">🌐 English</option>
+      <option value="ta">தமிழ்</option>
+      <option value="si">සිංහල</option>
+    </select>
+  </div>
+
+  <div class="search-bar">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" data-i18n-placeholder="common.search_users_events" placeholder="Search users, events…" id="globalSearchInput" oninput="globalSearch(this.value)">
+    <span class="search-kbd">⌘K</span>
+  </div>
+
+  <div class="topbar-right">
+    <button class="tb-btn" onclick="showSection('logs')" title="Audit Logs">
+      <i class="fa-solid fa-scroll"></i>
+    </button>
+    <button class="tb-btn" onclick="showSection('announcements')" title="Announcements">
+      <i class="fa-solid fa-bell"></i>
+      <span class="notif-pip"></span>
+    </button>
+    <div class="tb-user" onclick="openAdminProfile()">
+      <div class="tb-ava" id="tbAva">SA</div>
+      <div class="tb-info">
+        <div class="tb-name" id="tbName" data-i18n="roles.admin_name">Admin</div>
+        <div class="tb-role" data-i18n="roles.super_admin">Super Admin</div>
+      </div>
+      <i class="fa-solid fa-chevron-down" style="font-size:10px;color:var(--tb-muted);margin-left:2px"></i>
+    </div>
+    <button class="tb-btn" onclick="logout()" title="Logout" style="margin-left:2px">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+<!-- ════════════ SIDEBAR ════════════ -->
+<aside class="sidebar">
+  <div class="sb-section">
+    <div class="sb-label" data-i18n="nav.section.overview">Overview</div>
+    <div class="nav active" onclick="showSection('dashboard',this)" id="nav-dashboard">
+      <i class="fa-solid fa-house-chimney"></i><span data-i18n="nav.dashboard">Dashboard</span>
+    </div>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label" data-i18n="nav.section.management">Management</div>
+    <div class="nav" onclick="showSection('users',this)" id="nav-users">
+      <i class="fa-solid fa-users"></i><span data-i18n="nav.users">Users</span>
+    </div>
+    <div class="nav" onclick="showSection('events',this)" id="nav-events">
+      <i class="fa-solid fa-calendar-days"></i><span data-i18n="nav.events">Events</span>
+    </div>
+    <div class="nav" onclick="showSection('registrations',this)" id="nav-registrations">
+      <i class="fa-solid fa-ticket"></i><span data-i18n="nav.registrations">Registrations</span>
+      <span class="nav-pill pill-red" id="sidebarPendCount" style="display:none">0</span>
+    </div>
+    <div class="nav" onclick="showSection('volunteers',this)" id="nav-volunteers">
+      <i class="fa-solid fa-hand-holding-heart"></i><span data-i18n="nav.volunteers">Volunteers</span>
+    </div>
+    <div class="nav" onclick="showSection('payments',this)" id="nav-payments">
+      <i class="fa-solid fa-credit-card"></i><span data-i18n="nav.payments">Payments</span>
+    </div>
+    <div class="nav" onclick="location.href='budget.html'" id="nav-budget">
+      <i class="fa-solid fa-wallet"></i><span data-i18n="nav.budget">Budget</span>
+      <span class="nav-pill pill-green" data-i18n="common.new">new</span>
+    </div>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label" data-i18n="nav.section.platform">Platform</div>
+    <div class="nav" onclick="showSection('theme',this)" id="nav-theme">
+      <i class="fa-solid fa-palette"></i><span data-i18n="nav.theme">Theme</span>
+      <span class="nav-pill pill-acc" data-i18n="roles.admin_pill">admin</span>
+    </div>
+    <div class="nav" onclick="showSection('homepage',this)" id="nav-homepage">
+      <i class="fa-solid fa-globe"></i><span data-i18n="nav.homepage">Homepage</span>
+      <span class="nav-pill pill-acc" data-i18n="roles.admin_pill">admin</span>
+    </div>
+    <div class="nav" onclick="showSection('announcements',this)" id="nav-announcements">
+      <i class="fa-solid fa-bullhorn"></i><span data-i18n="nav.announce">Announce</span>
+    </div>
+    <div class="nav" onclick="showSection('system',this)" id="nav-system">
+      <i class="fa-solid fa-sliders"></i><span data-i18n="nav.settings">Settings</span>
+    </div>
+    <div class="nav" onclick="showSection('logs',this)" id="nav-logs">
+      <i class="fa-solid fa-scroll"></i><span data-i18n="nav.logs">Logs</span>
+    </div>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-status">
+      <div class="status-dot"></div>
+      <div class="sb-status-info">
+        <b data-i18n="status.online">System Online</b>
+        <span data-i18n="status.all_running">All services running</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ════════════ MAIN ════════════ -->
+<main class="main" id="mainContent">
+
+  <!-- ── DASHBOARD ── -->
+  <section id="sec-dashboard" class="section">
+    <div class="ph">
+      <div class="ph-left">
+        <h1 id="greeting" data-i18n="dashboard.admin.greeting">Welcome back 👋</h1>
+        <p id="greetSub" data-i18n="dashboard.admin.greeting_sub">Loading platform overview…</p>
+      </div>
+      <div class="ph-actions">
+        <button class="btn btn-ghost btn-sm" onclick="showSection('users')"><i class="fa-solid fa-users"></i> <span data-i18n="nav.users">Users</span></button>
+        <button class="btn btn-ghost btn-sm" onclick="showSection('events')"><i class="fa-solid fa-calendar"></i> <span data-i18n="nav.events">Events</span></button>
+        <button class="btn btn-ghost btn-sm" onclick="location.href='budget.html'" style="border-color:rgba(245,158,11,.35);color:var(--amber)"><i class="fa-solid fa-wallet"></i> <span data-i18n="nav.budget">Budget</span></button>
+        <button class="btn btn-primary btn-sm" onclick="showSection('announcements')"><i class="fa-solid fa-bullhorn"></i> <span data-i18n="dashboard.admin.broadcast">Broadcast</span></button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-top"><div class="stat-icon ico-acc"><i class="fa-solid fa-users"></i></div><span class="stat-delta delta-up" id="deltaUsers">+0%</span></div>
+        <div class="stat-val" id="statUsers">—</div><div class="stat-lbl" data-i18n="dashboard.admin.total_users">Total Users</div>
+        <div class="prog-bar"><div class="prog-fill" id="progUsers" style="background:var(--accent);width:0%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-top"><div class="stat-icon ico-green"><i class="fa-solid fa-calendar-days"></i></div><span class="stat-delta delta-neu" data-i18n="common.active">Active</span></div>
+        <div class="stat-val" id="statEvents">—</div><div class="stat-lbl" data-i18n="dashboard.admin.total_events">Total Events</div>
+        <div class="prog-bar"><div class="prog-fill" id="progEvents" style="background:var(--green);width:0%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-top"><div class="stat-icon ico-amber"><i class="fa-solid fa-ticket"></i></div><span class="stat-delta delta-dn" id="deltaPend" style="display:none">0 <span data-i18n="common.pending">pending</span></span><span class="stat-delta delta-neu" id="deltaPendBase" data-i18n="common.live">Live</span></div>
+        <div class="stat-val" id="statRegs">—</div><div class="stat-lbl" data-i18n="nav.registrations">Registrations</div>
+        <div class="prog-bar"><div class="prog-fill" id="progRegs" style="background:var(--amber);width:0%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-top"><div class="stat-icon ico-teal"><i class="fa-solid fa-building"></i></div><span class="stat-delta delta-neu" data-i18n="common.active">Active</span></div>
+        <div class="stat-val" id="statOrgs">—</div><div class="stat-lbl" data-i18n="dashboard.admin.organizers">Organizers</div>
+        <div class="prog-bar"><div class="prog-fill" id="progOrgs" style="background:var(--teal);width:0%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-top"><div class="stat-icon ico-red"><i class="fa-solid fa-clock"></i></div><span class="stat-delta delta-dn" id="statPendingBadge" style="display:none" data-i18n="dashboard.admin.needs_review">needs review</span></div>
+        <div class="stat-val" id="statPending">—</div><div class="stat-lbl" data-i18n="common.pending">Pending</div>
+        <div class="prog-bar"><div class="prog-fill" id="progPend" style="background:var(--red);width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="g3-1">
+    <!-- Budget Quick Access Banner -->
+    <div onclick="location.href='budget.html'" style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.05));border:1px solid rgba(245,158,11,.25);border-radius:var(--r-lg);padding:16px 20px;margin-bottom:16px;cursor:pointer;transition:.2s;" onmouseover="this.style.borderColor='rgba(245,158,11,.5)'" onmouseout="this.style.borderColor='rgba(245,158,11,.25)'">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:44px;height:44px;border-radius:var(--r);background:rgba(245,158,11,.15);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--amber);flex-shrink:0"><i class="fa-solid fa-wallet"></i></div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text)" data-i18n="nav.budget_management">Budget Management</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px" data-i18n="dashboard.admin.budget_sub">View estimated vs actual costs, budget breakdowns per event</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <span class="badge b-amber" data-i18n="dashboard.admin.finance_badge">Finance</span>
+        <i class="fa-solid fa-arrow-right" style="color:var(--amber);font-size:13px"></i>
+      </div>
+    </div>
+
+      <!-- Recent users -->
+      <div class="card">
+        <!--<div class="card-head">
+          <h3 data-i18n="dashboard.admin.recent_users">Recent Users</h3>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge b-acc" id="recentUserBadge">0</span>
+            <button class="btn btn-ghost btn-sm" onclick="showSection('users')" data-i18n="common.view_all">View all</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th data-i18n="table.user">User</th>
+              <th data-i18n="table.role">Role</th>
+              <th data-i18n="table.joined">Joined</th>
+              <th></th>
+            </tr></thead>
+            <tbody id="recentUsersBody"><tr><td colspan="4" class="loading"><i class="fa-solid fa-spinner fa-spin"></i></td></tr></tbody>
+          </table>
+        </div>
+      </div>-->
+
+      <!-- Today's events + pending -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-head"><h3 data-i18n="dashboard.admin.todays_events">Today's Events</h3></div>
+          <div class="card-body" id="todayEvents"><div class="loading" style="padding:16px" data-i18n="dashboard.admin.no_events_today">No events today</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h3 data-i18n="dashboard.admin.pending_approvals">Pending Approvals</h3>
+            <span class="badge b-red" id="pendRegBadge">0</span>
+          </div>
+          <div class="card-body" id="pendingRegsBox">
+            <div class="loading" style="padding:14px" data-i18n="dashboard.admin.no_pending_regs">No pending registrations</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mini activity log -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-head">
+        <h3 data-i18n="dashboard.admin.activity_feed">Activity Feed</h3>
+        <button class="btn btn-ghost btn-sm" onclick="showSection('logs')" data-i18n="dashboard.admin.full_log">Full log</button>
+      </div>
+      <div class="card-body">
+        <div class="log-list" id="activityFeed">
+          <div class="loading"><i class="fa-solid fa-spinner fa-spin"></i><span data-i18n="common.loading">Loading…</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── USERS ── -->
+  <section id="sec-users" class="section hidden">
+    <div class="ph">
+      <div class="ph-left">
+        <h1 data-i18n="dashboard.admin.manage_users">User Management</h1>
+        <p data-i18n="dashboard.admin.users_sub">All registered accounts across the platform</p>
+      </div>
+      <button class="btn btn-ghost" onclick="loadUsers()"><i class="fa-solid fa-rotate"></i> <span data-i18n="common.refresh">Refresh</span></button>
+    </div>
+
+    <div class="id-search">
+      <i class="fa-solid fa-fingerprint"></i>
+      <input type="text" id="searchByIdInput" data-i18n-placeholder="users.search_by_id" placeholder="Search by User ID…">
+      <button onclick="searchUserById()" data-i18n="common.search">Search</button>
+    </div>
+
+    <div class="card">
+      <div class="tbl-toolbar">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="usersSearch" data-i18n-placeholder="users.filter" placeholder="Filter users…" oninput="filterUsers(this.value)">
+        </div>
+        <div class="filters" id="roleFilters">
+          <button class="ftab active" onclick="filterRole('all',this)" data-i18n="filter.all">All</button>
+          <button class="ftab" onclick="filterRole('student',this)" data-i18n="roles.students">Students</button>
+          <button class="ftab" onclick="filterRole('organizer',this)" data-i18n="roles.organizers">Organizers</button>
+          <button class="ftab" onclick="filterRole('admin',this)" data-i18n="roles.admins">Admins</button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th data-i18n="table.user">User</th>
+            <th data-i18n="table.role">Role</th>
+            <th data-i18n="table.university">University</th>
+            <th data-i18n="table.dept_faculty">Dept / Faculty</th>
+            <th data-i18n="table.actions">Actions</th>
+          </tr></thead>
+          <tbody id="usersBody"><tr><td colspan="5" class="loading"><i class="fa-solid fa-spinner fa-spin"></i></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── EVENTS ── -->
+  <section id="sec-events" class="section hidden">
+    <div class="ph">
+      <div class="ph-left">
+        <h1 data-i18n="dashboard.admin.manage_events">Event Management</h1>
+        <p data-i18n="dashboard.admin.events_sub">All events platform-wide</p>
+      </div>
+      <button class="btn btn-ghost" onclick="loadEvents()"><i class="fa-solid fa-rotate"></i> <span data-i18n="common.refresh">Refresh</span></button>
+    </div>
+    <div class="tbl-toolbar" style="margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg)">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="evSearch" data-i18n-placeholder="events.filter" placeholder="Filter events…" oninput="filterEvents(this.value)">
+      </div>
+      <div class="filters">
+        <button class="ftab active" onclick="filterEvCat('all',this)" data-i18n="filter.all">All</button>
+        <button class="ftab" onclick="filterEvCat('upcoming',this)" data-i18n="filter.upcoming">Upcoming</button>
+        <button class="ftab" onclick="filterEvCat('past',this)" data-i18n="filter.past">Past</button>
+      </div>
+    </div>
+    <div class="ev-grid" id="eventsGrid">
+      <div class="loading" style="grid-column:1/-1"><i class="fa-solid fa-spinner fa-spin"></i><span data-i18n="events.loading">Loading events…</span></div>
+    </div>
+  </section>
+
+  <!-- ── REGISTRATIONS ── -->
+  <section id="sec-registrations" class="section hidden">
+    <div class="ph">
+      <div class="ph-left">
+        <h1 data-i18n="dashboard.organizer.registrations">All Registrations</h1>
+        <p data-i18n="dashboard.admin.registrations_sub">Review and manage all event registrations platform-wide</p>
+      </div>
+      <button class="btn btn-ghost" onclick="loadRegistrations()"><i class="fa-solid fa-rotate"></i> <span data-i18n="common.refresh">Refresh</span></button>
+    </div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th data-i18n="table.student">Student</th>
+            <th data-i18n="nav.events">Event</th>
+            <th data-i18n="events.date">Date</th>
+            <th data-i18n="table.status">Status</th>
+            <th data-i18n="table.actions">Actions</th>
+          </tr></thead>
+          <tbody id="regsBody"><tr><td colspan="5" class="loading"><i class="fa-solid fa-spinner fa-spin"></i></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── VOLUNTEERS ── -->
+  <section id="sec-volunteers" class="section hidden">
+    <div class="ph">
+      <div class="ph-left">
+        <h1 data-i18n="nav.volunteers">Volunteer Management</h1>
+        <p data-i18n="dashboard.admin.volunteers_sub">All volunteer assignments and applications</p>
+      </div>
+      <button class="btn btn-ghost" onclick="loadVolunteers()"><i class="fa-solid fa-rotate"></i> <span data-i18n="common.refresh">Refresh</span></button>
+    </div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th data-i18n="table.volunteer">Volunteer</th>
+            <th data-i18n="nav.events">Event</th>
+            <th data-i18n="table.role">Role</th>
+            <th data-i18n="table.status">Status</th>
+            <th data-i18n="table.actions">Actions</th>
+          </tr></thead>
+          <tbody id="volsBody"><tr><td colspan="5" class="loading"><i class="fa-solid fa-spinner fa-spin"></i></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PAYMENTS ── -->
+  <section id="sec-payments" class="section hidden">
+    <div class="ph">
+      <div class="ph-left">
+        <h1 data-i18n="nav.payments">Payments Overview</h1>
+        <p data-i18n="dashboard.admin.payments_sub">All ticket payments and transactions</p>
+      </div>
+      <button class="btn btn-ghost" onclick="loadPayments()"><i class="fa-solid fa-rotate"></i> <span data-i18n="common.refresh">Refresh</span></button>
+    </div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th data-i18n="table.student">Student</th>
+            <th data-i18n="nav.events">Event</th>
+            <th data-i18n="table.amount">Amount</th>
+            <th data-i18n="table.method">Method</th>
+            <th data-i18n="table.status">Status</th>
+            <th data-i18n="events.date">Date</th>
+          </tr></thead>
+          <tbody id="paymentsBody"><tr><td colspan="6" class="loading"><i class="fa-solid fa-spinner fa-spin"></i></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── THEME ── -->
+  <section id="sec-theme" class="section hidden">
+    <div class="ph"><div class="ph-left">
+      <h1 data-i18n="theme.title">Theme &amp; Branding</h1>
+      <p data-i18n="theme.subtitle">Customize the platform's visual identity</p>
+    </div></div>
+    <div class="panels-grid">
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-acc"><i class="fa-solid fa-swatchbook"></i></div><div>
+          <h3 data-i18n="theme.preset_themes">Preset Themes</h3>
+          <p data-i18n="theme.preset_sub">One-click color schemes</p>
+        </div></div>
+        <div class="preset-pills">
+          <button class="preset-pill" onclick="applyPreset('default')">🌑 <span data-i18n="theme.preset.default">Default</span></button>
+          <button class="preset-pill" onclick="applyPreset('ocean')">🌊 <span data-i18n="theme.preset.ocean">Ocean</span></button>
+          <button class="preset-pill" onclick="applyPreset('forest')">🌲 <span data-i18n="theme.preset.forest">Forest</span></button>
+          <button class="preset-pill" onclick="applyPreset('sunset')">🌅 <span data-i18n="theme.preset.sunset">Sunset</span></button>
+          <button class="preset-pill" onclick="applyPreset('violet')">💜 <span data-i18n="theme.preset.violet">Violet</span></button>
+          <button class="preset-pill" onclick="applyPreset('gold')">✨ <span data-i18n="theme.preset.gold">Gold</span></button>
+        </div>
+        <div class="fg"><label data-i18n="theme.primary_color">Primary Color</label>
+          <div class="color-row"><input type="color" id="primaryColor" value="#6366f1" oninput="liveColor('--accent',this.value);document.getElementById('primaryHex').innerText=this.value"><span id="primaryHex" style="font-family:var(--mono);font-size:12px">#6366f1</span></div></div>
+        <button class="btn btn-primary" style="width:100%" onclick="saveTheme()"><i class="fa-solid fa-floppy-disk"></i> <span data-i18n="theme.save">Save Theme</span></button>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-teal"><i class="fa-solid fa-image"></i></div><div>
+          <h3 data-i18n="theme.platform_identity">Platform Identity</h3>
+          <p data-i18n="theme.identity_sub">Logo, name and tagline</p>
+        </div></div>
+        <div class="fg"><label data-i18n="theme.platform_name">Platform Name</label><input type="text" class="fi" id="platName" value="UniConnect"></div>
+        <div class="fg"><label data-i18n="theme.tagline">Tagline</label><input type="text" class="fi" id="platTag" value="Your Campus, Connected."></div>
+        <div class="fg"><label data-i18n="theme.logo_path">Logo Path</label><input type="text" class="fi" id="logoUrl" value="Images/UClogo.png"></div>
+        <button class="btn btn-primary" style="width:100%" onclick="saveBranding()"><i class="fa-solid fa-floppy-disk"></i> <span data-i18n="theme.save_branding">Save Branding</span></button>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-amber"><i class="fa-solid fa-font"></i></div><div>
+          <h3 data-i18n="theme.typography">Typography</h3>
+          <p data-i18n="theme.typography_sub">Platform fonts and sizing</p>
+        </div></div>
+        <div class="fg"><label data-i18n="theme.heading_font">Heading Font</label><select class="fi"><option>Inter</option><option>Instrument Sans</option><option>Sora</option><option>Outfit</option></select></div>
+        <div class="fg"><label data-i18n="theme.body_font">Body Font</label><select class="fi"><option>Inter</option><option>DM Sans</option><option>Nunito</option></select></div>
+        <div class="fg"><label data-i18n="theme.base_size">Base Size</label><select class="fi"><option>13px</option><option selected>14px</option><option>15px</option><option>16px</option></select></div>
+        <button class="btn btn-primary" style="width:100%" onclick="toast('Typography saved!')"><i class="fa-solid fa-floppy-disk"></i> <span data-i18n="theme.save_typography">Save Typography</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOMEPAGE ── -->
+  <section id="sec-homepage" class="section hidden">
+    <div class="ph"><div class="ph-left">
+      <h1 data-i18n="homepage.title">Homepage Control</h1>
+      <p data-i18n="homepage.subtitle">Edit banners, hero sections and featured content</p>
+    </div></div>
+    <div class="panels-grid">
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-red"><i class="fa-solid fa-star"></i></div><div><h3 data-i18n="homepage.hero_banner">Hero Banner</h3></div></div>
+        <div class="banner-prev" id="bannerPrev">
+          <h3 id="bPrevTitle">Welcome to UniConnect 🎓</h3>
+          <p id="bPrevDesc">Discover exciting events, register instantly, and make the most of your university experience.</p>
+        </div>
+        <div class="fg"><label data-i18n="homepage.banner_title">Title</label><input type="text" class="fi" id="bannerTitle" value="Welcome to UniConnect 🎓" oninput="document.getElementById('bPrevTitle').innerText=this.value"></div>
+        <div class="fg"><label data-i18n="homepage.banner_subtitle">Subtitle</label><textarea class="fi" id="bannerDesc" rows="2" oninput="document.getElementById('bPrevDesc').innerText=this.value">Discover exciting events, register instantly, and make the most of your university experience.</textarea></div>
+        <div class="fr">
+          <div class="fg"><label data-i18n="homepage.gradient_start">Gradient Start</label><div class="color-row"><input type="color" id="bc1" value="#0d0934" oninput="updateBannerGrad()"><span style="font-family:var(--mono);font-size:11px;margin-left:4px" id="bc1hex">#0d0934</span></div></div>
+          <div class="fg"><label data-i18n="homepage.gradient_end">Gradient End</label><div class="color-row"><input type="color" id="bc2" value="#312e81" oninput="updateBannerGrad()"><span style="font-family:var(--mono);font-size:11px;margin-left:4px" id="bc2hex">#312e81</span></div></div>
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="toast('Banner saved!')"><i class="fa-solid fa-floppy-disk"></i> <span data-i18n="homepage.save_banner">Save Banner</span></button>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-amber"><i class="fa-solid fa-trophy"></i></div><div><h3 data-i18n="homepage.featured_events">Featured Events</h3></div></div>
+        <div class="fg"><label data-i18n="homepage.max_events">Max Events on Homepage</label><select class="fi"><option>3</option><option>4</option><option selected>6</option><option>8</option></select></div>
+        <div class="fg"><label data-i18n="homepage.sort_by">Sort By</label><select class="fi">
+          <option data-i18n="homepage.sort.upcoming">Upcoming First</option>
+          <option data-i18n="homepage.sort.most_reg">Most Registered</option>
+          <option data-i18n="homepage.sort.recent">Recently Created</option>
+        </select></div>
+        <div class="fg"><label data-i18n="homepage.show_past">Show Past Events</label><select class="fi">
+          <option data-i18n="homepage.past.hide">No — Hide Past</option>
+          <option data-i18n="homepage.past.show">Yes — Show All</option>
+        </select></div>
+        <button class="btn btn-primary" style="width:100%" onclick="toast('Display settings saved!')"><i class="fa-solid fa-floppy-disk"></i> <span data-i18n="homepage.save_display">Save Display</span></button>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-green"><i class="fa-solid fa-circle-info"></i></div><div><h3 data-i18n="homepage.notice_bar">Notice Bar</h3></div></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="homepage.enable_notice">Enable Notice Bar</h5><p data-i18n="homepage.notice_sub">Show banner on all pages</p></div><label class="toggle"><input type="checkbox" id="noticeOn" checked><span class="slider"></span></label></div>
+        <div class="fg"><label data-i18n="common.message">Message</label><input type="text" class="fi" id="noticeMsg" value="📢 Semester 2 registrations are now open!"></div>
+        <div class="fg"><label data-i18n="homepage.notice_style">Style</label><select class="fi">
+          <option data-i18n="homepage.style.navy">Navy</option>
+          <option data-i18n="homepage.style.info">Info Blue</option>
+          <option data-i18n="homepage.style.amber">Amber Warning</option>
+          <option data-i18n="homepage.style.red">Red Alert</option>
+        </select></div>
+        <button class="btn btn-primary" style="width:100%" onclick="toast('Notice bar saved!')"><i class="fa-solid fa-floppy-disk"></i> <span data-i18n="homepage.save_notice">Save Notice Bar</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ANNOUNCEMENTS ── -->
+  <section id="sec-announcements" class="section hidden">
+    <div class="ph"><div class="ph-left">
+      <h1 data-i18n="announcements.title">Platform Announcements</h1>
+      <p data-i18n="announcements.subtitle">Broadcast messages to all users</p>
+    </div></div>
+    <div class="g2" style="align-items:start">
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-red"><i class="fa-solid fa-megaphone"></i></div><div>
+          <h3 data-i18n="announcements.new">New Announcement</h3>
+          <p data-i18n="announcements.new_sub">Sent as platform notification</p>
+        </div></div>
+        <div class="fg"><label data-i18n="announcements.ann_title">Title</label><input type="text" class="fi" id="annTitle" data-i18n-placeholder="announcements.title_placeholder" placeholder="e.g. System Maintenance Scheduled"></div>
+        <div class="fg"><label data-i18n="common.message">Message</label><textarea class="fi" id="annBody" rows="4" data-i18n-placeholder="announcements.body_placeholder" placeholder="Write your announcement here…"></textarea></div>
+        <div class="fr">
+          <div class="fg"><label data-i18n="announcements.target">Target</label><select class="fi" id="annTarget">
+            <option data-i18n="announcements.target.all">All Users</option>
+            <option data-i18n="announcements.target.students">Students Only</option>
+            <option data-i18n="announcements.target.organizers">Organizers Only</option>
+          </select></div>
+          <div class="fg"><label data-i18n="announcements.priority">Priority</label><select class="fi" id="annPriority">
+            <option data-i18n="announcements.priority.normal">Normal</option>
+            <option data-i18n="announcements.priority.urgent">Urgent</option>
+            <option data-i18n="announcements.priority.info">Informational</option>
+          </select></div>
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="sendAnnouncement()"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="announcements.send">Send Announcement</span></button>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-acc"><i class="fa-solid fa-list"></i></div><div>
+          <h3 data-i18n="announcements.history">History</h3>
+          <p data-i18n="announcements.history_sub">Previously sent broadcasts</p>
+        </div></div>
+        <div class="ann-list" id="annHistory">
+          <div class="ann-item"><div class="ann-dot urgent"></div><div class="ann-txt"><b data-i18n="announcements.sample.maintenance_title">System Maintenance:</b> <span data-i18n="announcements.sample.maintenance_body">Scheduled Dec 20, 2–4 AM.</span></div><button class="ann-del" onclick="this.closest('.ann-item').remove()"><i class="fa-solid fa-xmark"></i></button></div>
+          <div class="ann-item"><div class="ann-dot info"></div><div class="ann-txt" data-i18n="announcements.sample.sem2">Semester 2 event registrations are now open!</div><button class="ann-del" onclick="this.closest('.ann-item').remove()"><i class="fa-solid fa-xmark"></i></button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SYSTEM SETTINGS ── -->
+  <section id="sec-system" class="section hidden">
+    <div class="ph"><div class="ph-left">
+      <h1 data-i18n="nav.settings">System Settings</h1>
+      <p data-i18n="settings.subtitle">Global platform configuration</p>
+    </div></div>
+    <div class="panels-grid">
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-acc"><i class="fa-solid fa-ticket"></i></div><div><h3 data-i18n="settings.registration">Registration</h3></div></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.auto_approve">Auto-approve Registrations</h5><p data-i18n="settings.auto_approve_sub">Skip manual approval</p></div><label class="toggle"><input type="checkbox" id="autoApprove"><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.email_confirm">Email Confirmations</h5><p data-i18n="settings.email_confirm_sub">Email on successful registration</p></div><label class="toggle"><input type="checkbox" id="emailConfirm" checked><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.allow_cancel">Allow Cancellations</h5><p data-i18n="settings.allow_cancel_sub">Students can cancel</p></div><label class="toggle"><input type="checkbox" id="allowCancel" checked><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.cross_dept">Cross-Dept Events</h5><p data-i18n="settings.cross_dept_sub">Any dept student can register</p></div><label class="toggle"><input type="checkbox" id="crossDept" checked><span class="slider"></span></label></div>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-green"><i class="fa-solid fa-calendar-days"></i></div><div><h3 data-i18n="nav.events">Events</h3></div></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.req_approval">Require Admin Approval</h5><p data-i18n="settings.req_approval_sub">Events go live after approval</p></div><label class="toggle"><input type="checkbox" id="reqApproval"><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.req_images">Require Event Images</h5><p data-i18n="settings.req_images_sub">Must upload before creating</p></div><label class="toggle"><input type="checkbox" id="reqImages"><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.featured">Featured Section</h5><p data-i18n="settings.featured_sub">Show pinned events at top</p></div><label class="toggle"><input type="checkbox" id="featSection" checked><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.auto_del">Auto-delete Past Events</h5><p data-i18n="settings.auto_del_sub">Remove events older than 6 months</p></div><label class="toggle"><input type="checkbox" id="autoDel"><span class="slider"></span></label></div>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-red"><i class="fa-solid fa-shield-halved"></i></div><div><h3 data-i18n="settings.security">Security</h3></div></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.maintenance">Maintenance Mode</h5><p data-i18n="settings.maintenance_sub">Show maintenance page to users</p></div><label class="toggle"><input type="checkbox" id="maintMode"><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.restrict_signup">Restrict New Signups</h5><p data-i18n="settings.restrict_signup_sub">Disable new registrations</p></div><label class="toggle"><input type="checkbox" id="restrictSU"><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.admin_2fa">2FA for Admins</h5><p data-i18n="settings.admin_2fa_sub">Require two-factor auth</p></div><label class="toggle"><input type="checkbox" id="admin2fa" checked><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.activity_log">Activity Logging</h5><p data-i18n="settings.activity_log_sub">Log all admin actions</p></div><label class="toggle"><input type="checkbox" id="actLog" checked><span class="slider"></span></label></div>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-ico pi-teal"><i class="fa-solid fa-bell"></i></div><div><h3 data-i18n="nav.notifications">Notifications</h3></div></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.email_notif">Email Notifications</h5><p data-i18n="settings.email_notif_sub">Email for platform events</p></div><label class="toggle"><input type="checkbox" id="emailNotif" checked><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.inapp_notif">In-app Notifications</h5><p data-i18n="settings.inapp_notif_sub">Bell icon notifications</p></div><label class="toggle"><input type="checkbox" id="inAppNotif" checked><span class="slider"></span></label></div>
+        <div class="toggle-row"><div class="tr-left"><h5 data-i18n="settings.reminders">Event Reminders</h5><p data-i18n="settings.reminders_sub">24hr reminder before events</p></div><label class="toggle"><input type="checkbox" id="remindEmails" checked><span class="slider"></span></label></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="saveSettings()"><i class="fa-solid fa-floppy-disk"></i> <span data-i18n="settings.save_all">Save All Settings</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── LOGS ── -->
+  <section id="sec-logs" class="section hidden">
+    <div class="ph">
+      <div class="ph-left">
+        <h1 data-i18n="logs.title">Activity Logs</h1>
+        <p data-i18n="logs.subtitle">Full audit trail of all platform actions</p>
+      </div>
+      <div class="ph-actions">
+        <button class="btn btn-ghost" onclick="loadLogs()"><i class="fa-solid fa-rotate"></i> <span data-i18n="common.refresh">Refresh</span></button>
+        <button class="btn btn-ghost"><i class="fa-solid fa-file-csv"></i> <span data-i18n="logs.export_csv">Export CSV</span></button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th data-i18n="table.time">Time</th>
+            <th data-i18n="table.action">Action</th>
+            <th data-i18n="table.user">User</th>
+            <th data-i18n="table.detail">Detail</th>
+            <th data-i18n="table.ip">IP</th>
+          </tr></thead>
+          <tbody id="logsBody"><tr><td colspan="5" class="loading"><i class="fa-solid fa-spinner fa-spin"></i></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div><!-- /shell -->
+
+
+
+<!-- ════════════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════════ -->
+<script>
+const API    = "http://localhost:3000/api";
+const token  = localStorage.getItem("token");
+const userId = localStorage.getItem("user_id");
+const role   = (localStorage.getItem("role") || "").toLowerCase();
+
+// Auth guard
+if (!token || !userId) location.href = "Login.html";
+const adminRoles = ["admin","super_admin","superadmin"];
+if (!adminRoles.includes(role)) {
+  if (role === "organizer") location.href = "OrganizerDash.html";
+  else if (role === "student") location.href = "Studentdash.html";
+  else location.href = "Login.html";
+}
+
+const $    = id => document.getElementById(id);
+const set  = (id, v) => { const el=$(id); if(el) el.innerText = v; };
+const fmt  = d => d ? String(d).split("T")[0] : "—";
+const ini  = n => n ? n.trim().split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase() : "??";
+const hdr  = () => ({ Authorization:"Bearer "+token });
+const jhdr = () => ({ ...hdr(), "Content-Type":"application/json" });
+
+function logout() { localStorage.clear(); location.href = "Login.html"; }
+
+/* ─── RESTORE THEME ─────────────────────────────────────────── */
+(()=>{
+  try {
+    const t = JSON.parse(localStorage.getItem("uc_theme")||"{}");
+    if (t.accent) document.documentElement.style.setProperty("--accent",t.accent);
+  } catch {}
+})();
+
+/* ─── TOAST ─────────────────────────────────────────────────── */
+let _toastTimer;
+function toast(msg, type="success") {
+  const t=$("toast"), ic=$("toastIcon"), bar=$("toastBar");
+  $("toastMsg").innerText = msg;
+  const C = { success:"var(--green)", error:"var(--red)", warning:"var(--amber)", info:"var(--accent)" };
+  const I = { success:"fa-check-circle", error:"fa-times-circle", warning:"fa-triangle-exclamation", info:"fa-circle-info" };
+  ic.className = `fas ${I[type]||I.success}`;
+  ic.style.color = C[type]||C.success;
+  bar.style.background = C[type]||C.success;
+  t.classList.add("show");
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=>t.classList.remove("show"), 3500);
+}
+
+/* ─── GENERIC MODAL ─────────────────────────────────────────── */
+let _mConfirm;
+function modal({ type="info", title, text, confirmText="OK", cancelText, onConfirm }) {
+  const mi=$("mIcon"), C={
+    success:{cls:"mi-s",icon:"fa-circle-check"},
+    danger: {cls:"mi-d",icon:"fa-triangle-exclamation"},
+    info:   {cls:"mi-i",icon:"fa-circle-info"},
+    warning:{cls:"mi-w",icon:"fa-exclamation-circle"},
+  };
+  const cfg = C[type]||C.info;
+  mi.className = "modal-icon "+cfg.cls;
+  mi.innerHTML = `<i class="fa-solid ${cfg.icon}"></i>`;
+  set("mTitle", title||"Notice"); set("mText", text||"");
+  _mConfirm = onConfirm;
+  const acts = $("mActions");
+  acts.innerHTML = cancelText
+    ? `<button class="btn btn-ghost" style="flex:1" onclick="closeModal()">${cancelText}</button>
+       <button class="btn btn-${type==="danger"?"danger":"primary"}" style="flex:1" onclick="_mConfirm&&_mConfirm();closeModal()">${confirmText}</button>`
+    : `<button class="btn btn-primary" style="flex:1" onclick="closeModal()">${confirmText}</button>`;
+  $("globalModal").classList.add("open");
+}
+function closeModal() { $("globalModal").classList.remove("open"); }
+$("globalModal").addEventListener("click", e => { if(e.target===$("globalModal")) closeModal(); });
+
+/* ─── PROFILE MODAL ─────────────────────────────────────────── */
+function closeProfile() { $("profileModal").classList.remove("open"); }
+$("profileModal").addEventListener("click", e => { if(e.target===$("profileModal")) closeProfile(); });
+
+function showProfile(u) {
+  const r = (u.role||"student").toLowerCase();
+  const cls = r==="organizer"?"ava-org":r==="admin"?"ava-adm":"ava-stu";
+  const name = u.full_name||u.name||"User";
+  const uid = u.user_id||u.id;
+  $("profileContent").innerHTML = `
+    <div class="prof-head">
+      <div class="prof-ava ${cls}">${ini(name)}</div>
+      <div style="font-size:18px;font-weight:800">${name}</div>
+      <span class="badge b-${r==="organizer"?"acc":r==="admin"?"red":"green"}" style="margin-top:7px;display:inline-block">${r}</span>
+    </div>
+    <div class="prof-body">
+      <div class="prof-row"><label>User ID</label><span class="mono">#${uid||"—"}</span></div>
+      <div class="prof-row"><label>Email</label><span>${u.email||"—"}</span></div>
+      <div class="prof-row"><label>University</label><span>${u.university||"—"}</span></div>
+      <div class="prof-row"><label>Department</label><span>${u.department_name||u.department||"—"}</span></div>
+      <div class="prof-row"><label>Status</label><span class="sdot active">active</span></div>
+      <div class="prof-row"><label>Interest</label><span>${u.interest||"—"}</span></div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeProfile()"><i class="fa-solid fa-pen"></i> Edit</button>
+        <button class="btn btn-danger" style="flex:1" onclick="deleteUser(${uid},'${name.replace(/'/g,"\\'")}');closeProfile()"><i class="fa-solid fa-trash"></i> Delete</button>
+      </div>
+    </div>`;
+  $("profileModal").classList.add("open");
+}
+
+/* ─── ADMIN PROFILE ─────────────────────────────────────────── */
+function openAdminProfile() {
+  fetch(`${API}/users/${userId}`, { headers: hdr() })
+    .then(r=>r.json())
+    .then(d=>showProfile(d.data||d.user||d))
+    .catch(()=>toast("Could not load profile","error"));
+}
+
+/* ─── SECTION ROUTER ─────────────────────────────────────────── */
+const SECTIONS = ["dashboard","users","events","registrations","volunteers","payments","theme","homepage","announcements","system","logs"];
+const LOADERS  = { users:loadUsers, events:loadEvents, registrations:loadRegistrations, volunteers:loadVolunteers, payments:loadPayments, logs:loadLogs };
+
+function showSection(name, el) {
+  SECTIONS.forEach(s => {
+    const sec=$("sec-"+s); if(sec) sec.classList.toggle("hidden", s!==name);
+    const nav=$("nav-"+s); if(nav) nav.classList.toggle("active", s===name);
+  });
+  history.replaceState(null,"","#"+name);
+  if (LOADERS[name]) LOADERS[name]();
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const hash = location.hash.replace("#","");
+  showSection(SECTIONS.includes(hash) ? hash : "dashboard");
+  loadDashboard();
+  // Load admin name
+  fetch(`${API}/users/${userId}`, { headers: hdr() })
+    .then(r=>r.json())
+    .then(d=>{
+      const u = d.data||d.user||d;
+      const name = u.full_name||"Admin";
+      setGreeting(name);
+      set("tbName", name);
+      const ava=$("tbAva"); if(ava) ava.innerText=ini(name);
+    })
+    .catch(()=>setGreeting("Admin"));
+});
+
+function setGreeting(name) {
+  const h = new Date().getHours();
+  const g = h<12?"Good Morning":h<17?"Good Afternoon":h<21?"Good Evening":"Good Night";
+  const el=$("greeting"); if(el) el.innerHTML=`${g}, <b>${name}</b> 👋`;
+  set("greetSub",`UniConnect Admin Panel · ${new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}`);
+}
+
+/* ─── USER ID SEARCH ─────────────────────────────────────────── */
+function searchUserById() {
+  const id = $("searchByIdInput").value.trim();
+  if (!id) { toast("Enter a User ID","warning"); return; }
+  fetch(`${API}/users/${id}`, { headers: hdr() })
+    .then(r=>{ if(!r.ok) throw 0; return r.json(); })
+    .then(d=>showProfile(d.data||d.user||d))
+    .catch(()=>modal({type:"warning",title:"Not Found",text:`No user with ID: ${id}`}));
+}
+$("searchByIdInput").addEventListener("keydown", e => { if(e.key==="Enter") searchUserById(); });
+
+/* ─── GLOBAL SEARCH ─────────────────────────────────────────── */
+function globalSearch(q) {
+  if (!$("sec-users").classList.contains("hidden")) filterUsers(q);
+  else if (!$("sec-events").classList.contains("hidden")) filterEvents(q);
+}
+
+/* ─── ANIMATE PROGRESS ─────────────────────────────────────────── */
+function animProg(id, pct) {
+  const el=$(id); if(!el) return;
+  setTimeout(()=>{ el.style.width=pct+"%"; }, 120);
+}
+
+/* ═══════════════════════════════
+   DASHBOARD
+═══════════════════════════════ */
+function loadDashboard() {
+  // users
+  fetch(`${API}/users`, { headers:hdr() })
+    .then(r=>r.json())
+    .then(d=>{
+      const u=Array.isArray(d)?d:(d.users||d.data||[]);
+      set("statUsers", u.length);
+      set("statOrgs",  u.filter(x=>(x.role||"").toLowerCase()==="organizer").length);
+      $("recentUserBadge").innerText = Math.min(u.length,5);
+      animProg("progUsers", Math.min(100,(u.length/200)*100));
+      animProg("progOrgs",  Math.min(100,(u.filter(x=>(x.role||"").toLowerCase()==="organizer").length/50)*100));
+      renderRecentUsers(u);
+    }).catch(()=>set("statUsers","Error"));
+
+  // events
+  fetch(`${API}/events`, { headers:hdr() })
+    .then(r=>r.json())
+    .then(d=>{
+      const ev=Array.isArray(d)?d:(d.events||d.data||[]);
+      set("statEvents", ev.length);
+      animProg("progEvents", Math.min(100,(ev.length/100)*100));
+      const today=new Date().toISOString().split("T")[0];
+      renderTodayEvents(ev.filter(e=>fmt(e.event_date)===today));
+      renderActivityFeed(ev.slice(0,5));
+    }).catch(()=>set("statEvents","—"));
+
+  // registrations
+  fetch(`${API}/registrations`, { headers:hdr() })
+    .then(r=>r.json())
+    .then(d=>{
+      const regs=Array.isArray(d)?d:(d.registrations||d.data||[]);
+      const pend=regs.filter(r=>(r.status||"").toLowerCase()==="pending");
+      set("statRegs",    regs.length);
+      set("statPending", pend.length);
+      $("pendRegBadge").innerText = pend.length;
+      animProg("progRegs",  Math.min(100,(regs.length/500)*100));
+      animProg("progPend",  Math.min(100,(pend.length/50)*100));
+      if (pend.length>0) {
+        const dc=$("deltaPend"); if(dc){ dc.style.display=""; dc.innerText=pend.length+" pending"; }
+        const sc=$("sidebarPendCount"); if(sc){ sc.style.display=""; sc.innerText=pend.length; }
+        $("statPendingBadge")&&($("statPendingBadge").style.display="");
+      }
+      renderPendingRegs(pend.slice(0,5));
+    }).catch(()=>{});
+}
+
+/* ─── RENDER RECENT USERS ─────────────── */
+function renderRecentUsers(users) {
+  const tbody=$("recentUsersBody"); if(!tbody) return;
+  const recent=users.slice(0,5);
+  if (!recent.length) { tbody.innerHTML=`<tr><td colspan="4" class="loading">No users yet.</td></tr>`; return; }
+  tbody.innerHTML=recent.map(u=>{
+    const r=(u.role||"student").toLowerCase();
+    const cls=r==="organizer"?"ava-org":r==="admin"?"ava-adm":"ava-stu";
+    return `<tr>
+      <td><div class="user-cell">
+        <div class="ava ${cls}">${ini(u.full_name||"")}</div>
+        <div><div class="u-name">${u.full_name||"—"}</div><div class="u-sub">${u.email||""}</div></div>
+      </div></td>
+      <td><span class="badge b-${r==="organizer"?"acc":r==="admin"?"red":"green"}">${r}</span></td>
+      <td style="font-size:11.5px;color:var(--muted)">${fmt(u.created_at)||"—"}</td>
+      <td><button class="icon-btn" onclick="viewUserProfile(${u.user_id||u.id})"><i class="fa-solid fa-eye"></i></button></td>
+    </tr>`;
+  }).join("");
+}
+
+/* ─── RENDER TODAY EVENTS ─────────────── */
+function renderTodayEvents(evs) {
+  const box=$("todayEvents"); if(!box) return;
+  if (!evs.length) { box.innerHTML=`<div class="loading" style="padding:14px">No events today 🎉</div>`; return; }
+  box.innerHTML=evs.map(e=>`
+    <div style="padding:9px 0;border-bottom:1px solid var(--border)">
+      <div style="font-weight:600;font-size:13px">${e.title||"Untitled"}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">${e.venue||"No venue"} · ${e.start_time||"—"}</div>
+    </div>`).join("");
+}
+
+/* ─── RENDER PENDING REGS ─────────────── */
+function renderPendingRegs(pend) {
+  const box=$("pendingRegsBox"); if(!box) return;
+  if (!pend.length) { box.innerHTML=`<div class="loading" style="padding:14px">No pending items ✓</div>`; return; }
+  box.innerHTML=pend.map(r=>`
+    <div class="pend-item">
+      <div class="ava ava-stu" style="width:30px;height:30px;font-size:10px">${ini(r.student_name||r.full_name||"")}</div>
+      <div class="pend-info">
+        <h5>${r.student_name||r.full_name||"—"}</h5>
+        <p>${r.event_title||"—"}</p>
+      </div>
+      <div class="pend-btns">
+        <button class="mini-ok" title="Approve" onclick="approveReg(${r.registration_id||r.id})"><i class="fa-solid fa-check"></i></button>
+        <button class="mini-no" title="Reject"  onclick="rejectReg(${r.registration_id||r.id})"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>`).join("");
+}
+
+/* ─── ACTIVITY FEED ─────────────── */
+function renderActivityFeed(events) {
+  const box=$("activityFeed"); if(!box) return;
+  if (!events.length) { box.innerHTML=`<div class="loading" style="padding:12px">No recent activity.</div>`; return; }
+  box.innerHTML=events.map(e=>`
+    <div class="log-item">
+      <div class="log-dot ld-e"><i class="fa-solid fa-calendar"></i></div>
+      <div class="log-info">
+        <h5>New Event: ${e.title||"—"}</h5>
+        <p>${e.organizer_name||"System"} · ${e.venue||"—"}</p>
+      </div>
+      <span class="log-time">${fmt(e.created_at||e.event_date)}</span>
+    </div>`).join("");
+}
+
+/* ═══════════════════════════════
+   USERS
+═══════════════════════════════ */
+let _allUsers = [], _roleFilter = "all";
+
+function loadUsers() {
+  const tbody=$("usersBody");
+  if(tbody) tbody.innerHTML=`<tr><td colspan="5" class="loading"><i class="fa-solid fa-spinner fa-spin"></i></td></tr>`;
+  fetch(`${API}/users`, { headers:hdr() })
+    .then(r=>r.json())
+    .then(d=>{
+      _allUsers = Array.isArray(d)?d:(d.users||d.data||[]);
+      renderUsers();
+    })
+    .catch(()=>{ if($("usersBody")) $("usersBody").innerHTML=`<tr><td colspan="5" class="loading">Error loading users.</td></tr>`; });
+}
+
+function renderUsers(list) {
+  const tbody=$("usersBody"); if(!tbody) return;
+  const users=(list||_allUsers).filter(u=>_roleFilter==="all"||(u.role||"").toLowerCase()===_roleFilter);
+  if (!users.length) { tbody.innerHTML=`<tr><td colspan="5" class="loading">No users found.</td></tr>`; return; }
+  tbody.innerHTML=users.map(u=>{
+    const r=(u.role||"student").toLowerCase();
+    const cls=r==="organizer"?"ava-org":r==="admin"?"ava-adm":"ava-stu";
+    const badge=r==="organizer"?"acc":r==="admin"?"red":"green";
+    return `<tr>
+      <td><div class="user-cell">
+        <div class="ava ${cls}">${ini(u.full_name||"")}</div>
+        <div><div class="u-name">${u.full_name||"—"}</div><div class="u-sub">${u.email||""}</div></div>
+      </div></td>
+      <td><span class="badge b-${badge}">${r}</span></td>
+      <td style="font-size:12px">${u.university||"—"}</td>
+      <td style="font-size:12px;color:var(--muted)">${u.department_name||u.faculty_name||"—"}</td>
+      <td><div class="act-row">
+        <button class="icon-btn" title="View" onclick="viewUserProfile(${u.user_id||u.id})"><i class="fa-solid fa-eye"></i></button>
+        <button class="icon-btn amber" title="Edit" onclick="editUser(${u.user_id||u.id})"><i class="fa-solid fa-pen"></i></button>
+        <button class="icon-btn red" title="Delete" onclick="deleteUser(${u.user_id||u.id},'${(u.full_name||"User").replace(/'/g,"\\'")}')"><i class="fa-solid fa-trash"></i></button>
+      </div></td>
+    </tr>`;
+  }).join("");
+}
+
+function filterUsers(q) {
+  if (!q.trim()) { renderUsers(); return; }
+  const low=q.toLowerCase();
+  renderUsers(_allUsers.filter(u=>(u.full_name||"").toLowerCase().includes(low)||(u.email||"").toLowerCase().includes(low)||(u.role||"").toLowerCase().includes(low)));
+}
+function filterRole(r,el) {
+  _roleFilter=r;
+  document.querySelectorAll("#roleFilters .ftab").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  renderUsers();
+}
+function viewUserProfile(id) {
+  const u=_allUsers.find(x=>(x.user_id||x.id)==id);
+  if (u) showProfile(u);
+  else fetch(`${API}/users/${id}`,{headers:hdr()}).then(r=>r.json()).then(d=>showProfile(d.data||d.user||d)).catch(()=>toast("Not found","error"));
+}
+function editUser(id) { toast("Edit form coming soon!","info"); }
+function deleteUser(id, name) {
+  modal({ type:"danger", title:"Delete User?", text:`"${name}" and all their data will be permanently removed.`,
+    confirmText:"Delete", cancelText:"Cancel",
+    onConfirm:()=>{
+      fetch(`${API}/users/${id}`,{method:"DELETE",headers:hdr()})
+        .then(()=>{ toast("User deleted."); loadUsers(); })
+        .catch(()=>toast("Failed to delete.","error"));
+    }
+  });
+}
+
+/* ═══════════════════════════════
+   EVENTS
+═══════════════════════════════ */
+let _allEvents=[];
+
+function loadEvents() {
+  const grid=$("eventsGrid");
+  if(grid) grid.innerHTML=`<div class="loading" style="grid-column:1/-1"><i class="fa-solid fa-spinner fa-spin"></i>Loading events…</div>`;
+  fetch(`${API}/events`,{headers:hdr()})
+    .then(r=>r.json())
+    .then(d=>{
+      _allEvents=Array.isArray(d)?d:(d.events||d.data||[]);
+      renderEvents(_allEvents);
+    })
+    .catch(()=>{ if(grid) grid.innerHTML=`<div class="loading" style="grid-column:1/-1">Error loading events.</div>`; });
+}
+
+function renderEvents(evs) {
+  const grid=$("eventsGrid"); if(!grid) return;
+  if (!evs.length) { grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-calendar-xmark"></i>No events found.</div>`; return; }
+  grid.innerHTML=evs.map(e=>{
+    const eid=e.event_id||e.id;
+    const today=new Date().toISOString().split("T")[0];
+    const isPast=fmt(e.event_date)<today;
+    return `<div class="ev-card">
+      <div class="ev-thumb">
+        ${e.image_url?`<img src="${e.image_url}" alt="${e.title}" onerror="this.remove()">`:`<i class="fa-solid fa-calendar-star"></i>`}
+      </div>
+      <div class="ev-info">
+        <div class="ev-title">${e.title||"Untitled"}</div>
+        <div class="ev-meta">
+          <span><i class="fa-solid fa-calendar"></i>${fmt(e.event_date)}</span>
+          <span><i class="fa-solid fa-location-dot"></i>${e.venue||"TBD"}</span>
+        </div>
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+          ${e.category?`<span class="badge b-acc">${e.category}</span>`:""}
+          <span class="badge ${isPast?"b-gray":"b-green"}">${isPast?"Past":"Upcoming"}</span>
+          <span class="badge b-teal">${e.registration_count||0} regs</span>
+        </div>
+      </div>
+      <div class="ev-foot">
+        <span style="font-size:11px;color:var(--muted)">By ${e.organizer_name||"Unknown"}</span>
+        <div class="act-row">
+          <button class="icon-btn green" title="Approve" onclick="approveEvent(${eid})"><i class="fa-solid fa-check"></i></button>
+          <button class="icon-btn red" title="Delete" onclick="deleteEvent(${eid},'${(e.title||"Event").replace(/'/g,"\\'")}')"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function filterEvents(q) {
+  if (!q.trim()) { renderEvents(_allEvents); return; }
+  const low=q.toLowerCase();
+  renderEvents(_allEvents.filter(e=>(e.title||"").toLowerCase().includes(low)||(e.venue||"").toLowerCase().includes(low)||(e.category||"").toLowerCase().includes(low)));
+}
+function filterEvCat(cat,el) {
+  document.querySelectorAll("#sec-events .ftab").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  const today=new Date().toISOString().split("T")[0];
+  if (cat==="all") renderEvents(_allEvents);
+  else if (cat==="upcoming") renderEvents(_allEvents.filter(e=>fmt(e.event_date)>=today));
+  else renderEvents(_allEvents.filter(e=>fmt(e.event_date)<today));
+}
+function approveEvent(id) {
+  fetch(`${API}/events/${id}/approve`,{method:"PATCH",headers:hdr()})
+    .then(()=>{ toast("Event approved!"); loadEvents(); })
+    .catch(()=>toast("Failed.","error"));
+}
+function deleteEvent(id, title) {
+  modal({ type:"danger", title:"Delete Event?", text:`"${title}" and all registrations will be permanently deleted.`,
+    confirmText:"Delete", cancelText:"Cancel",
+    onConfirm:()=>{
+      fetch(`${API}/events/${id}`,{method:"DELETE",headers:hdr()})
+        .then(()=>{ toast("Event deleted."); loadEvents(); })
+        .catch(()=>toast("Failed.","error"));
+    }
+  });
+}
+
+/* ═══════════════════════════════
+   REGISTRATIONS
+═══════════════════════════════ */
+function loadRegistrations() {
+  const tbody=$("regsBody");
+  if(tbody) tbody.innerHTML=`<tr><td colspan="5" class="loading"><i class="fa-solid fa-spinner fa-spin"></i></td></tr>`;
+  fetch(`${API}/registrations`,{headers:hdr()})
+    .then(r=>r.json())
+    .then(d=>{
+      const regs=Array.isArray(d)?d:(d.registrations||d.data||[]);
+      if(!tbody) return;
+      if(!regs.length){ tbody.innerHTML=`<tr><td colspan="5" class="loading">No registrations.</td></tr>`; return; }
+      const C={ confirmed:"var(--green)", cancelled:"var(--red)", pending:"var(--amber)" };
+      tbody.innerHTML=regs.map(r=>{
+        const sc=(r.status||"pending").toLowerCase();
+        const col=C[sc]||"var(--muted)";
+        return `<tr>
+          <td><div class="user-cell">
+            <div class="ava ava-stu" style="width:30px;height:30px;font-size:10px">${ini(r.student_name||r.full_name||"")}</div>
+            <div><div class="u-name">${r.student_name||r.full_name||"—"}</div><div class="u-sub">${r.student_email||""}</div></div>
+          </div></td>
+          <td style="font-size:12.5px">${r.event_title||"—"}</td>
+          <td style="font-size:11.5px;color:var(--muted)">${fmt(r.event_date)}</td>
+          <td><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:${col}20;color:${col};text-transform:uppercase;letter-spacing:.5px">${sc}</span></td>
+          <td><div class="act-row">
+            ${sc!=="confirmed"?`<button class="icon-btn green" title="Approve" onclick="approveReg(${r.registration_id||r.id})"><i class="fa-solid fa-check"></i></button>`:""}
+            <button class="icon-btn red" title="Delete" onclick="rejectReg(${r.registration_id||r.id})"><i class="fa-solid fa-trash"></i></button>
+          </div></td>
+        </tr>`;
+      }).join("");
+    })
+    .catch(()=>{ if(tbody) tbody.innerHTML=`<tr><td colspan="5" class="loading">Error loading.</td></tr>`; });
+}
+
+function approveReg(id) {
+  fetch(`${API}/registrations/${id}/approve`,{method:"PATCH",headers:hdr()})
+    .then(()=>{ toast("Registration approved!"); loadRegistrations(); loadDashboard(); })
+    .catch(()=>toast("Failed.","error"));
+}
+function rejectReg(id) {
+  modal({ type:"danger", title:"Remove Registration?", text:"This will permanently delete the registration.",
+    confirmText:"Delete", cancelText:"Cancel",
+    onConfirm:()=>{
+      fetch(`${API}/registrations/${id}`,{method:"DELETE",headers:hdr()})
+        .then(()=>{ toast("Registration removed."); loadRegistrations(); loadDashboard(); })
+        .catch(()=>toast("Failed.","error"));
+    }
+  });
+}
+
+/* ═══════════════════════════════
+   VOLUNTEERS
+═══════════════════════════════ */
+function loadVolunteers() {
+  const tbody=$("volsBody");
+  if(tbody) tbody.innerHTML=`<tr><td colspan="5" class="loading"><i class="fa-solid fa-spinner fa-spin"></i></td></tr>`;
+  fetch(`${API}/volunteers`,{headers:hdr()})
+    .then(r=>r.json())
+    .then(d=>{
+      const vols=Array.isArray(d)?d:(d.data||[]);
+      if(!tbody) return;
+      if(!vols.length){ tbody.innerHTML=`<tr><td colspan="5" class="loading">No volunteers.</td></tr>`; return; }
+      tbody.innerHTML=vols.map(v=>{
+        const vid=v.volunteer_id||v.id;
+        return `<tr>
+          <td><div class="user-cell">
+            <div class="ava ava-stu" style="width:30px;height:30px;font-size:10px">${ini(v.volunteer_name||"")}</div>
+            <div><div class="u-name">${v.volunteer_name||"—"}</div><div class="u-sub">${v.volunteer_email||""}</div></div>
+          </div></td>
+          <td style="font-size:12.5px">${v.event_title||"—"}</td>
+          <td style="font-size:12px;color:var(--muted2)">${v.role||"—"}</td>
+          <td><span class="badge b-green">${v.status||"pending"}</span></td>
+          <td><div class="act-row">
+            <button class="icon-btn red" title="Remove" onclick="deleteVol(${vid})"><i class="fa-solid fa-trash"></i></button>
+          </div></td>
+        </tr>`;
+      }).join("");
+    })
+    .catch(()=>{ if(tbody) tbody.innerHTML=`<tr><td colspan="5" class="loading">Error loading.</td></tr>`; });
+}
+function deleteVol(id) {
+  modal({ type:"danger", title:"Remove Volunteer?", text:"This will remove the volunteer assignment.",
+    confirmText:"Delete", cancelText:"Cancel",
+    onConfirm:()=>{
+      fetch(`${API}/volunteers/${id}`,{method:"DELETE",headers:hdr()})
+        .then(()=>{ toast("Deleted."); loadVolunteers(); })
+        .catch(()=>toast("Failed.","error"));
+    }
+  });
+}
+
+/* ═══════════════════════════════
+   PAYMENTS
+═══════════════════════════════ */
+function loadPayments() {
+  const tbody=$("paymentsBody");
+  if(tbody) tbody.innerHTML=`<tr><td colspan="6" class="loading"><i class="fa-solid fa-spinner fa-spin"></i></td></tr>`;
+  fetch(`${API}/payments`,{headers:hdr()})
+    .then(r=>r.json())
+    .then(d=>{
+      const pays=Array.isArray(d)?d:(d.data||[]);
+      if(!tbody) return;
+      if(!pays.length){ tbody.innerHTML=`<tr><td colspan="6" class="loading">No payments yet.</td></tr>`; return; }
+      tbody.innerHTML=pays.map(p=>{
+        const st=(p.payment_status||"Pending").toLowerCase();
+        const col=st==="completed"?"var(--green)":st==="failed"?"var(--red)":"var(--amber)";
+        return `<tr>
+          <td><div class="u-name">${p.student_name||"—"}</div><div class="u-sub">${p.student_email||""}</div></td>
+          <td style="font-size:12.5px">${p.event_title||"—"}</td>
+          <td style="font-weight:700;color:var(--green)">LKR ${(+p.amount||0).toLocaleString()}</td>
+          <td style="font-size:12px;color:var(--muted2)">${p.payment_method||"—"}</td>
+          <td><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:${col}20;color:${col};text-transform:uppercase;letter-spacing:.5px">${p.payment_status||"Pending"}</span></td>
+          <td class="mono" style="color:var(--muted)">${fmt(p.payment_date)}</td>
+        </tr>`;
+      }).join("");
+    })
+    .catch(()=>{ if(tbody) tbody.innerHTML=`<tr><td colspan="6" class="loading">Error loading.</td></tr>`; });
+}
+
+/* ═══════════════════════════════
+   LOGS
+═══════════════════════════════ */
+function loadLogs() {
+  const tbody=$("logsBody");
+  fetch(`${API}/admin/logs`,{headers:hdr()})
+    .then(r=>r.json())
+    .then(d=>{
+      const logs=Array.isArray(d)?d:(d.logs||d.data||[]);
+      if(!tbody) return;
+      if(!logs.length){ tbody.innerHTML=`<tr><td colspan="5" class="loading">No logs found.</td></tr>`; return; }
+      tbody.innerHTML=logs.map(l=>`<tr>
+        <td class="mono" style="white-space:nowrap;color:var(--muted)">${fmt(l.created_at||l.time)||"—"}</td>
+        <td style="font-weight:600">${l.action||l.action_type||"—"}</td>
+        <td style="font-size:12.5px">${l.performed_by||l.user||"—"}</td>
+        <td style="font-size:12px;color:var(--muted)">${(l.detail||l.description||"—").slice(0,80)}</td>
+        <td class="mono">${l.ip_address||l.ip||"—"}</td>
+      </tr>`).join("");
+    })
+    .catch(()=>{
+      if(!tbody) return;
+      tbody.innerHTML=`<tr>
+        <td class="mono" style="color:var(--muted)">${new Date().toLocaleString()}</td>
+        <td style="font-weight:600">Admin Login</td>
+        <td>Admin</td>
+        <td style="color:var(--muted)">Dashboard session started</td>
+        <td class="mono">127.0.0.1</td>
+      </tr>`;
+    });
+}
+
+/* ═══════════════════════════════
+   ANNOUNCEMENTS
+═══════════════════════════════ */
+function sendAnnouncement() {
+  const title=$("annTitle").value.trim();
+  const body=$("annBody").value.trim();
+  if (!title||!body){ modal({type:"warning",title:"Missing Fields",text:"Fill in both title and message.",confirmText:"OK"}); return; }
+  const doAdd=()=>{
+    const list=$("annHistory");
+    const prio=$("annPriority").value;
+    const item=document.createElement("div");
+    item.className="ann-item";
+    item.innerHTML=`<div class="ann-dot ${prio==="Urgent"?"urgent":"info"}"></div>
+      <div class="ann-txt"><b>${title}:</b> ${body}</div>
+      <button class="ann-del" onclick="this.closest('.ann-item').remove()"><i class="fa-solid fa-xmark"></i></button>`;
+    list.prepend(item);
+    $("annTitle").value=""; $("annBody").value="";
+  };
+  fetch(`${API}/notifications/broadcast`,{method:"POST",headers:jhdr(),body:JSON.stringify({title,message:body,target:$("annTarget").value,priority:$("annPriority").value})})
+    .then(()=>{ doAdd(); toast("Announcement sent!"); })
+    .catch(()=>{ doAdd(); toast("Queued locally."); });
+}
+
+/* ═══════════════════════════════
+   SETTINGS
+═══════════════════════════════ */
+function saveSettings() {
+  const ids=["autoApprove","emailConfirm","allowCancel","crossDept","reqApproval","reqImages","featSection","autoDel","maintMode","restrictSU","admin2fa","actLog","emailNotif","inAppNotif","remindEmails"];
+  const s={};
+  ids.forEach(id=>{ const el=$(id); if(el) s[id]=el.checked; });
+  localStorage.setItem("uc_settings",JSON.stringify(s));
+  if (s.maintMode) modal({type:"warning",title:"Maintenance Mode Active",text:"Users will see a maintenance page.",confirmText:"OK"});
+  else toast("All settings saved!");
+}
+
+/* ═══════════════════════════════
+   THEME
+═══════════════════════════════ */
+function liveColor(v, val) { document.documentElement.style.setProperty(v,val); }
+function applyPreset(name) {
+  const P={ default:{a:"#6366f1"}, ocean:{a:"#0ea5e9"}, forest:{a:"#22c55e"}, sunset:{a:"#f97316"}, violet:{a:"#a855f7"}, gold:{a:"#eab308"} };
+  const p=P[name]; if(!p) return;
+  liveColor("--accent",p.a);
+  $("primaryColor").value=p.a; $("primaryHex").innerText=p.a;
+  toast(`Preset "${name}" applied!`);
+}
+function saveTheme() { localStorage.setItem("uc_theme",JSON.stringify({accent:$("primaryColor").value})); toast("Theme saved!"); }
+function saveBranding() { toast("Branding saved!"); }
+
+/* ═══════════════════════════════
+   BANNER PREVIEW
+═══════════════════════════════ */
+function updateBannerGrad() {
+  const c1=$("bc1").value, c2=$("bc2").value;
+  $("bannerPrev").style.background=`linear-gradient(135deg,${c1},${c2})`;
+  $("bc1hex").innerText=c1; $("bc2hex").innerText=c2;
+}
+
+
+  // Set picker to current language on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const locale = payload.locale || 'en';
+        const picker = document.getElementById('language-picker');
+        if (picker) picker.value = locale;
+      } catch(e) {}
+    }
+  });
+
+</script>
+</body>
+</html>

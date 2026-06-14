@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect — Payment Approvals</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#050d1a;--navy2:#0c1a2e;--ink3:#0d1f38;--ink4:#132b4d;
+  --blue:#1a4fd6;--indigo:#3730a3;--violet:#4c1d95;
+  --accent:#818cf8;--light:#e0e7ff;
+  --muted:rgba(255,255,255,.38);
+  --surface:rgba(255,255,255,.04);
+  --border:rgba(255,255,255,.09);
+  --text:#e2e8f0;
+  --green:#34d399;--red:#f87171;--amber:#fcd34d;
+  --r:14px;--ease:cubic-bezier(.4,0,.2,1);
+}
+html{height:100%}
+body{
+  min-height:100vh;font-family:'Instrument Sans',sans-serif;
+  color:var(--text);background:var(--navy);overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% -10%,rgba(26,79,214,.2),transparent 55%),
+    radial-gradient(ellipse 55% 45% at 90% 110%,rgba(55,48,163,.16),transparent 50%),
+    linear-gradient(175deg,var(--navy) 0%,#07111e 100%);
+}
+button,input,select,textarea{font-family:inherit}
+
+/* ── TOPBAR ── */
+.topbar{
+  min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px 36px;background:rgba(5,13,26,.88);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:50;
+}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo img{height:88px;width:auto}
+.logo-fallback{font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#fff}
+.top-nav{display:flex;gap:8px;align-items:center}
+.nav-btn{
+  display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:7px 15px;
+  border-radius:10px;border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);color:rgba(255,255,255,.75);
+  font-size:13px;font-weight:600;text-decoration:none;cursor:pointer;transition:.2s var(--ease);
+}
+.nav-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-btn.accent{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* ── PAGE ── */
+.page{width:min(1260px,calc(100% - 48px));margin:0 auto;padding:36px 0 72px;position:relative;z-index:1}
+
+/* ── PAGE HEADER ── */
+.page-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin-bottom:28px;flex-wrap:wrap;
+}
+.page-header-left{display:flex;align-items:center;gap:16px}
+.ph-icon{
+  width:52px;height:52px;border-radius:16px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),var(--indigo));
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:#fff;box-shadow:0 8px 28px rgba(26,79,214,.38);
+}
+.page-header h1{font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:#fff;margin-bottom:3px}
+.page-header p{font-size:13px;color:var(--muted)}
+
+/* ── STAT STRIP ── */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+@media(max-width:900px){.stat-strip{grid-template-columns:repeat(2,1fr)}}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:16px 18px;display:flex;align-items:center;gap:14px;
+}
+.stat-icon{
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.si-pending{background:rgba(252,211,77,.15);color:var(--amber)}
+.si-approved{background:rgba(52,211,153,.15);color:var(--green)}
+.si-rejected{background:rgba(248,113,113,.15);color:var(--red)}
+.si-total{background:rgba(129,140,248,.15);color:var(--accent)}
+.stat-val{font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:#fff}
+.stat-lbl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+
+/* ── FILTERS ── */
+.filters{
+  display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;
+}
+.filter-tab{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:10px;
+  font-size:12.5px;font-weight:700;cursor:pointer;transition:.2s var(--ease);
+  border:1px solid var(--border);background:transparent;color:var(--muted);
+}
+.filter-tab:hover{background:var(--surface);color:var(--text)}
+.filter-tab.active{background:rgba(129,140,248,.12);border-color:rgba(129,140,248,.4);color:#fff}
+.filter-tab .ft-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:20px;height:20px;padding:0 6px;border-radius:999px;
+  font-size:10px;font-weight:800;
+}
+.ft-pending{background:rgba(252,211,77,.2);color:var(--amber)}
+.ft-approved{background:rgba(52,211,153,.2);color:var(--green)}
+.ft-rejected{background:rgba(248,113,113,.2);color:var(--red)}
+.ft-all{background:rgba(129,140,248,.2);color:var(--accent)}
+
+.search-wrap{margin-left:auto;position:relative}
+.search-wrap input{
+  padding:9px 14px 9px 38px;background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;color:#fff;font-size:13px;outline:none;min-width:220px;
+  transition:border-color .2s;
+}
+.search-wrap input:focus{border-color:rgba(129,140,248,.5)}
+.search-wrap input::placeholder{color:rgba(255,255,255,.22)}
+.search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px}
+
+/* ── EVENT FILTER ── */
+.event-filter{margin-bottom:18px}
+.event-filter select{
+  padding:9px 14px;background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;color:#fff;font-size:13px;outline:none;min-width:260px;
+  transition:border-color .2s;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;
+}
+.event-filter select option{background:#1e293b}
+.event-filter select:focus{border-color:rgba(129,140,248,.5)}
+
+/* ── TABLE ── */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.table-head{
+  display:grid;grid-template-columns:2fr 2fr 1.2fr 1fr 1fr 1fr 140px;
+  padding:12px 20px;border-bottom:1px solid var(--border);
+  font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;
+  gap:8px;
+}
+.table-body{max-height:600px;overflow-y:auto}
+.table-row{
+  display:grid;grid-template-columns:2fr 2fr 1.2fr 1fr 1fr 1fr 140px;
+  padding:14px 20px;border-bottom:1px solid var(--border);gap:8px;
+  align-items:center;transition:background .15s;
+}
+.table-row:last-child{border-bottom:none}
+.table-row:hover{background:rgba(255,255,255,.03)}
+.table-row .cell{font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cell-name{display:flex;align-items:center;gap:10px}
+.cell-avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:rgba(129,140,248,.2);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;font-family:'Sora',sans-serif;
+}
+.cell-name-text .cn-name{font-size:13px;font-weight:600;color:#fff}
+.cell-name-text .cn-email{font-size:11px;color:var(--muted);margin-top:1px}
+.cell-event .ev-title{font-size:13px;color:#fff;font-weight:500}
+.cell-event .ev-date{font-size:11px;color:var(--muted);margin-top:1px}
+.cell-amount{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--accent)}
+.cell-date{font-size:12px;color:var(--muted)}
+
+/* ── STATUS BADGE ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+.badge-pending {background:rgba(252,211,77,.12);color:var(--amber);border:1px solid rgba(252,211,77,.25)}
+.badge-approved{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.25)}
+.badge-rejected{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.25)}
+.badge-completed{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.25)}
+
+/* ── ACTION BUTTONS ── */
+.cell-actions{display:flex;gap:6px;align-items:center}
+.act-btn{
+  width:32px;height:32px;border-radius:8px;border:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;transition:.2s var(--ease);
+  text-decoration:none;
+}
+.act-view  {background:rgba(129,140,248,.15);color:var(--accent)}
+.act-view:hover {background:rgba(129,140,248,.3)}
+.act-approve{background:rgba(52,211,153,.15);color:var(--green)}
+.act-approve:hover{background:rgba(52,211,153,.3)}
+.act-reject {background:rgba(248,113,113,.12);color:var(--red)}
+.act-reject:hover {background:rgba(248,113,113,.25)}
+
+/* ── EMPTY STATE ── */
+.empty-state{padding:60px 20px;text-align:center;color:var(--muted)}
+.empty-state i{font-size:40px;margin-bottom:14px;display:block;opacity:.3}
+.empty-state p{font-size:14px;font-weight:600}
+.empty-state small{font-size:12px;opacity:.7;margin-top:6px;display:block}
+
+/* ── DETAIL DRAWER (right-side slide-in) ── */
+.drawer-overlay{
+  position:fixed;inset:0;background:rgba(5,13,26,.7);backdrop-filter:blur(6px);
+  z-index:100;display:none;
+}
+.drawer-overlay.show{display:block}
+.drawer{
+  position:fixed;right:0;top:0;bottom:0;width:min(600px,96vw);
+  background:var(--ink3);border-left:1px solid var(--border);
+  z-index:101;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .28s var(--ease);
+}
+.drawer.open{transform:translateX(0)}
+.drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.drawer-head h3{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:#fff}
+.drawer-close{
+  width:34px;height:34px;background:rgba(255,255,255,.07);border:1px solid var(--border);
+  color:rgba(255,255,255,.6);border-radius:10px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;font-size:13px;
+}
+.drawer-close:hover{background:rgba(255,255,255,.12);color:#fff}
+.drawer-body{flex:1;overflow-y:auto;padding:22px}
+.drawer-foot{
+  padding:16px 22px;border-top:1px solid var(--border);flex-shrink:0;
+  display:flex;gap:10px;flex-wrap:wrap;
+}
+
+/* ── DRAWER SECTIONS ── */
+.d-section{margin-bottom:22px}
+.d-section-title{
+  font-size:11px;font-weight:700;color:var(--accent);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;
+  display:flex;align-items:center;gap:7px;
+}
+.d-row{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+  padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;
+}
+.d-row:last-child{border-bottom:none}
+.d-lbl{color:var(--muted);flex-shrink:0;min-width:110px}
+.d-val{color:#fff;font-weight:500;text-align:right;word-break:break-all}
+
+/* ── SLIP PREVIEW IN DRAWER ── */
+.slip-thumb{
+  width:100%;border-radius:12px;overflow:hidden;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  min-height:180px;display:flex;align-items:center;justify-content:center;
+  margin-bottom:10px;position:relative;cursor:pointer;
+}
+.slip-thumb img{width:100%;max-height:280px;object-fit:contain;border-radius:10px}
+.slip-thumb .pdf-placeholder{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  color:var(--muted);padding:30px;
+}
+.slip-thumb .pdf-placeholder i{font-size:40px;color:var(--red)}
+.slip-expand-hint{
+  position:absolute;top:10px;right:10px;
+  background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:600;
+  border-radius:6px;padding:4px 8px;display:flex;align-items:center;gap:5px;
+}
+.slip-actions{display:flex;gap:8px;margin-bottom:18px}
+
+/* ── EMAIL COMPOSER ── */
+.email-composer{
+  background:rgba(26,79,214,.08);border:1px solid rgba(99,131,246,.2);
+  border-radius:14px;padding:18px;
+}
+.ec-label{
+  font-size:11px;font-weight:700;color:var(--accent);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:block;
+}
+.ec-input{
+  width:100%;padding:10px 13px;background:rgba(255,255,255,.06);
+  border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;
+  font-size:13px;outline:none;transition:border-color .2s;margin-bottom:12px;
+}
+.ec-input:focus{border-color:rgba(129,140,248,.6);background:rgba(129,140,248,.06)}
+.ec-input::placeholder{color:rgba(255,255,255,.22)}
+.ec-textarea{
+  width:100%;padding:10px 13px;background:rgba(255,255,255,.06);
+  border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;
+  font-size:13px;outline:none;transition:border-color .2s;
+  resize:vertical;min-height:160px;line-height:1.65;margin-bottom:12px;
+}
+.ec-textarea:focus{border-color:rgba(129,140,248,.6);background:rgba(129,140,248,.06)}
+.ec-textarea::placeholder{color:rgba(255,255,255,.22)}
+.placeholder-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.placeholder-chip{
+  background:rgba(129,140,248,.12);border:1px solid rgba(129,140,248,.25);
+  color:var(--accent);border-radius:6px;padding:4px 9px;font-size:11px;font-weight:600;
+  cursor:pointer;transition:.15s;
+}
+.placeholder-chip:hover{background:rgba(129,140,248,.25)}
+.ec-zoom-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.ec-zoom-row .ec-input{margin-bottom:0;flex:1}
+.zoom-badge{
+  display:flex;align-items:center;gap:6px;padding:6px 12px;
+  background:rgba(26,79,214,.2);border:1px solid rgba(99,131,246,.3);
+  border-radius:8px;font-size:12px;font-weight:600;color:#a5b4fc;white-space:nowrap;
+}
+.template-notice{
+  display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
+  background:rgba(129,140,248,.07);border:1px solid rgba(129,140,248,.2);
+  border-radius:8px;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:12px;line-height:1.5;
+}
+.template-notice i{flex-shrink:0;margin-top:1px;color:var(--accent)}
+
+/* ── REJECTION REASON ── */
+.reject-section{display:none;margin-top:12px}
+.reject-section.show{display:block}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;
+  cursor:pointer;border:none;transition:all .2s;text-decoration:none;white-space:nowrap;
+}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--indigo));color:#fff}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px)}
+.btn-success{background:linear-gradient(135deg,#059669,#047857);color:#fff;box-shadow:0 4px 16px rgba(5,150,105,.3)}
+.btn-success:hover:not(:disabled){transform:translateY(-1px)}
+.btn-danger {background:linear-gradient(135deg,#be123c,#9f1239);color:#fff}
+.btn-danger:hover:not(:disabled){transform:translateY(-1px)}
+.btn-ghost  {background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:8px}
+.btn-full{width:100%}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:20px;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--ink3);border:1px solid var(--border);
+  border-radius:20px;padding:28px;max-width:440px;width:100%;
+  animation:pop .18s var(--ease);
+}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.modal-icon-wrap{
+  width:48px;height:48px;border-radius:14px;display:flex;align-items:center;
+  justify-content:center;font-size:20px;margin-bottom:14px;
+}
+.modal-icon-wrap.success{background:rgba(52,211,153,.15);color:var(--green)}
+.modal-icon-wrap.error  {background:rgba(248,113,113,.15);color:var(--red)}
+.modal-icon-wrap.warn   {background:rgba(252,211,77,.12);color:var(--amber)}
+.modal-icon-wrap.info   {background:rgba(129,140,248,.12);color:var(--accent)}
+.modal h3{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;color:#fff;margin-bottom:8px}
+.modal p{font-size:13.5px;color:var(--muted);line-height:1.65}
+.modal-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;justify-content:flex-end}
+
+/* ── SLIP FULL VIEWER ── */
+.slip-full{
+  position:fixed;inset:0;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);
+  display:none;align-items:center;justify-content:center;z-index:300;padding:20px;
+}
+.slip-full.show{display:flex}
+.slip-full-inner{
+  background:var(--ink3);border:1px solid var(--border);border-radius:20px;
+  max-width:800px;width:100%;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;
+}
+.sf-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+}
+.sf-head h3{font-family:'Sora',sans-serif;font-size:14px;color:#fff;font-weight:700}
+.sf-body{flex:1;overflow:auto;padding:20px;display:flex;align-items:center;justify-content:center}
+.sf-body img{max-width:100%;max-height:65vh;border-radius:10px;object-fit:contain}
+.sf-body embed{width:100%;height:65vh;border-radius:10px}
+.sf-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px}
+.sf-close{
+  width:34px;height:34px;background:rgba(255,255,255,.07);border:1px solid var(--border);
+  color:rgba(255,255,255,.6);border-radius:10px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;font-size:13px;
+}
+.sf-close:hover{background:rgba(255,255,255,.12);color:#fff}
+
+/* ── LOADER ── */
+.loader-overlay{position:fixed;inset:0;background:rgba(5,13,26,.8);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:400}
+.loader-overlay.show{display:flex}
+.loader-box{display:flex;flex-direction:column;align-items:center;gap:14px}
+.loader-box i{font-size:34px;color:var(--accent)}
+.loader-box p{font-size:14px;color:var(--muted)}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:500;display:flex;flex-direction:column;gap:10px}
+.toast{
+  display:flex;align-items:center;gap:12px;padding:14px 18px;
+  background:var(--ink3);border:1px solid var(--border);border-radius:12px;
+  font-size:13.5px;font-weight:600;color:#fff;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  animation:slideIn .22s var(--ease);min-width:280px;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.toast i{font-size:18px}
+.toast.t-success i{color:var(--green)}
+.toast.t-error i{color:var(--red)}
+.toast.t-warn i{color:var(--amber)}
+
+@media(max-width:960px){.table-head,.table-row{grid-template-columns:2fr 1.5fr 1fr 1fr 120px}}
+@media(max-width:700px){.page{width:calc(100% - 24px)}.topbar{padding:12px 16px}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="OrganizerDash.html">
+    <img src="images/UClogo.png" alt="UniConnect"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <span class="logo-fallback" style="display:none">UniConnect</span>
+  </a>
+  <nav class="top-nav">
+    <a class="nav-btn" href="OrganizerDash.html">
+      <i class="fa-solid fa-gauge-high"></i> Dashboard
+    </a>
+    <a class="nav-btn" href="Eventpage.html">
+      <i class="fa-solid fa-calendar-days"></i> Events
+    </a>
+    <span class="nav-btn accent" style="cursor:default">
+      <i class="fa-solid fa-money-bill-transfer"></i> Payments
+    </span>
+  </nav>
+</header>
+
+<main class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="ph-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+      <div>
+        <h1>Payment Approvals</h1>
+        <p>Review bank transfer slips and approve or reject participant payments</p>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost btn-sm" onclick="loadPayments()">
+        <i class="fa-solid fa-rotate-right"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stat-strip">
+    <div class="stat-card">
+      <div class="stat-icon si-pending"><i class="fa-solid fa-clock"></i></div>
+      <div><div class="stat-val" id="statPending">—</div><div class="stat-lbl">Pending Review</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-approved"><i class="fa-solid fa-check-circle"></i></div>
+      <div><div class="stat-val" id="statApproved">—</div><div class="stat-lbl">Approved</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-rejected"><i class="fa-solid fa-circle-xmark"></i></div>
+      <div><div class="stat-val" id="statRejected">—</div><div class="stat-lbl">Rejected</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-total"><i class="fa-solid fa-money-bills"></i></div>
+      <div><div class="stat-val" id="statTotal">—</div><div class="stat-lbl">Total Collected</div></div>
+    </div>
+  </div>
+
+  <!-- EVENT FILTER -->
+  <div class="event-filter">
+    <select id="eventFilter" onchange="applyFilters()">
+      <option value="">All Events</option>
+    </select>
+  </div>
+
+  <!-- FILTERS & SEARCH -->
+  <div class="filters">
+    <button class="filter-tab active" data-filter="all" onclick="setFilter('all',this)">
+      All <span class="ft-count ft-all" id="cntAll">0</span>
+    </button>
+    <button class="filter-tab" data-filter="pending" onclick="setFilter('pending',this)">
+      Pending <span class="ft-count ft-pending" id="cntPending">0</span>
+    </button>
+    <button class="filter-tab" data-filter="approved" onclick="setFilter('approved',this)">
+      Approved <span class="ft-count ft-approved" id="cntApproved">0</span>
+    </button>
+    <button class="filter-tab" data-filter="rejected" onclick="setFilter('rejected',this)">
+      Rejected <span class="ft-count ft-rejected" id="cntRejected">0</span>
+    </button>
+    <div class="search-wrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" placeholder="Search name, email, event…" oninput="applyFilters()">
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <div class="table-head">
+      <div>Student</div>
+      <div>Event</div>
+      <div>Amount</div>
+      <div>Submitted</div>
+      <div>Status</div>
+      <div>Method</div>
+      <div>Actions</div>
+    </div>
+    <div class="table-body" id="tableBody">
+      <div class="empty-state">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Loading payments…</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── DETAIL DRAWER ── -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3 id="drawerTitle">Payment Detail</h3>
+    <button class="drawer-close" onclick="closeDrawer()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="drawer-body" id="drawerBody">
+
+    <!-- Student Info -->
+    <div class="d-section">
+      <div class="d-section-title"><i class="fa-solid fa-user"></i> Student Information</div>
+      <div class="d-row"><span class="d-lbl">Name</span>       <span class="d-val" id="dName">—</span></div>
+      <div class="d-row"><span class="d-lbl">Email</span>      <span class="d-val" id="dEmail">—</span></div>
+      <div class="d-row"><span class="d-lbl">University</span> <span class="d-val" id="dUni">—</span></div>
+      <div class="d-row"><span class="d-lbl">Faculty</span>    <span class="d-val" id="dFaculty">—</span></div>
+      <div class="d-row"><span class="d-lbl">Department</span> <span class="d-val" id="dDept">—</span></div>
+    </div>
+
+    <!-- Booking Info -->
+    <div class="d-section">
+      <div class="d-section-title"><i class="fa-solid fa-ticket"></i> Booking & Payment</div>
+      <div class="d-row"><span class="d-lbl">Event</span>      <span class="d-val" id="dEvent">—</span></div>
+      <div class="d-row"><span class="d-lbl">Event Date</span> <span class="d-val" id="dEventDate">—</span></div>
+      <div class="d-row"><span class="d-lbl">Venue</span>      <span class="d-val" id="dVenue">—</span></div>
+      <div class="d-row"><span class="d-lbl">Ticket #</span>   <span class="d-val" id="dTicketId">—</span></div>
+      <div class="d-row"><span class="d-lbl">Quantity</span>   <span class="d-val" id="dQty">—</span></div>
+      <div class="d-row"><span class="d-lbl">Amount</span>     <span class="d-val" id="dAmount" style="color:var(--accent);font-weight:700">—</span></div>
+      <div class="d-row"><span class="d-lbl">Method</span>     <span class="d-val" id="dMethod">—</span></div>
+      <div class="d-row"><span class="d-lbl">Submitted</span>  <span class="d-val" id="dDate">—</span></div>
+      <div class="d-row"><span class="d-lbl">Status</span>     <span class="d-val" id="dStatus">—</span></div>
+    </div>
+
+    <!-- Bank Slip -->
+    <div class="d-section" id="slipSection">
+      <div class="d-section-title"><i class="fa-solid fa-file-image"></i> Bank Transfer Slip</div>
+      <div class="slip-thumb" id="slipThumb" onclick="openFullSlip()">
+        <div class="slip-expand-hint"><i class="fa-solid fa-expand"></i> Click to expand</div>
+        <div style="color:var(--muted);font-size:13px">No slip uploaded</div>
+      </div>
+      <div class="slip-actions">
+        <a class="btn btn-ghost btn-sm" id="slipDownloadBtn" href="#" target="_blank">
+          <i class="fa-solid fa-download"></i> Download
+        </a>
+        <button class="btn btn-ghost btn-sm" onclick="openFullSlip()">
+          <i class="fa-solid fa-expand"></i> Full View
+        </button>
+      </div>
+    </div>
+
+    <!-- Email Composer -->
+    <div class="d-section" id="emailComposerSection">
+      <div class="d-section-title"><i class="fa-solid fa-envelope"></i> Approval Email to Student</div>
+      <div class="email-composer">
+        <div class="template-notice">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <div>Click a placeholder to insert it into the message body. The email will be sent from your registered organizer address.</div>
+        </div>
+
+        <label class="ec-label">Subject Line</label>
+        <input class="ec-input" id="emailSubject" type="text" placeholder="e.g. Your Payment is Confirmed — UniConnect Event">
+
+        <!-- Zoom Link Row -->
+        <label class="ec-label">Zoom / Meeting Link (optional)</label>
+        <div class="ec-zoom-row">
+          <input class="ec-input" id="zoomLink" type="url" placeholder="https://zoom.us/j/...">
+          <div class="zoom-badge"><i class="fa-brands fa-zoom" style="color:#2d8cff"></i> Zoom</div>
+        </div>
+
+        <!-- Placeholders -->
+        <label class="ec-label">Insert Placeholder</label>
+        <div class="placeholder-chips">
+          <button class="placeholder-chip" onclick="insertPlaceholder('{student_name}')">👤 {student_name}</button>
+          <button class="placeholder-chip" onclick="insertPlaceholder('{event_name}')">📅 {event_name}</button>
+          <button class="placeholder-chip" onclick="insertPlaceholder('{event_date}')">🗓️ {event_date}</button>
+          <button class="placeholder-chip" onclick="insertPlaceholder('{venue}')">📍 {venue}</button>
+          <button class="placeholder-chip" onclick="insertPlaceholder('{amount_paid}')">💳 {amount_paid}</button>
+          <button class="placeholder-chip" onclick="insertPlaceholder('{zoom_link}')">🔗 {zoom_link}</button>
+          <button class="placeholder-chip" onclick="insertPlaceholder('{organizer_name}')">✍️ {organizer_name}</button>
+        </div>
+
+        <label class="ec-label">Message Body</label>
+        <textarea class="ec-textarea" id="emailBody" placeholder="Write your message here…"></textarea>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="loadEmailTemplate('webinar')">
+            <i class="fa-solid fa-video"></i> Webinar Template
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="loadEmailTemplate('workshop')">
+            <i class="fa-solid fa-chalkboard-user"></i> Workshop Template
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="loadEmailTemplate('event')">
+            <i class="fa-solid fa-calendar-days"></i> General Template
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="previewEmail()">
+            <i class="fa-solid fa-eye"></i> Preview
+          </button>
+        </div>
+      </div>
+
+      <!-- Reject reason (only when rejecting) -->
+      <div class="reject-section" id="rejectSection">
+        <label class="ec-label" style="margin-top:14px;display:block">Rejection Reason (sent to student)</label>
+        <textarea class="ec-textarea" id="rejectReason" placeholder="e.g. The slip is unclear. Please re-upload a valid bank transfer receipt showing the full amount and reference number."
+                  style="min-height:100px"></textarea>
+      </div>
+    </div>
+
+  </div>
+  <div class="drawer-foot">
+    <button class="btn btn-success" id="approveBtn" onclick="approvePayment()">
+      <i class="fa-solid fa-check"></i> Approve & Send Email
+    </button>
+    <button class="btn btn-danger" id="rejectBtn" onclick="confirmReject()">
+      <i class="fa-solid fa-xmark"></i> Reject
+    </button>
+    <button class="btn btn-ghost" onclick="closeDrawer()">Close</button>
+  </div>
+</div>
+
+<!-- SLIP FULL VIEWER -->
+<div class="slip-full" id="slipFull">
+  <div class="slip-full-inner">
+    <div class="sf-head">
+      <h3><i class="fa-solid fa-file-image" style="color:var(--accent);margin-right:8px"></i>Payment Slip</h3>
+      <button class="sf-close" onclick="closeFullSlip()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sf-body" id="sfBody"></div>
+    <div class="sf-foot">
+      <a class="btn btn-ghost btn-sm" id="sfDownload" href="#" target="_blank">
+        <i class="fa-solid fa-download"></i> Download
+      </a>
+      <button class="btn btn-ghost btn-sm" onclick="closeFullSlip()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="overlayClose(event)">
+  <div class="modal">
+    <div class="modal-icon-wrap info" id="modalIconWrap">
+      <i class="fa-solid fa-circle-info" id="modalIconI"></i>
+    </div>
+    <h3 id="modalTitle">Message</h3>
+    <p id="modalMsg">—</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary btn-sm" id="modalConfirmBtn" onclick="closeModal()" style="display:none">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADER -->
+<div class="loader-overlay" id="loaderOverlay">
+  <div class="loader-box">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <p id="loaderMsg">Processing…</p>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- EMAIL PREVIEW MODAL -->
+<div class="modal-overlay" id="emailPreviewOverlay" onclick="if(event.target.id==='emailPreviewOverlay')closeEmailPreview()">
+  <div class="modal" style="max-width:620px;max-height:90vh;overflow-y:auto">
+    <div class="modal-icon-wrap info" style="background:rgba(129,140,248,.12);color:var(--accent)">
+      <i class="fa-solid fa-envelope-open-text"></i>
+    </div>
+    <h3>Email Preview</h3>
+    <div id="emailPreviewBody" style="margin-top:14px;padding:16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;max-height:440px;overflow-y:auto"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeEmailPreview()">Close Preview</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── CONFIG ── */
+const API = "http://localhost:3000";
+const params = new URLSearchParams(location.search);
+
+let allPayments = [];
+let filteredPayments = [];
+let currentFilter = "all";
+let currentPayment = null; // currently open in drawer
+let organizerName = "Event Organizer";
+
+/* ── INIT ── */
+document.addEventListener("DOMContentLoaded", async () => {
+  // Try to get organizer name from session
+  const uid = sessionStorage.getItem("user_id");
+  if (uid) {
+    try {
+      const res = await fetch(`${API}/api/users/${uid}`);
+      const body = await res.json().catch(() => ({}));
+      const u = body.data?.user || body.user || body.data;
+      if (u?.full_name) organizerName = u.full_name;
+    } catch(_) {}
+  }
+  await loadPayments();
+});
+
+/* ── LOAD PAYMENTS ── */
+async function loadPayments() {
+  showLoader("Loading payments…");
+  try {
+    // Fetch all payments with slip uploads pending approval
+    const res  = await fetch(`${API}/api/payments/organizer/all`, {
+      headers: buildAuthHeaders()
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.message || "Could not load payments");
+
+    allPayments = body.data?.payments || body.data || [];
+    populateEventFilter();
+    applyFilters();
+    updateStats();
+  } catch (err) {
+    document.getElementById("tableBody").innerHTML = `
+      <div class="empty-state">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <p>${esc(err.message)}</p>
+        <small>Check your connection and try refreshing.</small>
+      </div>`;
+  } finally {
+    hideLoader();
+  }
+}
+
+/* ── POPULATE EVENT FILTER ── */
+function populateEventFilter() {
+  const sel = document.getElementById("eventFilter");
+  const seen = new Set();
+  const opts = ['<option value="">All Events</option>'];
+  allPayments.forEach(p => {
+    const eid = p.event_id;
+    if (!seen.has(eid)) {
+      seen.add(eid);
+      opts.push(`<option value="${eid}">${esc(p.event_title || `Event #${eid}`)}</option>`);
+    }
+  });
+  sel.innerHTML = opts.join("");
+}
+
+/* ── FILTERS ── */
+function setFilter(filter, el) {
+  currentFilter = filter;
+  document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+  applyFilters();
+}
+
+function applyFilters() {
+  const eventId = document.getElementById("eventFilter").value;
+  const search  = (document.getElementById("searchInput").value || "").toLowerCase();
+
+  filteredPayments = allPayments.filter(p => {
+    const status = normalizeStatus(p.payment_status);
+    if (currentFilter !== "all" && status !== currentFilter) return false;
+    if (eventId && String(p.event_id) !== String(eventId)) return false;
+    if (search) {
+      const haystack = [p.user_name||"", p.user_email||"", p.event_title||""].join(" ").toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
+    return true;
+  });
+  renderTable();
+}
+
+/* ── UPDATE STATS ── */
+function updateStats() {
+  const pending  = allPayments.filter(p => normalizeStatus(p.payment_status) === "pending").length;
+  const approved = allPayments.filter(p => normalizeStatus(p.payment_status) === "approved").length;
+  const rejected = allPayments.filter(p => normalizeStatus(p.payment_status) === "rejected").length;
+  const total    = allPayments
+    .filter(p => normalizeStatus(p.payment_status) === "approved")
+    .reduce((s, p) => s + Number(p.amount || 0), 0);
+
+  setText("statPending",  String(pending));
+  setText("statApproved", String(approved));
+  setText("statRejected", String(rejected));
+  setText("statTotal",    money(total));
+
+  setText("cntAll",      String(allPayments.length));
+  setText("cntPending",  String(pending));
+  setText("cntApproved", String(approved));
+  setText("cntRejected", String(rejected));
+}
+
+/* ── RENDER TABLE ── */
+function renderTable() {
+  const body = document.getElementById("tableBody");
+  if (!filteredPayments.length) {
+    body.innerHTML = `
+      <div class="empty-state">
+        <i class="fa-solid fa-inbox"></i>
+        <p>No payments found</p>
+        <small>Try changing the filter or search term.</small>
+      </div>`;
+    return;
+  }
+
+  body.innerHTML = filteredPayments.map(p => {
+    const status    = normalizeStatus(p.payment_status);
+    const badgeCls  = {pending:"badge-pending",approved:"badge-approved",rejected:"badge-rejected"}[status] || "badge-pending";
+    const badgeIcon = {pending:"fa-clock",approved:"fa-check",rejected:"fa-xmark"}[status] || "fa-clock";
+    const badgeLbl  = {pending:"Pending",approved:"Approved",rejected:"Rejected"}[status] || status;
+    const initials  = (p.user_name||"?").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+    const hasSlip   = !!(p.slip_url || p.bank_slip_url);
+
+    return `
+      <div class="table-row" onclick="openDrawer(${p.payment_id})">
+        <div class="cell cell-name">
+          <div class="cell-avatar">${esc(initials)}</div>
+          <div class="cell-name-text">
+            <div class="cn-name">${esc(p.user_name||"—")}</div>
+            <div class="cn-email">${esc(p.user_email||"—")}</div>
+          </div>
+        </div>
+        <div class="cell cell-event">
+          <div class="ev-title">${esc(p.event_title||"—")}</div>
+          <div class="ev-date">${formatDate(p.event_date)}</div>
+        </div>
+        <div class="cell cell-amount">${money(p.amount)}</div>
+        <div class="cell cell-date">${formatDate(p.created_at)}</div>
+        <div class="cell">
+          <span class="badge ${badgeCls}">
+            <i class="fa-solid ${badgeIcon}"></i> ${badgeLbl}
+          </span>
+        </div>
+        <div class="cell" style="font-size:12px;color:var(--muted)">
+          ${p.payment_method === "bank_transfer" ? "🏦 Bank" : "💳 Card"}
+          ${hasSlip ? '<span style="margin-left:6px;color:var(--green);font-size:10px">● slip</span>' : ""}
+        </div>
+        <div class="cell cell-actions" onclick="event.stopPropagation()">
+          <button class="act-btn act-view" title="View Details" onclick="openDrawer(${p.payment_id})">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+          ${status === "pending" ? `
+            <button class="act-btn act-approve" title="Quick Approve" onclick="quickApprove(${p.payment_id})">
+              <i class="fa-solid fa-check"></i>
+            </button>
+            <button class="act-btn act-reject" title="Reject" onclick="quickReject(${p.payment_id})">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          ` : ""}
+        </div>
+      </div>`;
+  }).join("");
+}
+
+/* ── OPEN DRAWER ── */
+function openDrawer(paymentId) {
+  currentPayment = allPayments.find(p => p.payment_id === paymentId);
+  if (!currentPayment) return;
+  const p = currentPayment;
+  const status = normalizeStatus(p.payment_status);
+
+  // Populate drawer fields
+  setText("drawerTitle", `Payment #${p.payment_id}`);
+  setText("dName",      p.user_name      || "—");
+  setText("dEmail",     p.user_email     || "—");
+  setText("dUni",       p.university_name|| "—");
+  setText("dFaculty",   p.faculty_name   || "—");
+  setText("dDept",      p.department_name|| "—");
+  setText("dEvent",     p.event_title    || "—");
+  setText("dEventDate", formatDate(p.event_date));
+  setText("dVenue",     p.venue          || "—");
+  setText("dTicketId",  `#${p.ticket_id || "—"}`);
+  setText("dQty",       String(p.quantity || 1));
+  setText("dAmount",    money(p.amount));
+  setText("dMethod",    p.payment_method === "bank_transfer" ? "Bank Transfer" : "Card");
+  setText("dDate",      formatDateTime(p.created_at));
+  document.getElementById("dStatus").innerHTML = `<span class="badge badge-${status}"><i class="fa-solid ${status==="approved"?"fa-check":status==="rejected"?"fa-xmark":"fa-clock"}"></i> ${status.charAt(0).toUpperCase()+status.slice(1)}</span>`;
+
+  // Load slip
+  const slipUrl = p.slip_url || p.bank_slip_url || null;
+  const thumb   = document.getElementById("slipThumb");
+  const dlBtn   = document.getElementById("slipDownloadBtn");
+  if (slipUrl) {
+    const isPdf = slipUrl.toLowerCase().includes(".pdf");
+    if (isPdf) {
+      thumb.innerHTML = `
+        <div class="slip-expand-hint"><i class="fa-solid fa-expand"></i> Click to expand</div>
+        <div class="pdf-placeholder">
+          <i class="fa-regular fa-file-pdf"></i>
+          <span style="font-size:13px;color:var(--muted)">PDF Slip</span>
+        </div>`;
+    } else {
+      thumb.innerHTML = `
+        <div class="slip-expand-hint"><i class="fa-solid fa-expand"></i> Click to expand</div>
+        <img src="${esc(slipUrl)}" alt="Payment Slip"
+             onerror="this.outerHTML='<div style=padding:20px;color:var(--muted);text-align:center>Image could not load</div>'">`;
+    }
+    dlBtn.href = slipUrl;
+  } else {
+    thumb.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px"><i class="fa-solid fa-image" style="font-size:28px;margin-bottom:8px;display:block;opacity:.3"></i>No slip uploaded</div>`;
+    dlBtn.style.opacity = ".4"; dlBtn.style.pointerEvents = "none";
+  }
+
+  // Show/hide approve/reject buttons based on status
+  document.getElementById("approveBtn").style.display = status === "pending" ? "inline-flex" : "none";
+  document.getElementById("rejectBtn").style.display  = status === "pending" ? "inline-flex" : "none";
+  document.getElementById("rejectSection").classList.remove("show");
+
+  // Pre-fill email composer
+  prefillEmail(p);
+
+  // Open drawer
+  document.getElementById("drawerOverlay").classList.add("show");
+  document.getElementById("drawer").classList.add("open");
+}
+
+function closeDrawer() {
+  document.getElementById("drawerOverlay").classList.remove("show");
+  document.getElementById("drawer").classList.remove("open");
+  currentPayment = null;
+}
+
+/* ── PRE-FILL EMAIL ── */
+function prefillEmail(p) {
+  const eventName = p.event_title || "the event";
+  const eventDate = formatDate(p.event_date);
+  const venue     = p.venue || "—";
+
+  document.getElementById("emailSubject").value =
+    `Your Payment is Confirmed — ${eventName}`;
+
+  document.getElementById("zoomLink").value = p.zoom_link || "";
+
+  document.getElementById("emailBody").value =
+`Dear {student_name},
+
+We are delighted to confirm that your payment of {amount_paid} for {event_name} has been received and verified.
+
+Event Details:
+• Event: {event_name}
+• Date: {event_date}
+• Venue: {venue}
+
+{zoom_link}
+
+Your ticket is now confirmed. Please present this email or your QR code at the event entrance.
+
+If you have any questions, feel free to reach out to us.
+
+Best regards,
+{organizer_name}
+UniConnect Events`;
+}
+
+/* ── LOAD EMAIL TEMPLATE ── */
+function loadEmailTemplate(type) {
+  const p = currentPayment;
+  if (!type || !p) return;
+
+  const subject = {
+    webinar:  `You're Registered: ${p.event_title} — Access Details Inside`,
+    workshop: `Workshop Confirmed: ${p.event_title} — What to Expect`,
+    event:    `Payment Confirmed — See You at ${p.event_title}!`
+  }[type] || `Payment Confirmed — ${p.event_title}`;
+
+  const bodies = {
+    webinar: `Dear {student_name},
+
+Excellent news! Your registration for {event_name} has been confirmed after verifying your payment of {amount_paid}.
+
+📅 Date: {event_date}
+🔗 Join Link: {zoom_link}
+
+Please make sure to join a few minutes early. The session will not be recorded, so we encourage full attendance.
+
+Technical tips:
+• Use a stable internet connection
+• Have a quiet environment
+• Update your Zoom/meeting app before joining
+
+We look forward to seeing you online!
+
+Warm regards,
+{organizer_name}
+UniConnect Events`,
+
+    workshop: `Dear {student_name},
+
+Your spot in {event_name} is now confirmed! We received your payment of {amount_paid} — thank you.
+
+Workshop Details:
+📅 Date & Time: {event_date}
+📍 Venue: {venue}
+💳 Amount Paid: {amount_paid}
+
+What to bring:
+• Your student ID
+• Laptop / notebook (as applicable)
+• Printed or digital copy of this email
+
+Please arrive 15 minutes early for registration. Contact us if you need to make changes.
+
+See you there!
+{organizer_name}
+UniConnect Events`,
+
+    event: `Dear {student_name},
+
+We are happy to confirm your payment of {amount_paid} for {event_name}.
+
+📅 Date: {event_date}
+📍 Venue: {venue}
+
+Please keep this email as proof of your registration. Show it or your QR code at the entrance.
+
+We look forward to seeing you!
+
+Best,
+{organizer_name}
+UniConnect Events`
+  };
+
+  document.getElementById("emailSubject").value = subject;
+  document.getElementById("emailBody").value = bodies[type] || bodies.event;
+}
+
+/* ── INSERT PLACEHOLDER ── */
+function insertPlaceholder(tag) {
+  const ta = document.getElementById("emailBody");
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const val = ta.value;
+  ta.value = val.substring(0, start) + tag + val.substring(end);
+  ta.selectionStart = ta.selectionEnd = start + tag.length;
+  ta.focus();
+}
+
+/* ── RESOLVE PLACEHOLDERS ── */
+function resolvePlaceholders(text, p) {
+  const zoomLink = document.getElementById("zoomLink").value.trim();
+  return text
+    .replace(/\{student_name\}/g,  p.user_name         || "Student")
+    .replace(/\{event_name\}/g,    p.event_title        || "the event")
+    .replace(/\{event_date\}/g,    formatDate(p.event_date))
+    .replace(/\{venue\}/g,         p.venue              || "—")
+    .replace(/\{amount_paid\}/g,   money(p.amount))
+    .replace(/\{zoom_link\}/g,     zoomLink ? `Join here: ${zoomLink}` : "(No meeting link provided)")
+    .replace(/\{organizer_name\}/g, organizerName);
+}
+
+/* ── PREVIEW EMAIL ── */
+function previewEmail() {
+  const p = currentPayment; if (!p) return;
+  const subject = document.getElementById("emailSubject").value;
+  const body    = resolvePlaceholders(document.getElementById("emailBody").value, p);
+  document.getElementById("emailPreviewBody").textContent =
+    `To: ${p.user_email}\nSubject: ${resolvePlaceholders(subject, p)}\n\n${body}`;
+  document.getElementById("emailPreviewOverlay").classList.add("show");
+}
+function closeEmailPreview() { document.getElementById("emailPreviewOverlay").classList.remove("show"); }
+
+/* ── APPROVE PAYMENT ── */
+async function approvePayment() {
+  if (!currentPayment) return;
+  const p = currentPayment;
+  const subject = document.getElementById("emailSubject").value.trim();
+  const body    = document.getElementById("emailBody").value.trim();
+  const zoomUrl = document.getElementById("zoomLink").value.trim();
+
+  if (!subject) { showToast("Please fill in the email subject.", "warn"); return; }
+  if (!body)    { showToast("Please write an email message.", "warn"); return; }
+
+  const resolvedSubject = resolvePlaceholders(subject, p);
+  const resolvedBody    = resolvePlaceholders(body, p);
+
+  showLoader("Approving payment and sending email…");
+  try {
+    const res = await fetch(`${API}/api/payments/${p.payment_id}/approve`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...buildAuthHeaders() },
+      body: JSON.stringify({
+        payment_id:     p.payment_id,
+        user_id:        p.user_id,
+        event_id:       p.event_id,
+        ticket_id:      p.ticket_id,
+        email_subject:  resolvedSubject,
+        email_body:     resolvedBody,
+        zoom_link:      zoomUrl || null,
+        // In-app notification
+        notify_message: `Your payment for "${p.event_title}" has been approved! ${zoomUrl ? "Check your email for the join link." : "See you at the event!"}`
+      })
+    });
+    const rbody = await res.json().catch(() => ({}));
+    hideLoader();
+    if (!res.ok) throw new Error(rbody.message || "Approval failed");
+
+    // Update local state
+    const idx = allPayments.findIndex(x => x.payment_id === p.payment_id);
+    if (idx > -1) allPayments[idx].payment_status = "Approved";
+    updateStats();
+    applyFilters();
+    closeDrawer();
+    showToast(`Payment approved & email sent to ${p.user_email}`, "success");
+
+  } catch (err) {
+    hideLoader();
+    showToast(err.message, "error");
+  }
+}
+
+/* ── CONFIRM REJECT ── */
+function confirmReject() {
+  document.getElementById("rejectSection").classList.add("show");
+  showModal(
+    "Reject Payment",
+    "Fill in the rejection reason in the form below, then click confirm.",
+    "warn",
+    "Reject Payment",
+    () => rejectPayment()
+  );
+}
+
+/* ── REJECT PAYMENT ── */
+async function rejectPayment() {
+  if (!currentPayment) return;
+  const p = currentPayment;
+  const reason = document.getElementById("rejectReason").value.trim();
+
+  showLoader("Rejecting payment and notifying student…");
+  try {
+    const res = await fetch(`${API}/api/payments/${p.payment_id}/reject`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...buildAuthHeaders() },
+      body: JSON.stringify({
+        payment_id:      p.payment_id,
+        user_id:         p.user_id,
+        event_id:        p.event_id,
+        rejection_reason: reason || "Your payment slip could not be verified. Please re-upload a valid slip.",
+        notify_message:  `Your payment slip for "${p.event_title}" was rejected. ${reason ? reason : "Please re-upload a valid bank transfer receipt."}`
+      })
+    });
+    const rbody = await res.json().catch(() => ({}));
+    hideLoader();
+    if (!res.ok) throw new Error(rbody.message || "Rejection failed");
+
+    const idx = allPayments.findIndex(x => x.payment_id === p.payment_id);
+    if (idx > -1) allPayments[idx].payment_status = "Rejected";
+    updateStats();
+    applyFilters();
+    closeDrawer();
+    showToast(`Payment rejected. Student has been notified.`, "error");
+
+  } catch (err) {
+    hideLoader();
+    showToast(err.message, "error");
+  }
+}
+
+/* ── QUICK APPROVE (no email composer, sends default email) ── */
+async function quickApprove(paymentId) {
+  const p = allPayments.find(x => x.payment_id === paymentId); if (!p) return;
+  showLoader("Approving…");
+  try {
+    const subject = `Your Payment is Confirmed — ${p.event_title}`;
+    const body    = `Dear ${p.user_name},\n\nYour payment of ${money(p.amount)} for "${p.event_title}" has been confirmed. See you at the event!\n\nBest regards,\n${organizerName}`;
+    const res = await fetch(`${API}/api/payments/${paymentId}/approve`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json",...buildAuthHeaders()},
+      body: JSON.stringify({ payment_id:paymentId, user_id:p.user_id, event_id:p.event_id, ticket_id:p.ticket_id, email_subject:subject, email_body:body, notify_message:`Your payment for "${p.event_title}" has been approved!` })
+    });
+    const rbody = await res.json().catch(() => ({}));
+    hideLoader();
+    if (!res.ok) throw new Error(rbody.message || "Failed");
+    const idx = allPayments.findIndex(x => x.payment_id === paymentId);
+    if (idx > -1) allPayments[idx].payment_status = "Approved";
+    updateStats(); applyFilters();
+    showToast(`Approved! Email sent to ${p.user_email}`, "success");
+  } catch (err) { hideLoader(); showToast(err.message, "error"); }
+}
+
+/* ── QUICK REJECT ── */
+async function quickReject(paymentId) {
+  const p = allPayments.find(x => x.payment_id === paymentId); if (!p) return;
+  // Open drawer with reject section open for reason
+  openDrawer(paymentId);
+  setTimeout(() => {
+    document.getElementById("rejectSection").classList.add("show");
+    document.getElementById("rejectReason").scrollIntoView({behavior:"smooth"});
+  }, 300);
+}
+
+/* ── SLIP VIEWER ── */
+function openFullSlip() {
+  const p = currentPayment; if (!p) return;
+  const url = p.slip_url || p.bank_slip_url;
+  if (!url) { showToast("No slip available.", "warn"); return; }
+  const body = document.getElementById("sfBody");
+  const isPdf = url.toLowerCase().includes(".pdf");
+  body.innerHTML = isPdf
+    ? `<embed src="${esc(url)}" type="application/pdf" style="width:100%;height:65vh;border-radius:10px">`
+    : `<img src="${esc(url)}" alt="Payment slip" style="max-width:100%;max-height:65vh;border-radius:10px;object-fit:contain">`;
+  document.getElementById("sfDownload").href = url;
+  document.getElementById("slipFull").classList.add("show");
+}
+function closeFullSlip() { document.getElementById("slipFull").classList.remove("show"); }
+
+/* ── MODAL ── */
+let _modalCallback = null;
+function showModal(title, msg, type="info", confirmLabel="", callback=null) {
+  const types = {success:"success",error:"error",warn:"warn",info:"info"};
+  const icons = {success:"fa-circle-check",error:"fa-circle-xmark",warn:"fa-triangle-exclamation",info:"fa-circle-info"};
+  const t = types[type] || "info";
+  document.getElementById("modalIconWrap").className = `modal-icon-wrap ${t}`;
+  document.getElementById("modalIconI").className = `fa-solid ${icons[t]}`;
+  setText("modalTitle", title);
+  document.getElementById("modalMsg").innerHTML = msg;
+  const cb = document.getElementById("modalConfirmBtn");
+  if (confirmLabel && callback) {
+    cb.textContent = confirmLabel;
+    cb.style.display = "inline-flex";
+    _modalCallback = callback;
+    cb.onclick = () => { closeModal(); _modalCallback && _modalCallback(); _modalCallback = null; };
+  } else { cb.style.display = "none"; _modalCallback = null; }
+  document.getElementById("modalOverlay").classList.add("show");
+}
+function closeModal()    { document.getElementById("modalOverlay").classList.remove("show"); }
+function overlayClose(e) { if (e.target.id === "modalOverlay") closeModal(); }
+
+/* ── TOAST ── */
+function showToast(msg, type="info") {
+  const icons = {success:"fa-check-circle",error:"fa-circle-xmark",warn:"fa-triangle-exclamation",info:"fa-circle-info"};
+  const div = document.createElement("div");
+  div.className = `toast t-${type}`;
+  div.innerHTML = `<i class="fa-solid ${icons[type]||"fa-circle-info"}"></i> ${esc(msg)}`;
+  document.getElementById("toastWrap").appendChild(div);
+  setTimeout(() => { div.style.opacity="0"; div.style.transform="translateY(10px)"; div.style.transition="all .3s"; setTimeout(() => div.remove(), 350); }, 3500);
+}
+
+/* ── LOADER ── */
+function showLoader(msg) { setText("loaderMsg", msg||"Processing…"); document.getElementById("loaderOverlay").classList.add("show"); }
+function hideLoader()    { document.getElementById("loaderOverlay").classList.remove("show"); }
+
+/* ── HELPERS ── */
+function buildAuthHeaders() {
+  const token = sessionStorage.getItem("token") || localStorage.getItem("token") || "";
+  const uid   = sessionStorage.getItem("user_id") || localStorage.getItem("user_id") || "";
+  return token ? {"Authorization":`Bearer ${token}`,"x-user-id":uid} : {};
+}
+
+function normalizeStatus(s) {
+  if (!s) return "pending";
+  const l = s.toLowerCase();
+  if (l.includes("approv") || l.includes("complet")) return "approved";
+  if (l.includes("reject"))                           return "rejected";
+  return "pending";
+}
+
+function setText(id, val) { const el=document.getElementById(id); if(el) el.textContent = val??'—'; }
+
+function formatDate(v) {
+  if (!v) return "—";
+  try { return new Date(v).toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"}); }
+  catch(_) { return String(v).split("T")[0]; }
+}
+function formatDateTime(v) {
+  if (!v) return "—";
+  try { return new Date(v).toLocaleString("en-US",{year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}); }
+  catch(_) { return String(v); }
+}
+function money(v) {
+  const n = Number(v||0);
+  return n>0 ? `LKR ${n.toLocaleString("en-LK",{minimumFractionDigits:2,maximumFractionDigits:2})}` : "Free";
+}
+function esc(v) {
+  return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
+</script>
+</body>
+</html>

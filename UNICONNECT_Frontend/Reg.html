@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniConnect  Register</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #040c30;
+            --navy2: #1f276f;
+            --navy3: #2d3a8c;
+            --accent: #4f7cff;
+            --white: #fff;
+            --g50: #f9fafb;
+            --g100: #f3f4f6;
+            --g200: #e5e7eb;
+            --g400: #9ca3af;
+            --g600: #4b5563;
+            --g900: #111827;
+            --font: 'DM Sans',sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: var(--font);
+            background: #eef2fb;
+            color: var(--g900);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 40px;
+            background: var(--white);
+            border-bottom: 1px solid var(--g200);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .logo img {
+                height: 80px;
+                width: auto;
+                object-fit: contain;
+            }
+
+        .logo-fallback {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg,var(--navy),var(--navy2));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .logo-icon svg {
+                width: 80px;
+                height: 80px;
+                fill: none;
+                stroke: #fff;
+                stroke-width: 2;
+            }
+
+        .logo-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--navy);
+            letter-spacing: -.3px;
+        }
+
+        nav a {
+            margin: 0 12px;
+            text-decoration: none;
+            color: var(--g600);
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: color .2s;
+        }
+
+            nav a:hover {
+                color: var(--navy);
+            }
+
+        .btn-login {
+            padding: 7px 18px;
+            background: linear-gradient(135deg,var(--navy),var(--navy2));
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: var(--font);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: .25s;
+        }
+
+            .btn-login:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 14px rgba(31,39,111,.3);
+            }
+
+        /* ── PAGE SHELL ── */
+        .page-wrap {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 24px;
+        }
+
+        /* ── CARD ── */
+        .main-content {
+            display: grid;
+            grid-template-columns: 210px 1fr;
+            width: 100%;
+            max-width: 1020px;
+            background: var(--white);
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(31,39,111,.18),0 4px 16px rgba(31,39,111,.08);
+        }
+
+        /* ── LEFT HERO ── */
+        .hero {
+            background: linear-gradient(160deg,var(--navy) 0%,var(--navy2) 55%,var(--navy3) 100%);
+            padding: 28px 22px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .hero::before {
+                content: '';
+                position: absolute;
+                width: 280px;
+                height: 280px;
+                border-radius: 50%;
+                border: 1px solid rgba(255,255,255,.06);
+                top: -90px;
+                right: -90px;
+            }
+
+            .hero::after {
+                content: '';
+                position: absolute;
+                width: 160px;
+                height: 160px;
+                border-radius: 50%;
+                background: rgba(79,124,255,.08);
+                bottom: 30px;
+                left: -50px;
+            }
+
+        .hero-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-logo-wrap {
+            width: 30px;
+            height: 30px;
+            background: rgba(255,255,255,.15);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+            .hero-logo-wrap img {
+                width: 26px;
+                height: 26px;
+                object-fit: contain;
+                filter: brightness(0) invert(1);
+            }
+
+            .hero-logo-wrap svg {
+                width: 16px;
+                height: 16px;
+                fill: none;
+                stroke: #fff;
+                stroke-width: 2;
+            }
+
+        .hero-brand-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .hero-title {
+            font-family: 'DM Serif Display',serif;
+            font-size: 26px;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-sub {
+            font-size: 11px;
+            color: rgba(255,255,255,.5);
+            line-height: 1.65;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 10px;
+            border-radius: 10px;
+        }
+
+            .step.active {
+                background: rgba(255,255,255,.12);
+                border: 1px solid rgba(255,255,255,.18);
+            }
+
+            .step.inactive {
+                border: 1px solid transparent;
+            }
+
+        .snum {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step.active .snum {
+            background: #fff;
+            color: var(--navy2);
+        }
+
+        .step.inactive .snum {
+            background: rgba(255,255,255,.1);
+            color: rgba(255,255,255,.35);
+        }
+
+        .step.active .stxt {
+            font-size: 11.5px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .step.inactive .stxt {
+            font-size: 11.5px;
+            color: rgba(255,255,255,.35);
+        }
+
+        .hero-benefits {
+            margin-top: auto;
+            padding-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brow {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 10.5px;
+            color: rgba(255,255,255,.45);
+        }
+
+            .brow i {
+                width: 22px;
+                height: 22px;
+                background: rgba(255,255,255,.07);
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 10px;
+                color: rgba(211,230,253,.7);
+                flex-shrink: 0;
+            }
+
+        /* ── RIGHT FORM ── */
+        .form-col {
+            padding: 22px 28px 20px 24px;
+            overflow-y: auto;
+            background: var(--white);
+        }
+
+        .fh h1 {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--g900);
+            margin-bottom: 2px;
+            letter-spacing: -.3px;
+        }
+
+        .fh p {
+            font-size: 11.5px;
+            color: var(--g400);
+            margin-bottom: 12px;
+        }
+
+        .sep {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--g400);
+            margin: 10px 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .sep::after {
+                content: '';
+                flex: 1;
+                height: 1px;
+                background: var(--g200);
+            }
+
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .grid1 {
+            margin-bottom: 8px;
+        }
+
+        .ig {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+            .ig label {
+                font-size: 10.5px;
+                font-weight: 600;
+                color: var(--g600);
+                letter-spacing: .2px;
+            }
+
+        .iw {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: var(--g50);
+            border: 1px solid var(--g200);
+            border-radius: 8px;
+            transition: .2s;
+        }
+
+            .iw:focus-within {
+                border-color: var(--navy2);
+                background: var(--white);
+                box-shadow: 0 0 0 2.5px rgba(31,39,111,.08);
+            }
+
+            .iw i.fi {
+                padding: 0 9px;
+                color: var(--g400);
+                font-size: 11px;
+                flex-shrink: 0;
+            }
+
+            .iw input, .iw select {
+                flex: 1;
+                border: none;
+                outline: none;
+                background: transparent;
+                font-family: var(--font);
+                font-size: 12px;
+                color: var(--g900);
+                padding: 8px 8px 8px 0;
+            }
+
+                .iw input::placeholder {
+                    color: var(--g400);
+                    font-size: 12px;
+                }
+
+            .iw select {
+                padding-right: 8px;
+                cursor: pointer;
+                font-size: 12px;
+            }
+
+        .eye {
+            padding: 0 10px;
+            cursor: pointer;
+            color: var(--g400);
+            font-size: 11px;
+            flex-shrink: 0;
+            transition: color .2s;
+        }
+
+            .eye:hover {
+                color: var(--navy2);
+            }
+
+        .sbar {
+            height: 3px;
+            background: var(--g200);
+            border-radius: 99px;
+            overflow: hidden;
+            margin: 4px 0 2px;
+        }
+
+        .sfill {
+            height: 100%;
+            width: 0%;
+            border-radius: 99px;
+            transition: width .4s,background .4s;
+        }
+
+        .stext {
+            font-size: 10.5px;
+            color: var(--g400);
+        }
+
+        #pwMsg {
+            font-size: 11px;
+            color: #ef4444;
+            min-height: 14px;
+            margin-top: 2px;
+        }
+
+        .roles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .ropt input {
+            display: none;
+        }
+
+        .ropt span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 11px;
+            border: 1px solid var(--g200);
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--g600);
+            background: var(--g50);
+            cursor: pointer;
+            transition: .2s;
+            user-select: none;
+        }
+
+        .ropt input:checked + span {
+            background: linear-gradient(135deg,var(--navy),var(--navy2));
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .ropt span:hover {
+            border-color: var(--navy2);
+            color: var(--navy2);
+        }
+
+        .ropt input:checked + span:hover {
+            color: #fff;
+        }
+
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--g600);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+            .terms input {
+                margin-top: 1px;
+                accent-color: var(--navy2);
+                cursor: pointer;
+            }
+
+            .terms a {
+                color: var(--navy2);
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+                .terms a:hover {
+                    text-decoration: underline;
+                }
+
+        .brow2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg,var(--navy),var(--navy2));
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+
+            .btn-main:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 18px rgba(31,39,111,.3);
+            }
+
+            .btn-main:active {
+                transform: scale(.99);
+            }
+
+            .btn-main:disabled {
+                opacity: .7;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+
+        .btn-clr {
+            width: 100%;
+            padding: 10px;
+            background: var(--g50);
+            border: 1px solid var(--g200);
+            border-radius: 8px;
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--g600);
+            cursor: pointer;
+            transition: .2s;
+        }
+
+            .btn-clr:hover {
+                background: var(--g100);
+            }
+
+        .login-cta {
+            text-align: center;
+            font-size: 11.5px;
+            color: var(--g400);
+            margin-top: 10px;
+        }
+
+            .login-cta a {
+                color: var(--navy2);
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+                .login-cta a:hover {
+                    text-decoration: underline;
+                }
+
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,.35);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── POPUP ── */
+        .popup {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: rgba(4,12,48,.65);
+            backdrop-filter: blur(10px);
+            animation: fadeIn .3s ease;
+        }
+
+        .popup-content {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+            background: var(--white);
+            border-radius: 24px;
+            border: 1px solid var(--g200);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(31,39,111,.18);
+            animation: popIn .35s ease;
+        }
+
+            .popup-content.success::before {
+                content: '';
+                display: block;
+                height: 5px;
+                background: linear-gradient(90deg,var(--navy),var(--navy2),var(--accent));
+            }
+
+            .popup-content.fail::before {
+                content: '';
+                display: block;
+                height: 5px;
+                background: linear-gradient(90deg,#c0392b,#e74c3c,#ff8a80);
+            }
+
+        .popup-header {
+            padding: 14px 18px 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .popup-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--g200);
+            background: var(--g50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--g400);
+            transition: .25s;
+            line-height: 1;
+        }
+
+            .popup-close:hover {
+                background: var(--navy);
+                color: #fff;
+                border-color: var(--navy);
+                transform: rotate(90deg);
+            }
+
+        .popup-body {
+            padding: 8px 28px 28px;
+            text-align: center;
+        }
+
+        .icon-container {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .success .icon-container {
+            background: linear-gradient(145deg,#D3E6FD,#dfe4f4);
+        }
+
+        .fail .icon-container {
+            background: linear-gradient(145deg,#fce8e8,#fde8e8);
+        }
+
+        .popup-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border-radius: 999px;
+            padding: 3px 10px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .badge-success {
+            background: #eef2ff;
+            color: var(--navy);
+        }
+
+        .badge-fail {
+            background: #fef2f2;
+            color: #c0392b;
+        }
+
+        .badge-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .badge-dot-success {
+            background: var(--navy);
+        }
+
+        .badge-dot-fail {
+            background: #e74c3c;
+        }
+
+        .popup-content h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--g900);
+            margin-bottom: 7px;
+        }
+
+        .popup-content p {
+            font-size: 13px;
+            color: var(--g400);
+            line-height: 1.7;
+        }
+
+        .uid-card {
+            background: linear-gradient(135deg,var(--navy),var(--navy2));
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .uid-card::before {
+                content: '';
+                position: absolute;
+                top: -25px;
+                right: -25px;
+                width: 80px;
+                height: 80px;
+                background: rgba(255,255,255,.05);
+                border-radius: 50%;
+            }
+
+        .uid-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.5);
+            margin-bottom: 5px;
+        }
+
+        .uid-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 3px;
+            font-family: 'Courier New',monospace;
+        }
+
+        .uid-copy-hint {
+            font-size: 10px;
+            color: rgba(255,255,255,.45);
+            margin-top: 5px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+            .uid-copy-hint:hover {
+                color: rgba(255,255,255,.8);
+            }
+
+        .popup-info-box {
+            background: #f0f4ff;
+            border: 1px solid #d6e0ff;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin: 12px 0;
+            text-align: left;
+        }
+
+            .popup-info-box .info-label {
+                font-size: 10px;
+                font-weight: 600;
+                color: var(--navy);
+                text-transform: uppercase;
+                letter-spacing: .06em;
+                margin-bottom: 5px;
+            }
+
+            .popup-info-box .info-value {
+                font-size: 13px;
+                color: #374151;
+                line-height: 1.7;
+            }
+
+                .popup-info-box .info-value strong {
+                    color: var(--navy);
+                }
+
+        .fail .popup-info-box {
+            background: #fff5f5;
+            border-color: #fcd6d6;
+        }
+
+            .fail .popup-info-box .info-label {
+                color: #c0392b;
+            }
+
+        .popup-divider {
+            border: none;
+            border-top: 1px solid var(--g200);
+            margin: 14px 0;
+        }
+
+        .popup-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 11px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: var(--font);
+            cursor: pointer;
+            transition: .25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            border: none;
+        }
+
+        .btn-continue {
+            background: linear-gradient(135deg,var(--navy),var(--navy2));
+            color: #fff;
+        }
+
+            .btn-continue:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 18px rgba(31,39,111,.28);
+            }
+
+        .btn-back {
+            background: var(--g50);
+            color: var(--g400);
+            border: 1px solid var(--g200);
+        }
+
+            .btn-back:hover {
+                background: #eef1ff;
+                border-color: #c7d2fe;
+            }
+
+        .btn-danger {
+            background: linear-gradient(135deg,#c0392b,#e74c3c);
+            color: #fff;
+        }
+
+            .btn-danger:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 18px rgba(231,76,60,.3);
+            }
+
+        .copy-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--navy);
+            color: #fff;
+            padding: 9px 20px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0;
+            transition: .3s;
+            z-index: 999999;
+            pointer-events: none;
+        }
+
+            .copy-toast.show {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+        /* ── FOOTER ── */
+        .footer {
+            background: var(--white);
+            border-top: 1px solid var(--g200);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 16px;
+        }
+
+            .footer-links a {
+                font-size: 12px;
+                color: #121111;
+                text-decoration: none;
+                transition: color .2s;
+            }
+
+                .footer-links a:hover {
+                    color: var(--navy);
+                }
+
+        .footer-copy {
+            font-size: 12px;
+            color: var(--g400);
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeIn {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: translateY(24px) scale(.93)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1)
+            }
+        }
+
+        .form-col {
+            animation: slideIn .45s ease both;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(16px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        .hero {
+            animation: heroIn .5s ease both;
+        }
+
+        @keyframes heroIn {
+            from {
+                opacity: 0;
+                transform: translateX(-8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:860px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                display: none;
+            }
+
+            .form-col {
+                padding: 28px 22px;
+            }
+
+            .navbar {
+                padding: 12px 20px;
+            }
+
+            .footer {
+                padding: 14px 20px;
+            }
+        }
+
+        @media(max-width:500px) {
+            .grid2 {
+                grid-template-columns: 1fr;
+            }
+
+            .brow2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-wrap">
+
+        <!-- NAVBAR -->
+        <header class="navbar">
+            <div class="logo">
+                <!-- If UClogo.png exists, show it; otherwise show text logo -->
+                <img src="images/UClogo.png" alt="UniConnect" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex';" style="height:34px;width:auto;object-fit:contain;">
+                <div class="logo-fallback" id="logoFallback" style="display:none;">
+                    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 3L2 8l10 5 10-5-10-5z" /><path d="M2 16l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg></div>
+                    <span class="logo-name">UniConnect</span>
+                </div>
+            </div>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="#">About Us</a>
+                <a href="#">Contact</a>
+            </nav>
+            <a href="Login.html" class="btn-login">Log In</a>
+        </header>
+
+        <!-- MAIN -->
+        <main>
+            <div class="main-content">
+
+                <!-- LEFT HERO -->
+                <div class="hero">
+                    <div class="hero-brand">
+                        
+                       
+                    </div>
+                    <div style="font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px;position:relative;z-index:1;">Registration Process</div>
+                    <h2 class="hero-title">Join<br>UniConnect.</h2>
+                    <p class="hero-sub">Three quick steps to activate your account and start exploring events on campus.</p>
+                    <div class="steps">
+                        <div class="step active"><div class="snum">1</div><div class="stxt">Register your identity</div></div>
+                        <div class="step inactive"><div class="snum">2</div><div class="stxt">Verify your email</div></div>
+                        <div class="step inactive"><div class="snum">3</div><div class="stxt">Access your dashboard</div></div>
+                    </div>
+                    <div class="hero-benefits">
+                        <div class="brow"><i class="fa-regular fa-calendar"></i>Discover and register for events</div>
+                        <div class="brow"><i class="fa-regular fa-user"></i>Connect with peers & volunteers</div>
+                        <div class="brow"><i class="fa-regular fa-bell"></i>Real-time updates and alerts</div>
+                        <div class="brow"><i class="fa-solid fa-chart-line"></i>Track activities & achievements</div>
+                    </div>
+                </div>
+
+                <!-- RIGHT FORM -->
+                <div class="form-col">
+                    <div class="fh">
+                        <h1>Create Your Account</h1>
+                        <p>Join UniConnect and be part of amazing events.</p>
+                    </div>
+
+                    <form id="rf">
+                        <div class="sep">Personal Info</div>
+                        <div class="grid2">
+                            <div class="ig">
+                                <label>Full Name</label>
+                                <div class="iw"><i class="fa-regular fa-user fi"></i><input type="text" name="full_name" placeholder="Your full name" required></div>
+                            </div>
+                            <div class="ig">
+                                <label>Email Address</label>
+                                <div class="iw"><i class="fa-regular fa-envelope fi"></i><input type="email" name="email" placeholder="you@university.edu" required></div>
+                            </div>
+                        </div>
+                        <div class="grid2">
+                            <div class="ig">
+                                <label>Contact Number</label>
+                                <div class="iw"><i class="fa-solid fa-phone fi"></i><input type="tel" name="contact_number" placeholder="+94 7X XXX XXXX"></div>
+                            </div>
+                            <div class="ig">
+                                <label>Interest</label>
+                                <div class="iw">
+                                    <i class="fa-solid fa-star fi"></i>
+                                    <select name="interest">
+    <option value="">Select interest</option>
+    <option>Technology</option>
+    <option>Sports</option>
+    <option>Music</option>
+    <option>Art</option>
+    <option>Photography</option>
+    <option>Travel</option>
+    <option>Reading</option>
+    <option>Writing</option>
+    <option>Cooking</option>
+    <option>Baking</option>
+    <option>Gardening</option>
+    <option>Fitness</option>
+    <option>Yoga</option>
+    <option>Dancing</option>
+    <option>Gaming</option>
+    <option>Movies</option>
+    <option>Fashion</option>
+    <option>Science</option>
+    <option>Nature</option>
+    <option>Animals</option>
+    <option>History</option>
+    <option>Languages</option>
+    <option>Volunteering</option>
+    <option>Entrepreneurship</option>
+    <option>Graphic Design</option>
+    <option>Programming</option>
+    <option>Crafts</option>
+    <option>Photography</option>
+    <option>Social Media</option>
+    
+</select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sep">Academic Info</div>
+                        <div class="grid1">
+                            <div class="ig">
+                                <label>University</label>
+                                <div class="iw"><i class="fa-solid fa-building-columns fi"></i><input type="text" name="university" placeholder="Your university"></div>
+                            </div>
+                        </div>
+                        <div class="grid2">
+                            <div class="ig">
+                                <label>Faculty</label>
+                                <div class="iw"><i class="fa-solid fa-building fi"></i><input type="text" name="faculty_name" placeholder="Faculty"></div>
+                            </div>
+                            <div class="ig">
+                                <label>Department</label>
+                                <div class="iw"><i class="fa-solid fa-sitemap fi"></i><input type="text" name="department_name" placeholder="Department"></div>
+                            </div>
+                        </div>
+                        <div class="grid1">
+                            <div class="ig">
+                                <label>Student ID</label>
+                                <div class="iw"><i class="fa-solid fa-id-card fi"></i><input type="text" name="studentId" placeholder="e.g. 2024CS001"></div>
+                            </div>
+                        </div>
+
+                        <div class="sep">Security</div>
+                        <div class="grid2">
+                            <div class="ig">
+                                <label>Password</label>
+                                <div class="iw"><i class="fa-solid fa-lock fi"></i><input type="password" name="password" id="pw" placeholder="Create password" minlength="8" required><i class="fa-solid fa-eye eye" onclick="tPw('pw',this)"></i></div>
+                            </div>
+                            <div class="ig">
+                                <label>Confirm Password</label>
+                                <div class="iw"><i class="fa-solid fa-lock fi"></i><input type="password" name="confirm_password" id="cpw" placeholder="Repeat password" minlength="8" required><i class="fa-solid fa-eye eye" onclick="tPw('cpw',this)"></i></div>
+                            </div>
+                        </div>
+                        <div class="sbar"><div id="sf" class="sfill"></div></div>
+                        <p id="st" class="stext">8+ chars · uppercase · number · symbol</p>
+                        <p id="pwMsg"></p>
+
+                        <div style="margin:10px 0 6px;">
+                            <label style="font-size:10.5px;font-weight:600;color:var(--g600);display:block;margin-bottom:6px;letter-spacing:.2px;">Account Role</label>
+                            <div class="roles">
+                                <label class="ropt"><input type="radio" name="role" value="student" checked><span><i class="fa-solid fa-graduation-cap"></i> Participant</span></label>
+                                <label class="ropt"><input type="radio" name="role" value="organizer"><span><i class="fa-solid fa-calendar-plus"></i> Organizer</span></label>
+                                <label class="ropt"><input type="radio" name="role" value="admin"><span><i class="fa-solid fa-shield-halved"></i> Admin</span></label>
+                                
+                            </div>
+                        </div>
+
+                        <div class="terms">
+                            <input type="checkbox" id="tc" required>
+                            <label for="tc">I agree to the <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a></label>
+                        </div>
+
+                        <div class="brow2">
+                            <button type="submit" class="btn-main" id="sb">Register Account</button>
+                            <button type="reset" class="btn-clr">Clear Form</button>
+                        </div>
+                    </form>
+
+                    <p class="login-cta">Already a member? <a href="Login.html">Log in here</a></p>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <p class="footer-copy">© 2026 UniConnect. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms</a>
+                <a href="#">Help Center</a>
+                <a href="#">Contact</a>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- SUCCESS POPUP -->
+    <div id="successPopup" class="popup">
+        <div class="popup-content success">
+            <div class="popup-header"><span class="popup-close" onclick="closePopup('successPopup')">✕</span></div>
+            <div class="popup-body">
+                <div class="icon-container">
+                    <lottie-player src="Animations/success.json" background="transparent" speed="1" style="width:100px;height:100px;" autoplay loop></lottie-player>
+                </div>
+                <span class="popup-badge badge-success"><span class="badge-dot badge-dot-success"></span> Registration Successful</span>
+                <h2>Welcome 🎉</h2>
+                <p>Your UniConnect account is ready. Keep your User ID safe - you'll need it to log in and register for events.</p>
+                <div class="uid-card" id="uidCard">
+                    <div class="uid-label">Your UniConnect User ID</div>
+                    <div class="uid-value" id="uidDisplay">—</div>
+                    <div class="uid-copy-hint" onclick="copyUserId()"><i class="fa-regular fa-copy"></i> Tap to copy</div>
+                </div>
+                <div class="popup-info-box">
+                    <div class="info-label">Account Details</div>
+                    <div id="successUserInfo" class="info-value"></div>
+                </div>
+                <hr class="popup-divider">
+                <div class="popup-actions">
+                    <button onclick="openEmailApp()" class="btn-action btn-back">📩 Open email app</button>
+                    <button onclick="goDashboard()" class="btn-action btn-continue">Continue to dashboard →</button>
+                    <button onclick="stayOnForm()" class="btn-action btn-back">← Register another account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAIL POPUP -->
+    <div id="failPopup" class="popup">
+        <div class="popup-content fail">
+            <div class="popup-header"><span class="popup-close" onclick="closePopup('failPopup')">✕</span></div>
+            <div class="popup-body">
+                <div class="icon-container">
+                    <svg width="48" height="48" viewBox="0 0 52 52" fill="none">
+                        <circle cx="26" cy="26" r="26" fill="#fce8e8" />
+                        <path d="M17 17L35 35" stroke="#e74c3c" stroke-width="3" stroke-linecap="round" />
+                        <path d="M35 17L17 35" stroke="#e74c3c" stroke-width="3" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <span class="popup-badge badge-fail"><span class="badge-dot badge-dot-fail"></span> Registration Failed</span>
+                <h2>Something Went Wrong</h2>
+                <p>We couldn't create your account. Please check your details and try again.</p>
+                <div class="popup-info-box">
+                    <div class="info-label">Error Details</div>
+                    <div class="info-value" id="failMsg">An unexpected error occurred.</div>
+                </div>
+                <hr class="popup-divider">
+                <div class="popup-actions">
+                    <button onclick="closePopup('failPopup')" class="btn-action btn-danger">Try Again</button>
+                    <button onclick="closePopup('failPopup')" class="btn-action btn-back">← Go Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COPY TOAST -->
+    <div class="copy-toast" id="copyToast"><i class="fa-solid fa-check"></i> User ID copied!</div>
+
+    <script>
+        let _email = '', _uid = '';
+
+        function formatUserId(role, id) {
+            const p = { student: 'UCP', organizer: 'UCO', admin: 'UCA', academic: 'UCAC' };
+            return (p[role] || 'UCU') + String(id).padStart(4, '0');
+        }
+        function copyUserId() {
+            if (!_uid) return;
+            navigator.clipboard.writeText(_uid).then(() => {
+                const t = document.getElementById('copyToast');
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 2000);
+            });
+        }
+        function showPopup(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        function closePopup(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
+        function goDashboard() { window.location.href = '/HomePage.html'; }
+        function stayOnForm() {
+            closePopup('successPopup');
+            setTimeout(() => {
+                document.getElementById('rf').reset();
+                document.getElementById('pwMsg').innerText = '';
+                document.getElementById('sf').style.width = '0%';
+                document.getElementById('st').innerText = '8+ chars · uppercase · number · symbol';
+                document.getElementById('st').style.color = '';
+            }, 100);
+        }
+        function tPw(id, icon) {
+            const i = document.getElementById(id);
+            if (i.type === 'password') { i.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+            else { i.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+        }
+        function openEmailApp() {
+            if (!_email) return;
+            const s = encodeURIComponent('Welcome to UniConnect 🎉');
+            const b = encodeURIComponent('Registration successful!\nYour UniConnect User ID: ' + _uid);
+            window.location.href = 'mailto:' + _email + '?subject=' + s + '&body=' + b;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('rf');
+            const pwInput = document.getElementById('pw');
+            const sf = document.getElementById('sf');
+            const st = document.getElementById('st');
+            const msg = document.getElementById('pwMsg');
+
+            pwInput.addEventListener('input', function () {
+                const v = this.value;
+                const s = [v.length >= 8, /[A-Z]/.test(v), /[0-9]/.test(v), /[^A-Za-z0-9]/.test(v)].filter(Boolean).length;
+                const m = [
+                    { w: '0%', c: '#e5e7eb', t: '8+ chars · uppercase · number · symbol' },
+                    { w: '25%', c: '#ef4444', t: 'Weak password' },
+                    { w: '50%', c: '#f59e0b', t: 'Fair password' },
+                    { w: '75%', c: '#22c55e', t: 'Strong password' },
+                    { w: '100%', c: '#3b82f6', t: 'Very strong password' }
+                ][s];
+                sf.style.width = m.w; sf.style.background = m.c;
+                st.innerText = m.t; st.style.color = m.c;
+            });
+
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+                const sb = document.getElementById('sb');
+                const pw = form.password.value, cp = form.confirm_password.value;
+                const role = document.querySelector('input[name="role"]:checked')?.value || 'student';
+                msg.innerText = '';
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.value)) { msg.innerText = 'Invalid email format.'; return; }
+                if (form.contact_number.value && !/^[0-9]{9,15}$/.test(form.contact_number.value)) { msg.innerText = 'Invalid phone (9–15 digits).'; return; }
+                if (pw !== cp) { msg.innerText = 'Passwords do not match!'; return; }
+                if (pw.length < 8 || !/[A-Z]/.test(pw) || !/[0-9]/.test(pw) || !/[^A-Za-z0-9]/.test(pw)) { msg.innerText = 'Password needs uppercase, number, symbol & 8+ chars.'; return; }
+                sb.disabled = true; sb.innerHTML = '<div class="spinner"></div> Creating Account…';
+                const data = {
+                    full_name: form.full_name.value.trim(),
+                    email: form.email.value.trim(),
+                    password: pw, role,
+                    faculty_name: form.faculty_name.value.trim(),
+                    department_name: form.department_name.value.trim(),
+                    contact_number: form.contact_number.value.trim(),
+                    university: form.university.value.trim(),
+                    university_id: form.studentId.value.trim(),
+                    interest: form.interest.value
+                };
+                try {
+                    const res = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                    let result = {}; try { result = await res.json(); } catch { }
+                    if (res.ok) {
+                        const rawId = result.user?.id || result.userId || result.id || 0;
+                        _uid = formatUserId(role, rawId); _email = data.email;
+                        document.getElementById('uidDisplay').textContent = _uid;
+                        const rl = { student: 'Participant', organizer: 'Organizer', admin: 'Admin', academic: 'Academic' }[role] || role;
+                        document.getElementById('successUserInfo').innerHTML = `Name: <strong>${data.full_name || '—'}</strong><br>Email: <strong>${data.email}</strong><br>Role: <strong>${rl}</strong>`;
+                        form.reset(); sf.style.width = '0%'; st.innerText = '8+ chars · uppercase · number · symbol'; st.style.color = '';
+                        showPopup('successPopup');
+                    } else {
+                        const m = result;
+                        let errMsg = 'Registration failed. Please try again.';
+                        if (m.field === 'email' || m.message?.toLowerCase().includes('email')) errMsg = 'This email is already registered.';
+                        else if (m.field === 'studentId' || m.message?.toLowerCase().includes('student')) errMsg = 'Student ID already in use.';
+                        else if (m.message) errMsg = m.message;
+                        document.getElementById('failMsg').innerText = errMsg;
+                        showPopup('failPopup');
+                    }
+                } catch {
+                    document.getElementById('failMsg').innerText = 'Server not responding. Please try again.';
+                    showPopup('failPopup');
+                } finally { sb.disabled = false; sb.innerHTML = 'Register Account'; }
+            });
+        });
+    </script>
+</body>
+</html>

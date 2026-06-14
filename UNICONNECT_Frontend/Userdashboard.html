@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect — Student Dashboard</title>
+<script src="uc-translate.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+<style>
+/* === GOOGLE TRANSLATE HIDE === */
+.goog-te-banner-frame,.skiptranslate{display:none!important}
+body{top:0!important}
+#google_translate_element{display:none}
+
+/* === CSS VARS === */
+:root{
+  --navy-deep:#0d0934;--navy-mid:#1e1b4b;--navy-light:#312e81;
+  --accent-blue:#3b82f6;--accent-teal:#0ea5e9;
+  --bg-body:#f3f4f6;--surface:#fff;--surface-alt:#f8fafc;
+  --text-main:#1e293b;--text-muted:#64748b;--text-light:#94a3b8;
+  --success:#10b981;--success-bg:#d1fae5;
+  --warning:#f59e0b;--warning-bg:#fef3c7;
+  --danger:#ef4444;--danger-bg:#fee2e2;
+  --info:#3b82f6;--info-bg:#dbeafe;
+  --purple:#8b5cf6;--purple-bg:#ede9fe;
+  --shadow-sm:0 1px 2px 0 rgba(0,0,0,.05);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05);
+  --border:#e2e8f0;
+  --primary:#1f276f;--primary-dark:#040c30;
+  --trans-fast:0.2s ease;--trans-smooth:0.3s cubic-bezier(.4,0,.2,1);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg-body);color:var(--text-main);min-height:100vh;overflow-x:hidden;display:flex}
+.container{display:flex;width:100%;min-height:100vh}
+
+/* === SIDEBAR === */
+.sidebar{width:260px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;z-index:50;box-shadow:4px 0 24px rgba(0,0,0,.02)}
+.logo-area{height:72px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);padding:0 20px;background:#fff}
+.logo-area img{max-width:130px;height:auto;object-fit:contain}
+.logo-text{font-size:19px;font-weight:800;color:var(--navy-deep);letter-spacing:-.03em}
+.logo-text span{color:var(--accent-blue)}
+.sidebar-user{display:flex;align-items:center;gap:10px;margin:18px 16px 8px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:12px;transition:var(--trans-fast)}
+.sidebar-user:hover{border-color:var(--accent-blue);box-shadow:var(--shadow-sm)}
+.sidebar-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--navy-deep),var(--accent-blue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;overflow:hidden}
+.sidebar-avatar img{width:100%;height:100%;object-fit:cover}
+.sidebar-user-info{line-height:1.4;overflow:hidden}
+.sidebar-user-info .sname{font-weight:600;color:var(--text-main);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user-info .srole{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:var(--info-bg);color:var(--accent-blue);padding:2px 7px;border-radius:99px;display:inline-block;margin-top:2px}
+.nav-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-light);padding:0 24px;margin:10px 0 3px}
+.menu{list-style:none;display:flex;flex-direction:column;gap:2px;padding:0 12px}
+.menu li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:var(--trans-fast);color:#050d33;font-weight:500;font-size:14px;position:relative}
+.menu li i{width:18px;font-size:14px;text-align:center;transition:var(--trans-fast)}
+.menu li:hover{background:var(--surface-alt);color:var(--navy-deep)}
+.menu li.active{background:var(--navy-deep);color:#fff;box-shadow:0 4px 12px rgba(13,9,52,.3)}
+.menu li.active i{color:#fff}
+.menu-badge{position:absolute;right:10px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:99px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+
+/* === LANGUAGE PICKER === */
+.sidebar-lang{padding:10px 16px;margin:4px 0}
+.sidebar-lang label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;padding-left:2px}
+.lang-select-wrap{position:relative;display:flex;align-items:center}
+.lang-select-wrap i{position:absolute;left:11px;color:var(--accent-blue);font-size:14px;pointer-events:none;z-index:1}
+.sidebar-lang select{width:100%;padding:10px 12px 10px 34px;border-radius:10px;border:1.5px solid var(--border);background:#f8fafc;color:var(--text-main);font-size:13px;font-weight:600;cursor:pointer;outline:none;font-family:inherit;transition:var(--trans-fast);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.sidebar-lang select:hover{border-color:var(--accent-blue);background:#fff}
+.sidebar-lang select:focus{border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(59,130,246,.15);background:#fff}
+
+.sidebar-logout{display:flex;align-items:center;gap:10px;margin:8px 16px 20px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--danger);font-weight:500;font-size:13px;transition:var(--trans-fast);background:transparent;border:1px solid transparent}
+.sidebar-logout:hover{background:var(--danger-bg);border-color:#fecaca}
+
+/* === MAIN === */
+.main{flex:1;padding:28px;overflow-y:auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.greeting-area h2{font-size:26px;font-weight:800;color:var(--navy-deep);margin-bottom:3px;letter-spacing:-.02em}
+.greeting-area p{color:var(--text-muted);font-size:14px}
+.topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.browse-events-btn{display:flex;align-items:center;gap:7px;background:var(--navy-deep);color:#fff;border:none;padding:9px 18px;border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;transition:var(--trans-fast);box-shadow:0 4px 12px rgba(13,9,52,.25);text-decoration:none}
+.browse-events-btn:hover{background:var(--navy-mid);transform:translateY(-2px)}
+
+/* === PROFILE CHIP === */
+.topbar-user{display:flex;align-items:center;gap:10px;background:var(--surface);padding:6px 14px 6px 6px;border-radius:50px;border:1px solid var(--border);box-shadow:var(--shadow-sm);transition:var(--trans-fast);cursor:default}
+.topbar-user:hover{box-shadow:var(--shadow-md)}
+.topbar-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--navy-deep),var(--accent-blue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;overflow:hidden;flex-shrink:0}
+.topbar-avatar img{width:100%;height:100%;object-fit:cover}
+.topbar-user-info{display:flex;flex-direction:column;line-height:1.25}
+.tname{font-weight:700;color:var(--text-main);font-size:13px}
+.tmeta{font-size:11px;color:var(--text-muted)}
+.tmeta2{font-size:10px;color:var(--text-light)}
+
+/* === STATS === */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:36px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm);transition:var(--trans-smooth)}
+.stat-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--accent-blue)}
+.stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.stat-icon.blue{background:var(--info-bg);color:var(--info)}
+.stat-icon.green{background:var(--success-bg);color:var(--success)}
+.stat-icon.amber{background:var(--warning-bg);color:var(--warning)}
+.stat-icon.purple{background:var(--purple-bg);color:var(--purple)}
+.stat-icon.red{background:var(--danger-bg);color:var(--danger)}
+.stat-info h3{font-size:22px;font-weight:800;color:var(--navy-deep);line-height:1;margin-bottom:2px}
+.stat-info p{font-size:12px;color:var(--text-muted);font-weight:500}
+
+/* === SECTIONS === */
+.dashboard-section{margin-bottom:44px}
+.section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px}
+.section-header h3{font-size:19px;font-weight:700;color:var(--navy-deep)}
+.section-header p{font-size:13px;color:var(--text-muted);margin-top:3px}
+.view-btn{border:none;padding:9px 18px;border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;color:#fff;background:var(--navy-deep);transition:var(--trans-fast);box-shadow:0 4px 12px rgba(13,9,52,.15)}
+.view-btn:hover{background:var(--navy-mid);transform:translateY(-2px)}
+
+/* === EVENT CARDS === */
+.event-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px}
+.event-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:var(--trans-smooth);box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
+.event-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--accent-blue)}
+.event-image-box{position:relative;height:170px;overflow:hidden}
+.event-image-box img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.event-card:hover .event-image-box img{transform:scale(1.05)}
+.event-badge{position:absolute;top:10px;left:10px;padding:5px 12px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#fff}
+.event-badge.open{background:linear-gradient(135deg,#10b981,#059669)}
+.event-badge.upcoming{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.reg-checkmark{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:8px;background:rgba(16,185,129,.9);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px}
+.event-content{padding:18px;flex:1;display:flex;flex-direction:column}
+.event-tags{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.event-tags span{padding:3px 9px;border-radius:6px;background:var(--surface-alt);border:1px solid var(--border);color:var(--text-muted);font-size:10px;font-weight:600}
+.event-content h3{font-size:16px;font-weight:700;color:var(--navy-deep);margin-bottom:7px;line-height:1.3}
+.event-desc{color:var(--text-muted);font-size:12px;line-height:1.6;margin-bottom:14px;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.event-meta{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;padding-top:14px;border-top:1px solid var(--surface-alt)}
+.event-meta div{display:flex;align-items:center;gap:8px;color:var(--text-main);font-size:12px;font-weight:500}
+.event-meta i{color:var(--accent-blue);width:14px}
+.event-actions{display:flex;gap:8px}
+.details-btn,.register-btn{flex:1;padding:9px;border-radius:10px;font-weight:600;cursor:pointer;transition:var(--trans-fast);font-size:12px;text-align:center;border:none}
+.details-btn{background:var(--surface-alt);color:var(--navy-deep)}
+.details-btn:hover{background:#e2e8f0}
+.register-btn{background:var(--navy-deep);color:#fff;box-shadow:0 4px 12px rgba(13,9,52,.2)}
+.register-btn:hover{background:var(--navy-mid);transform:translateY(-1px)}
+.register-btn.registered{background:var(--success);box-shadow:0 4px 12px rgba(16,185,129,.25);cursor:default}
+
+/* === HERO BANNER === */
+.hero-banner{background:linear-gradient(135deg,var(--navy-deep),var(--navy-light));border-radius:22px;padding:36px;display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden;color:#fff;box-shadow:0 20px 40px -10px rgba(13,9,52,.4);margin-bottom:36px}
+.hero-banner::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(59,130,246,.15);pointer-events:none}
+.hero-text h2{font-size:22px;font-weight:800;margin-bottom:8px}
+.hero-text p{color:rgba(255,255,255,.8);font-size:14px;max-width:480px;line-height:1.6}
+.hero-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.hero-btn-primary{background:#fff;color:var(--navy-deep);border:none;padding:11px 22px;border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;transition:var(--trans-fast)}
+.hero-btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.hero-btn-secondary{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:11px 22px;border-radius:11px;font-weight:600;font-size:13px;cursor:pointer;transition:var(--trans-fast)}
+.hero-btn-secondary:hover{background:rgba(255,255,255,.25)}
+.hero-stats{display:flex;gap:28px;flex-shrink:0}
+.hero-stat{text-align:center}
+.hero-stat h3{font-size:30px;font-weight:800}
+.hero-stat p{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px}
+
+/* === LOWER GRID === */
+.lower-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px;margin-bottom:28px}
+.dashboard-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;min-height:240px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.card-head h3{font-size:15px;font-weight:700;color:var(--navy-deep)}
+.card-count{background:var(--info-bg);color:var(--info);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px}
+
+/* === MY REGISTRATIONS LIST ITEMS === */
+.my-reg-item{display:flex;align-items:center;gap:10px;padding:9px;border-radius:11px;background:var(--surface-alt);border:1px solid transparent;margin-bottom:7px;transition:var(--trans-fast);cursor:pointer}
+.my-reg-item:hover{border-color:var(--border);background:#fff;box-shadow:var(--shadow-sm)}
+.my-reg-item img{width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0}
+.my-reg-info{flex:1;overflow:hidden}
+.my-reg-info h4{font-size:12px;font-weight:700;color:var(--navy-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.my-reg-info span{font-size:11px;color:var(--text-muted)}
+.reg-status{font-size:9px;padding:2px 8px;border-radius:99px;font-weight:700;text-transform:uppercase;flex-shrink:0}
+.reg-status.confirmed{background:var(--success-bg);color:var(--success)}
+.reg-status.approved{background:var(--success-bg);color:var(--success)}
+.reg-status.pending{background:var(--warning-bg);color:var(--warning)}
+.reg-status.cancelled{background:var(--danger-bg);color:var(--danger)}
+.reg-status.rejected{background:var(--danger-bg);color:var(--danger)}
+.reg-view-all{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:4px;padding:8px;border-radius:9px;background:#f0f4ff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;font-weight:700;text-decoration:none}
+
+/* === NOTIFICATIONS === */
+.note-item{display:flex;gap:9px;align-items:flex-start;padding:10px;border-radius:10px;margin-bottom:8px;font-size:12px;line-height:1.5;cursor:pointer}
+.note-item.unread{background:var(--info-bg);color:var(--navy-light);border:1px solid #bfdbfe}
+.note-item.read{background:var(--surface-alt);color:var(--text-muted);border:1px solid var(--border)}
+.note-item i{margin-top:2px;flex-shrink:0}
+
+/* === TODAY / VOLUNTEER === */
+.today-item,.vol-item{padding:10px;border-radius:11px;background:var(--surface-alt);border:1px solid transparent;margin-bottom:8px;transition:var(--trans-fast);cursor:pointer}
+.today-item:hover,.vol-item:hover{border-color:var(--border);background:#fff}
+.today-item-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px}
+.today-item h4,.vol-item h4{font-size:12px;font-weight:700;color:var(--navy-deep)}
+.today-item span,.vol-item p{font-size:11px;color:var(--text-muted)}
+.vol-item p{margin-bottom:7px}
+.today-dot{width:7px;height:7px;border-radius:50%;background:var(--success);flex-shrink:0;margin-top:4px}
+.vol-apply-btn{border:1px solid var(--navy-deep);background:transparent;color:var(--navy-deep);padding:4px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;transition:var(--trans-fast)}
+.vol-apply-btn:hover{background:var(--navy-deep);color:#fff}
+
+/* === EMPTY / LOADING === */
+.empty-box,.empty-small{padding:36px 16px;text-align:center;color:var(--text-muted);font-size:13px;background:var(--surface-alt);border-radius:14px;border:1px dashed var(--border)}
+.empty-small{padding:18px;font-size:12px}
+.empty-box i{font-size:28px;display:block;margin-bottom:10px;color:var(--text-light)}
+
+/* === TICKET ITEMS === */
+.ticket-item{display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:11px;background:var(--surface-alt);border:1px solid transparent;margin-bottom:8px;transition:var(--trans-fast)}
+.ticket-item:hover{border-color:var(--border);background:#fff;box-shadow:var(--shadow-sm)}
+.ticket-icon-box{width:40px;height:40px;border-radius:8px;background:var(--info-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ticket-info{flex:1;overflow:hidden}
+.ticket-info h4{font-size:12px;font-weight:700;color:var(--navy-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ticket-info span{font-size:11px;color:var(--text-muted)}
+.ticket-actions{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.cancel-ticket-btn{font-size:10px;font-weight:700;color:var(--danger);background:var(--danger-bg);border:1px solid #fecaca;padding:3px 9px;border-radius:7px;cursor:pointer;transition:var(--trans-fast)}
+.cancel-ticket-btn:hover{background:var(--danger);color:#fff}
+
+/* === ACTIVITY LOG === */
+.activity-item{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:11px;background:var(--surface-alt);border:1px solid transparent;margin-bottom:7px;transition:var(--trans-fast)}
+.activity-item:hover{border-color:var(--border);background:#fff}
+.activity-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:1px}
+.activity-info{flex:1;overflow:hidden}
+.activity-info h4{font-size:12px;font-weight:700;color:var(--navy-deep);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.activity-info span{font-size:11px;color:var(--text-muted)}
+
+/* === REGISTRATION MODAL === */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:none;justify-content:center;align-items:center;padding:20px;z-index:999}
+.modal-box{width:100%;max-width:960px;background:#fff;border-radius:26px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 20px 60px rgba(0,0,0,.15);position:relative}
+.close-btn{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:9px;background:#f3f4f6;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;z-index:10;font-size:15px;color:#555}
+.close-btn:hover{background:var(--primary);color:#fff}
+.modal-left{padding:32px 28px;background:#f9fafb;border-right:1px solid #eee;display:flex;flex-direction:column;gap:14px}
+.modal-content h2{font-size:22px;font-weight:800;margin-bottom:8px;line-height:1.3;color:var(--navy-deep)}
+.modal-content p{color:var(--text-muted);line-height:1.6;font-size:13px}
+.event-meta-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.event-meta-list .tag{background:#eef2ff;color:#1f276f;font-size:12px;padding:9px 12px;border-radius:11px;display:flex;align-items:center;gap:7px;font-weight:500}
+.modal-right{padding:28px;background:#fff;display:flex;flex-direction:column;gap:14px;overflow-y:auto;max-height:90vh}
+.modal-image{width:100%;height:190px;object-fit:cover;border-radius:14px;display:block}
+.event-info h2{font-size:18px;font-weight:700;margin-bottom:5px;color:var(--navy-deep)}
+.event-info p{color:var(--text-muted);font-size:13px}
+.form-title{font-size:14px;font-weight:700;color:#111827;margin-bottom:3px}
+.form-step{display:flex;flex-direction:column;gap:10px}
+.input-group{position:relative;display:flex;align-items:center;width:100%}
+.input-group>i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:13px;pointer-events:none;z-index:1}
+.input-group.textarea>i{top:14px;transform:none}
+.register-form input,.register-form select,.register-form textarea{width:100%;padding:12px 12px 12px 40px;border-radius:11px;border:1.5px solid #e5e7eb;background:#f9fafb;font-size:13px;font-family:inherit;color:var(--text-main);outline:none;transition:.2s;appearance:none;-webkit-appearance:none}
+.register-form textarea{padding-top:12px;min-height:80px;resize:vertical}
+.register-form input:focus,.register-form select:focus,.register-form textarea:focus{border-color:#4f7cff;background:#fff;box-shadow:0 0 0 3px rgba(79,124,255,.15)}
+.register-form input[readonly]{background:#f0f4ff;color:#555;cursor:not-allowed}
+.input-group select{padding-right:32px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.form-btn{width:100%;padding:12px 18px;border:none;border-radius:11px;font-weight:600;font-size:13px;cursor:pointer;transition:.25s;background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;display:flex;align-items:center;justify-content:center;gap:7px}
+.form-btn:hover{transform:translateY(-2px);opacity:.92}
+.form-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.form-note{padding:12px;border-radius:11px;background:#eef2ff;border:1px solid #e0e7ff;font-size:12px;color:#475569;line-height:1.6}
+
+/* === POPUP === */
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(4px);display:none;z-index:9999}
+.dash-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:92%;max-width:400px;background:#fff;border-radius:20px;padding:28px 22px 22px;box-shadow:0 15px 40px rgba(0,0,0,.15);display:none;z-index:10000;text-align:center;border:1px solid #e5e7eb}
+.dash-popup h2{font-size:18px;margin-top:10px;color:#111827}
+.dash-popup p{color:#6b7280;font-size:13px;line-height:1.6;margin-top:7px}
+.lottie-box{width:64px;height:64px;margin:0 auto 8px}
+.popup-close-x{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:8px;background:#f3f4f6;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;font-size:13px}
+.popup-close-x:hover{background:#1f276f;color:#fff}
+.popup-actions{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+.popup-actions button{width:100%;padding:10px;border:none;border-radius:9px;font-weight:600;font-size:13px;cursor:pointer;transition:.2s}
+.popup-primary{background:#1f276f;color:#fff}
+.popup-secondary{background:#f3f4f6;color:#111827}
+
+/* =========================================================
+   === RECOMMENDATION POPUP ================================
+   ========================================================= */
+#recPopupOverlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(8px);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:16px;
+  z-index:1200;
+  animation:recFadeIn .25s ease;
+}
+#recPopupOverlay.open{display:flex}
+@keyframes recFadeIn{from{opacity:0}to{opacity:1}}
+
+.rec-popup-box{
+  width:100%;
+  max-width:860px;
+  max-height:90vh;
+  background:#fff;
+  border-radius:26px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 30px 80px rgba(0,0,0,.25);
+  animation:recSlideUp .3s cubic-bezier(.4,0,.2,1);
+}
+@keyframes recSlideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* Header gradient */
+.rec-popup-header{
+  background:linear-gradient(135deg,var(--navy-deep) 0%,#2563eb 100%);
+  padding:22px 26px 18px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-shrink:0;
+}
+.rec-popup-header-left h2{
+  font-size:19px;font-weight:800;color:#fff;margin:0 0 4px;
+  display:flex;align-items:center;gap:9px;
+}
+.rec-popup-header-left p{font-size:12px;color:rgba(255,255,255,.75);margin:0}
+.rec-popup-close{
+  width:34px;height:34px;border-radius:9px;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  color:#fff;font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:.2s;flex-shrink:0;margin-top:2px;
+}
+.rec-popup-close:hover{background:rgba(255,255,255,.3)}
+
+/* Interest chips row */
+.rec-interests-row{
+  display:flex;align-items:center;gap:7px;
+  padding:12px 26px;
+  background:#f0f5ff;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+  flex-wrap:wrap;
+}
+.rec-interests-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.rec-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  background:#dbeafe;color:#1e40af;
+  border:1px solid #bfdbfe;border-radius:20px;
+  padding:3px 11px;font-size:11px;font-weight:700;
+}
+.rec-chip i{font-size:10px}
+
+/* Scrollable body */
+.rec-popup-body{
+  padding:20px 26px 24px;
+  overflow-y:auto;
+  flex:1;
+}
+
+/* 2-column mini cards (show 2 by default) */
+.rec-cards-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:16px;
+}
+@media(max-width:600px){.rec-cards-grid{grid-template-columns:1fr}}
+
+.rec-event-card{
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  background:var(--surface-alt);
+  transition:var(--trans-smooth);
+  display:flex;
+  flex-direction:column;
+}
+.rec-event-card:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--shadow-lg);
+  border-color:var(--accent-blue);
+  background:#fff;
+}
+
+.rec-card-img{
+  height:110px;
+  object-fit:cover;
+  width:100%;
+  display:block;
+}
+.rec-card-img-placeholder{
+  height:110px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;
+  background:linear-gradient(135deg,#dbeafe,#ede9fe);
+}
+.rec-card-body{padding:12px 14px 14px;flex:1;display:flex;flex-direction:column}
+
+.rec-card-cat{
+  font-size:9px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--accent-blue);
+  background:var(--info-bg);border-radius:6px;
+  padding:2px 7px;display:inline-block;margin-bottom:6px;
+}
+.rec-top-badge{
+  display:inline-block;
+  background:#fef3c7;color:#92400e;
+  font-size:9px;font-weight:800;
+  padding:2px 7px;border-radius:6px;
+  margin-left:5px;
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.rec-card-title{
+  font-size:13px;font-weight:700;color:var(--navy-deep);
+  margin-bottom:6px;line-height:1.35;
+}
+.rec-card-meta{
+  font-size:11px;color:var(--text-muted);
+  display:flex;flex-direction:column;gap:3px;margin-bottom:8px;
+}
+.rec-card-meta span{display:flex;align-items:center;gap:5px}
+.rec-card-meta i{color:var(--accent-blue);width:12px;font-size:10px}
+
+/* Score bar */
+.rec-score-wrap{margin-bottom:8px}
+.rec-score-top{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-bottom:3px}
+.rec-score-track{height:5px;background:#e2e8f0;border-radius:5px;overflow:hidden}
+.rec-score-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#3b82f6,#8b5cf6)}
+
+/* Reason tag */
+.rec-reason{
+  font-size:10px;color:#1d4ed8;
+  background:#eff6ff;
+  border-left:3px solid #3b82f6;
+  padding:4px 8px;border-radius:0 7px 7px 0;
+  margin-bottom:10px;line-height:1.4;
+}
+
+.rec-card-actions{display:flex;gap:7px;margin-top:auto}
+.rec-btn-reg{
+  flex:1;background:var(--navy-deep);color:#fff;
+  border:none;border-radius:9px;padding:7px 10px;
+  font-size:11px;font-weight:700;cursor:pointer;
+  transition:var(--trans-fast);
+}
+.rec-btn-reg:hover{background:var(--navy-mid)}
+.rec-btn-detail{
+  background:var(--surface-alt);color:var(--navy-deep);
+  border:1px solid var(--border);border-radius:9px;
+  padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;
+  transition:var(--trans-fast);
+}
+.rec-btn-detail:hover{background:#e2e8f0}
+
+/* See all / footer */
+.rec-popup-footer{
+  display:flex;align-items:center;justify-content:center;
+  padding:0 26px 20px;gap:10px;flex-shrink:0;
+}
+.rec-see-all-btn{
+  width:100%;padding:11px;
+  background:linear-gradient(135deg,var(--navy-deep),#2563eb);
+  color:#fff;border:none;border-radius:12px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:var(--trans-fast);
+}
+.rec-see-all-btn:hover{opacity:.9;transform:translateY(-1px)}
+
+/* Trigger button on dashboard hero */
+.rec-trigger-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,#f59e0b,#d97706);
+  color:#fff;border:none;padding:11px 22px;border-radius:11px;
+  font-weight:700;font-size:13px;cursor:pointer;
+  transition:var(--trans-fast);
+  box-shadow:0 4px 14px rgba(245,158,11,.35);
+  position:relative;
+}
+.rec-trigger-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(245,158,11,.4)}
+.rec-trigger-badge{
+  position:absolute;top:-7px;right:-7px;
+  background:#ef4444;color:#fff;
+  font-size:9px;font-weight:800;
+  min-width:18px;height:18px;border-radius:99px;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid #fff;
+}
+
+/* All-recs expanded grid (inside popup when "See all" clicked) */
+.rec-all-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+@media(max-width:600px){.rec-all-grid{grid-template-columns:1fr}}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+/* === RESPONSIVE === */
+@media(max-width:1100px){
+  .sidebar{width:72px}
+  .sidebar-user-info,.logo-area img,.menu li span,.sidebar-logout span,.nav-label,.sidebar-lang label,.sidebar-lang select{display:none}
+  .sidebar-user{justify-content:center;padding:8px}
+  .menu li{justify-content:center;padding:12px}
+  .logo-area{justify-content:center}
+  .logo-text{display:none}
+  .hero-stats{display:none}
+}
+@media(max-width:900px){
+  .container{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;padding:8px 16px;border-bottom:1px solid var(--border);border-right:none;overflow-x:auto;flex-shrink:0}
+  .logo-area,.sidebar-user{display:none}
+  .menu{flex-direction:row;width:100%;justify-content:flex-start}
+  .sidebar-logout,.sidebar-lang{display:none}
+  .menu li{padding:7px 10px}
+  .main{padding:16px}
+  .hero-banner{flex-direction:column;align-items:flex-start;gap:18px}
+  .hero-stats{display:none}
+  .modal-box{grid-template-columns:1fr;max-height:95vh;overflow-y:auto}
+  .modal-left{border-right:none;border-bottom:1px solid #eee}
+}
+@media(max-width:600px){
+  .main{padding:12px}
+  .topbar{flex-direction:column;align-items:flex-start;gap:12px}
+  .topbar-actions{width:100%;flex-wrap:wrap}
+  .stats{grid-template-columns:1fr 1fr}
+  .event-grid{grid-template-columns:1fr}
+  .section-header{flex-direction:column;align-items:flex-start;gap:10px}
+}
+</style>
+
+<div id="google_translate_element"></div>
+<script>
+function googleTranslateElementInit(){
+  new google.translate.TranslateElement({pageLanguage:'en',includedLanguages:'en,ta,si',autoDisplay:false},'google_translate_element');
+}
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</head>
+
+<body>
+<div class="container">
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <img src="images/UClogo.png" alt="UniConnect" onerror="this.style.display='none';document.getElementById('logoText').style.display='block'">
+    <span class="logo-text" id="logoText" style="display:none">Uni<span>Connect</span></span>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebarAvatar">--</div>
+    <div class="sidebar-user-info">
+      <div class="sname" id="sidebarName">Loading…</div>
+      <div class="srole">Student</div>
+    </div>
+  </div>
+  <span class="nav-label">Main Menu</span>
+  <ul class="menu" id="mainMenu">
+    <li class="active"><i class="fa-solid fa-house"></i><span>Dashboard</span></li>
+    <li onclick="window.location.href='UserSprofile.html'"><i class="fa-solid fa-user"></i><span>My Profile</span></li>
+    <li onclick="window.location.href='Allevents.html'"><i class="fa-solid fa-calendar-days"></i><span>Browse Events</span></li>
+    <li onclick="window.location.href='Myactivities.html'">
+      <i class="fa-solid fa-ticket"></i><span>Activity Log</span>
+      <span class="menu-badge" id="regBadge" style="display:none">0</span>
+    </li>
+  </ul>
+  <span class="nav-label" style="margin-top:6px">Account</span>
+  <ul class="menu">
+    <li onclick="window.location.href='NotificationsPart.html'">
+      <i class="fa-solid fa-bell"></i><span>Notifications</span>
+      <span class="menu-badge" id="notificationCount" style="display:none">0</span>
+    </li>
+    <li><i class="fa-solid fa-gear"></i><span>Settings</span></li>
+  </ul>
+  <div class="sidebar-lang">
+    <label for="langSelect">🌐 Language</label>
+    <div class="lang-select-wrap">
+      <i class="fa-solid fa-globe"></i>
+      <select id="langSelect" onchange="doGoogleTranslate(this.value)">
+        <option value="en">English</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+        <option value="si">සිංහල (Sinhala)</option>
+      </select>
+    </div>
+  </div>
+  <div class="sidebar-logout" onclick="logout()">
+    <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+  </div>
+</aside>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main">
+
+  <header class="topbar">
+    <div class="greeting-area">
+      <h2 id="greeting">Hello 👋</h2>
+      <p id="topbarSub">Discover events happening at your university</p>
+    </div>
+    <div class="topbar-actions">
+      <a href="Allevents.html" class="browse-events-btn"><i class="fa-solid fa-compass"></i> Browse Events</a>
+      <div class="topbar-user">
+        <div class="topbar-avatar" id="topbarAvatar">--</div>
+        <div class="topbar-user-info">
+          <div class="tname" id="topbarName">Loading…</div>
+          <div class="tmeta" id="topbarMeta">Student</div>
+          <div class="tmeta2" id="topbarMeta2">—</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO BANNER — recommendation trigger button added here -->
+  <div class="hero-banner">
+    <div class="hero-text">
+      <h2>Welcome to UniConnect 🎓</h2>
+      <p>Discover exciting events, register instantly, and make the most of your university experience.</p>
+      <div class="hero-actions">
+        <button class="hero-btn-primary" onclick="window.location.href='Allevents.html'">
+          <i class="fa-solid fa-compass"></i> Explore Events
+        </button>
+        <button class="hero-btn-secondary" onclick="window.location.href='Myregistrations_Student.html'">
+          My Registrations
+        </button>
+        <!-- ✨ RECOMMENDATION TRIGGER -->
+        <button class="rec-trigger-btn" onclick="openRecPopup()" id="recTriggerBtn">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Recommended for You
+          <span class="rec-trigger-badge" id="recTriggerBadge" style="display:none">0</span>
+        </button>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><h3 id="heroTotalEvents">—</h3><p>Events Available</p></div>
+      <div class="hero-stat"><h3 id="heroMyRegs">—</h3><p>My Registrations</p></div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <section class="stats">
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fa-solid fa-calendar-days"></i></div>
+      <div class="stat-info"><h3 id="totalEvents">0</h3><p>Events Available</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fa-solid fa-ticket"></i></div>
+      <div class="stat-info"><h3 id="myRegCount">0</h3><p>My Registrations</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon amber"><i class="fa-solid fa-calendar-check"></i></div>
+      <div class="stat-info"><h3 id="upcomingCount">0</h3><p>Upcoming Events</p></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple"><i class="fa-solid fa-hands-helping"></i></div>
+      <div class="stat-info"><h3 id="volCount">0</h3><p>Volunteer Spots</p></div>
+    </div>
+    <div class="stat-card" style="cursor:pointer" onclick="openRecPopup()">
+      <div class="stat-icon" style="background:#fef3c7;color:#d97706"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+      <div class="stat-info">
+        <h3 id="recCount" style="color:#d97706">0</h3>
+        <p>Recommendations</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon red"><i class="fa-solid fa-bell"></i></div>
+      <div class="stat-info"><h3 id="unreadNotifCount">0</h3><p>Unread Notifications</p></div>
+    </div>
+  </section>
+
+  <!-- UPCOMING EVENTS -->
+  <section class="dashboard-section">
+    <div class="section-header">
+      <div>
+        <h3>Upcoming Events</h3>
+        <p id="eventsSubtitle">Events open for registration at your university</p>
+      </div>
+      <button class="view-btn" onclick="window.location.href='Allevents.html'">View All →</button>
+    </div>
+    <div class="event-grid" id="eventList">
+      <div class="empty-box" style="grid-column:1/-1">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span style="margin-top:8px;display:block">Loading events…</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOWER GRID -->
+  <section class="lower-grid">
+    <div class="dashboard-card">
+      <div class="card-head"><h3>My Registrations</h3><span class="card-count" id="myRegBadge">0</span></div>
+      <div id="myRegistrations"><div class="empty-small">Loading…</div></div>
+    </div>
+    <div class="dashboard-card">
+      <div class="card-head">
+        <h3><i class="fa-solid fa-ticket" style="margin-right:5px;color:var(--accent-blue)"></i>My Tickets</h3>
+        <span class="card-count" id="myTicketBadge">0</span>
+      </div>
+      <div id="myTicketsList"><div class="empty-small">Loading tickets…</div></div>
+    </div>
+    <div class="dashboard-card">
+      <div class="card-head"><h3>Notifications</h3><span class="card-count" id="noteCount">0</span></div>
+      <div id="notificationList"><div class="empty-small">Loading…</div></div>
+    </div>
+    <div class="dashboard-card">
+      <div class="card-head"><h3>Today's Events</h3></div>
+      <div id="todayEvents"><div class="empty-small">No events today</div></div>
+    </div>
+    <div class="dashboard-card">
+      <div class="card-head"><h3>Volunteer Opportunities</h3></div>
+      <div id="volunteerList"><div class="empty-small">Loading opportunities…</div></div>
+    </div>
+    <div class="dashboard-card">
+      <div class="card-head">
+        <h3><i class="fa-solid fa-clock-rotate-left" style="margin-right:5px;color:var(--accent-blue)"></i>Recent Activity</h3>
+        <span class="card-count" id="activityCount">0</span>
+      </div>
+      <div id="activityList"><div class="empty-small">Loading activity…</div></div>
+    </div>
+  </section>
+</main>
+</div>
+
+<!-- =====================================================
+     ✨ RECOMMENDATION POPUP
+     ===================================================== -->
+<div id="recPopupOverlay" onclick="recOverlayClick(event)">
+  <div class="rec-popup-box">
+
+    <!-- Header -->
+    <div class="rec-popup-header">
+      <div class="rec-popup-header-left">
+        <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Recommended for You</h2>
+        <p id="recPopupSub">Personalised events based on your interests and activity</p>
+      </div>
+      <button class="rec-popup-close" onclick="closeRecPopup()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Interest chips -->
+    <div class="rec-interests-row">
+      <span class="rec-interests-label">Your interests:</span>
+      <div id="recInterestChips" style="display:flex;gap:6px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--text-muted)">Loading…</span>
+      </div>
+    </div>
+
+    <!-- Scrollable body -->
+    <div class="rec-popup-body">
+      <div id="recCardArea">
+        <!-- default: show 2 cards -->
+        <div class="rec-cards-grid" id="recCardsGrid">
+          <div class="empty-small" style="grid-column:1/-1">
+            <i class="fa-solid fa-spinner fa-spin"></i> Loading recommendations…
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="rec-popup-footer">
+      <button class="rec-see-all-btn" id="recSeeAllBtn" onclick="toggleSeeAll()">
+        <i class="fa-solid fa-grid-2"></i> See All Recommendations
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== REGISTRATION MODAL ===== -->
+<div class="modal" id="dashEventModal">
+  <div class="modal-box">
+    <div class="close-btn" onclick="closeDashModal()"><i class="fa-solid fa-xmark"></i></div>
+    <div class="modal-left">
+      <div class="modal-content">
+        <h2 id="dashModalTitle">Event Title</h2>
+        <p id="dashModalDesc">Event Description</p>
+        <div class="event-meta-list">
+          <div class="tag" id="dashModalDate">📅 Date</div>
+          <div class="tag" id="dashModalVenue">📍 Venue</div>
+          <div class="tag" id="dashModalCategory">Category</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-right">
+      <img id="dashModalImage" class="modal-image" src="" alt="Event Image">
+      <div class="event-info">
+        <h2>Participant Registration</h2>
+        <p>Fill the form below to register for this event.</p>
+      </div>
+      <form class="register-form" onsubmit="event.preventDefault();dashRegisterParticipant();">
+        <div class="form-step">
+          <div class="form-title">Registration Details</div>
+          <div class="input-group"><i class="fa-solid fa-users"></i>
+            <select id="dashParticipantType"><option value="participant">Participant</option><option value="audience">Audience</option></select>
+          </div>
+          <div class="input-group"><i class="fa-solid fa-building"></i><input type="text" id="dashFaculty" placeholder="Faculty / Department" readonly></div>
+          <div class="input-group"><i class="fa-solid fa-school"></i><input type="text" id="dashUniversity" placeholder="University / Campus" readonly></div>
+          <div class="input-group"><i class="fa-solid fa-phone"></i><input type="text" id="dashPhone" placeholder="Phone Number"></div>
+          <div class="input-group textarea"><i class="fa-solid fa-note-sticky"></i><textarea id="dashNotes" placeholder="Additional Notes (optional)"></textarea></div>
+          <button type="submit" class="form-btn" id="dashRegisterBtn"><i class="fa-solid fa-check"></i> Complete Registration</button>
+          <div class="form-note">
+            <b>Check your details carefully before registration.</b><br><br>
+            Your university and department are pre-filled from your profile. Update them in
+            <a href="UserSprofile.html" style="color:#1f276f;font-weight:700">My Profile</a> if needed.
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SUCCESS POPUP ===== -->
+<div class="dash-popup" id="dashSuccessPopup">
+  <div class="popup-close-x" onclick="document.getElementById('dashSuccessPopup').style.display='none'"><i class="fa-solid fa-xmark"></i></div>
+  <div id="dashSuccessAnimation" class="lottie-box"></div>
+  <h2>Registration Successful 🎉</h2>
+  <p>You have successfully registered for this event. Your participation details have been saved.</p>
+  <div class="popup-actions"><button class="popup-primary" onclick="document.getElementById('dashSuccessPopup').style.display='none'">OK</button></div>
+</div>
+
+<!-- ===== ALERT POPUP ===== -->
+<div class="dash-popup" id="dashAlertPopup">
+  <div class="popup-close-x" onclick="closeDashAlertPopup()"><i class="fa-solid fa-xmark"></i></div>
+  <div id="dashAlertAnimation" class="lottie-box"></div>
+  <h2 id="dashAlertTitle">Message</h2>
+  <p id="dashAlertMessage">Popup Message</p>
+  <div class="popup-actions"><button class="popup-primary" onclick="closeDashAlertPopup()">OK</button></div>
+</div>
+
+<!-- ===== CANCEL TICKET MODAL ===== -->
+<div class="modal" id="cancelTicketModal" style="z-index:1100">
+  <div class="modal-box" style="max-width:440px;grid-template-columns:1fr;border-radius:20px">
+    <div class="close-btn" onclick="closeCancelModal()"><i class="fa-solid fa-xmark"></i></div>
+    <div style="padding:30px 26px;text-align:center">
+      <div style="width:52px;height:52px;border-radius:13px;background:var(--danger-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+        <i class="fa-solid fa-triangle-exclamation" style="color:var(--danger);font-size:20px"></i>
+      </div>
+      <h3 style="font-size:17px;font-weight:700;color:var(--navy-deep);margin-bottom:7px">Cancel Ticket?</h3>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:5px">You are about to cancel your ticket for:</p>
+      <p style="font-size:14px;font-weight:700;color:var(--navy-deep);margin-bottom:18px" id="cancelTicketEventName">—</p>
+      <p style="font-size:12px;color:var(--danger);background:var(--danger-bg);padding:9px 12px;border-radius:9px;margin-bottom:20px">This action cannot be undone.</p>
+      <div style="display:flex;gap:8px">
+        <button onclick="closeCancelModal()" style="flex:1;padding:10px;border-radius:9px;border:1px solid var(--border);background:#fff;font-weight:600;font-size:13px;cursor:pointer;color:var(--text-main)">Keep Ticket</button>
+        <button id="confirmCancelBtn" onclick="confirmCancelTicket()" style="flex:1;padding:10px;border-radius:9px;border:none;background:var(--danger);color:#fff;font-weight:700;font-size:13px;cursor:pointer">Yes, Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="popup-overlay" id="dashPopupOverlay"></div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+/* ── CONFIG ── */
+const BASE_URL = "http://localhost:3000";
+const token    = sessionStorage.getItem("token");
+const userId   = sessionStorage.getItem("user_id");
+
+if (!token || !userId) window.location.href = "Login.html";
+
+/* ── HELPERS ── */
+function safeSet(id,val){const el=document.getElementById(id);if(el)el.innerText=val;}
+function formatDate(d){if(!d)return"—";return String(d).split("T")[0];}
+function makeInitials(name){if(!name)return"--";return name.trim().split(" ").map(w=>w[0]).join("").substring(0,2).toUpperCase();}
+function setAvatarInitials(id,name){const el=document.getElementById(id);if(el)el.innerText=makeInitials(name);}
+function getImageUrl(path){if(!path)return"https://picsum.photos/seed/ev/400/250";if(path.startsWith("http"))return path;return`${BASE_URL}${path}`;}
+function sanitize(str){const d=document.createElement("div");d.textContent=str||"";return d.innerHTML;}
+function todayStr(){return new Date().toISOString().split("T")[0];}
+function logout(){logActivity("logout","Logged out of UniConnect");sessionStorage.clear();window.location.href="Login.html";}
+
+/* ── ACTIVITY LOG ── */
+const ACTIVITY_KEY=`uc_activity_${userId}`;
+const ACTIVITY_META={
+  login:{icon:"fa-right-to-bracket",color:"#10b981",bg:"#d1fae5"},
+  logout:{icon:"fa-right-from-bracket",color:"#ef4444",bg:"#fee2e2"},
+  registration:{icon:"fa-calendar-check",color:"#3b82f6",bg:"#dbeafe"},
+  cancel:{icon:"fa-calendar-xmark",color:"#ef4444",bg:"#fee2e2"},
+  profile:{icon:"fa-user-pen",color:"#8b5cf6",bg:"#ede9fe"},
+  general:{icon:"fa-circle-info",color:"#64748b",bg:"#f1f5f9"}
+};
+function getActivityLog(){try{return JSON.parse(localStorage.getItem(ACTIVITY_KEY))||[];}catch(e){return[];}}
+function saveActivityLog(list){try{localStorage.setItem(ACTIVITY_KEY,JSON.stringify(list.slice(0,30)));}catch(e){}}
+function logActivity(type,message){const list=getActivityLog();list.unshift({type,message,time:new Date().toISOString()});saveActivityLog(list);renderActivityLog();}
+function timeAgo(iso){const diff=Math.floor((Date.now()-new Date(iso).getTime())/1000);if(diff<60)return"Just now";if(diff<3600)return`${Math.floor(diff/60)}m ago`;if(diff<86400)return`${Math.floor(diff/3600)}h ago`;return`${Math.floor(diff/86400)}d ago`;}
+let lastRegsForActivity=[];
+function renderActivityLog(){
+  const box=document.getElementById("activityList");if(!box)return;
+  const local=getActivityLog().map(a=>({type:a.type,message:a.message,time:a.time}));
+  const fromRegs=(lastRegsForActivity||[]).map(r=>({type:(r.status||"").toLowerCase()==="cancelled"?"cancel":"registration",message:(r.status||"").toLowerCase()==="cancelled"?`Cancelled registration for "${r.event_title||r.title||"Event"}"`:`Registered for "${r.event_title||r.title||"Event"}"`,time:r.registered_at||r.registration_date||r.created_at||r.event_date||null})).filter(r=>r.time);
+  const merged=[...local,...fromRegs].sort((a,b)=>new Date(b.time)-new Date(a.time)).slice(0,8);
+  safeSet("activityCount",merged.length);
+  if(!merged.length){box.innerHTML=`<div class="empty-small">No recent activity yet</div>`;return;}
+  box.innerHTML=merged.map(a=>{const meta=ACTIVITY_META[a.type]||ACTIVITY_META.general;return`<div class="activity-item"><div class="activity-icon" style="background:${meta.bg};color:${meta.color}"><i class="fa-solid ${meta.icon}"></i></div><div class="activity-info"><h4>${sanitize(a.message)}</h4><span>${timeAgo(a.time)}</span></div></div>`;}).join("");
+}
+if(!sessionStorage.getItem("uc_login_logged")){logActivity("login","Logged in to UniConnect");sessionStorage.setItem("uc_login_logged","1");}
+
+/* ── USER PROFILE ── */
+let currentUserProfile=null;
+let currentUserUniversity="";
+
+function populateUserUI(user){
+  const name=user.full_name||user.username||"Student";
+  const uni=user.university||user.university_name||"—";
+  const dept=user.department_name||user.faculty||"—";
+  const role=user.role||"Student";
+  currentUserProfile=user;
+  currentUserUniversity=uni.toLowerCase().trim();
+  const h=new Date().getHours();
+  const greet=h<12?"Good Morning":h<17?"Good Afternoon":h<21?"Good Evening":"Good Night";
+  const greetEl=document.getElementById("greeting");
+  if(greetEl)greetEl.innerHTML=`${greet}, <b>${sanitize(name)}</b> 👋`;
+  safeSet("sidebarName",name);
+  setAvatarInitials("sidebarAvatar",name);
+  setAvatarInitials("topbarAvatar",name);
+  safeSet("topbarName",name);
+  const metaEl=document.getElementById("topbarMeta");if(metaEl)metaEl.innerText=`${role} · ${uni}`;
+  const meta2El=document.getElementById("topbarMeta2");if(meta2El)meta2El.innerText=dept;
+  const topSub=document.getElementById("topbarSub");if(topSub)topSub.innerText=uni!=="—"?`${uni} — Discover events near you`:"Discover events happening at your university";
+  const evSub=document.getElementById("eventsSubtitle");if(evSub&&uni!=="—")evSub.innerText=`Upcoming events at ${uni}`;
+  sessionStorage.setItem("username",name);sessionStorage.setItem("uni_name",uni);sessionStorage.setItem("dept_name",dept);sessionStorage.setItem("user_role",role);sessionStorage.setItem("user_phone",user.phone||"");
+  if(allEvents.length>0)renderEventGrid(allEvents);
+  /* load recommendations once profile is known */
+  loadRecommendations();
+}
+
+(function initFromCache(){
+  const name=sessionStorage.getItem("username")||"";
+  const uni=sessionStorage.getItem("uni_name")||"";
+  const dept=sessionStorage.getItem("dept_name")||"";
+  const role=sessionStorage.getItem("user_role")||"Student";
+  if(name){
+    setAvatarInitials("sidebarAvatar",name);setAvatarInitials("topbarAvatar",name);
+    safeSet("sidebarName",name);safeSet("topbarName",name);
+    const metaEl=document.getElementById("topbarMeta");if(metaEl)metaEl.innerText=uni?`${role} · ${uni}`:role;
+    const meta2El=document.getElementById("topbarMeta2");if(meta2El)meta2El.innerText=dept||"—";
+    const h=new Date().getHours();const greet=h<12?"Good Morning":h<17?"Good Afternoon":h<21?"Good Evening":"Good Night";
+    const greetEl=document.getElementById("greeting");if(greetEl)greetEl.innerHTML=`${greet}, <b>${sanitize(name)}</b> 👋`;
+    currentUserUniversity=uni.toLowerCase().trim();
+  }
+})();
+
+/* ── LOTTIE ── */
+const dashSuccessAnim=lottie.loadAnimation({container:document.getElementById("dashSuccessAnimation"),renderer:"svg",loop:false,autoplay:false,path:"Animations/success.json"});
+const dashAlertAnim=lottie.loadAnimation({container:document.getElementById("dashAlertAnimation"),renderer:"svg",loop:false,autoplay:false,path:"https://assets10.lottiefiles.com/packages/lf20_qp1q7mct.json"});
+
+function showDashPopup(title,message,type="info"){
+  document.getElementById("dashAlertTitle").innerText=title;
+  document.getElementById("dashAlertMessage").innerHTML=message;
+  const popup=document.getElementById("dashAlertPopup");
+  popup.style.borderColor=type==="error"?"#ef4444":type==="success"?"#22c55e":"#2563eb";
+  popup.style.display="block";dashAlertAnim.stop();dashAlertAnim.play();
+}
+function closeDashAlertPopup(){document.getElementById("dashAlertPopup").style.display="none";}
+
+fetch(`${BASE_URL}/api/users/${userId}`,{headers:{Authorization:"Bearer "+token}})
+.then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
+.then(d=>{const user=d.data||d.user||d;if(user&&(user.full_name||user.email||user.username))populateUserUI(user);})
+.catch(err=>{
+  console.warn("Profile load failed:",err);
+  const fallback=sessionStorage.getItem("username")||"Student";
+  const h=new Date().getHours();const greet=h<12?"Good Morning":h<17?"Good Afternoon":h<21?"Good Evening":"Good Night";
+  const greetEl=document.getElementById("greeting");if(greetEl)greetEl.innerHTML=`${greet}, <b>${sanitize(fallback)}</b> 👋`;
+  safeSet("sidebarName",fallback);setAvatarInitials("sidebarAvatar",fallback);setAvatarInitials("topbarAvatar",fallback);safeSet("topbarName",fallback);
+  loadRecommendations();
+});
+
+/* ═══════════════════════════════════════════════════════
+   ✨ RECOMMENDATION ENGINE — CLIENT-SIDE HYBRID SCORING
+   ═══════════════════════════════════════════════════════
+   Signals:
+   1. Interest match  (40%) — event category matches user interests
+   2. Engagement      (30%) — past registrations in same category
+   3. Popularity      (20%) — registration count
+   4. Recency         (10%) — proximity to today
+*/
+let recAllResults   = [];   /* full scored list */
+let recUserInterests= [];   /* [{interest_id, interest_name}] */
+let recShowAll      = false;/* toggle for See All */
+
+function recDaysFromNow(dateStr){
+  return(new Date(dateStr)-new Date())/(1000*60*60*24);
+}
+function recencyScore(dateStr){
+  const d=recDaysFromNow(dateStr);
+  if(d<0)return 0;
+  if(d<=7)return 1;
+  return Math.max(0,1-(d-7)/90);
+}
+function normalise(arr){const max=Math.max(...arr,1);return arr.map(v=>v/max);}
+
+function scoreEvents(events,interests,registeredCategories){
+  const interestNames=interests.map(i=>i.interest_name.toLowerCase());
+  /* engagement map: category → normalised score */
+  const engMap={};
+  registeredCategories.forEach(cat=>{engMap[cat]=(engMap[cat]||0)+1;});
+  const maxEng=Math.max(...Object.values(engMap),1);
+
+  const today=todayStr();
+  /* only upcoming, not already registered */
+  const candidates=events.filter(ev=>{
+    const d=formatDate(ev.event_date);
+    return d>=today && !myRegisteredIds.includes(Number(ev.event_id));
+  });
+  if(!candidates.length)return[];
+
+  const regCounts=candidates.map(e=>Number(e.registrant_count||0));
+  const normPop=normalise(regCounts);
+
+  return candidates.map((ev,idx)=>{
+    const cat=(ev.category||"other").toLowerCase();
+    const interestMatch=interestNames.some(i=>i.includes(cat)||cat.includes(i))?1:0;
+    const engSim=(engMap[cat]||0)/maxEng;
+    const pop=normPop[idx];
+    const recency=recencyScore(ev.event_date);
+    const score=0.4*interestMatch+0.3*engSim+0.2*pop+0.1*recency;
+    /* human-readable reason */
+    const reasons=[];
+    if(interestMatch)reasons.push(`Matches your interest in <b>${sanitize(ev.category||"General")}</b>`);
+    if(engSim>0.3)reasons.push("Similar to events you attended");
+    if(recency>0.8)reasons.push("Coming up very soon");
+    if(!reasons.length)reasons.push("Popular on campus right now");
+    return{...ev,_score:score,_reason:reasons.join(" · ")};
+  }).sort((a,b)=>b._score-a._score);
+}
+
+function categoryEmoji(cat){
+  const m={technology:"💻",tech:"💻",workshop:"🔧",sports:"⚽",music:"🎵",art:"🎨",science:"🔬",cultural:"🌍",business:"💼",health:"🏥",academic:"📚",social:"🤝",career:"👔",environment:"🌱",leadership:"🏆"};
+  const k=(cat||"other").toLowerCase();
+  return m[k]||Object.entries(m).find(([key])=>k.includes(key))?.[1]||"📅";
+}
+
+function buildRecCard(ev,idx){
+  const scoreP=Math.round(ev._score*100);
+  const isTop=idx===0;
+  const date=formatDate(ev.event_date);
+  const imgSrc=ev.image_url?`${BASE_URL}${ev.image_url}`:"";
+
+  return`<div class="rec-event-card">
+    ${imgSrc
+      ?`<img class="rec-card-img" src="${imgSrc}" alt="${sanitize(ev.title)}" onerror="this.outerHTML='<div class=rec-card-img-placeholder>${categoryEmoji(ev.category)}</div>'">`
+      :`<div class="rec-card-img-placeholder">${categoryEmoji(ev.category)}</div>`
+    }
+    <div class="rec-card-body">
+      <div>
+        <span class="rec-card-cat">${sanitize(ev.category||"General")}</span>
+        ${isTop?`<span class="rec-top-badge">⭐ Top Pick</span>`:""}
+      </div>
+      <div class="rec-card-title">${sanitize(ev.title||"Event")}</div>
+      <div class="rec-card-meta">
+        <span><i class="fa-solid fa-calendar"></i>${date}</span>
+        ${ev.venue?`<span><i class="fa-solid fa-location-dot"></i>${sanitize(ev.venue)}</span>`:""}
+      </div>
+      <div class="rec-score-wrap">
+        <div class="rec-score-top"><span>Match score</span><span>${scoreP}%</span></div>
+        <div class="rec-score-track"><div class="rec-score-fill" style="width:${scoreP}%"></div></div>
+      </div>
+      <div class="rec-reason"><i class="fa-solid fa-circle-check" style="margin-right:4px;color:#3b82f6"></i>${ev._reason}</div>
+      <div class="rec-card-actions">
+        <button class="rec-btn-reg" onclick="recRegister(${ev.event_id})"><i class="fa-solid fa-circle-plus"></i> Register</button>
+        <button class="rec-btn-detail" onclick="viewEvent(${ev.event_id})">Details</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderRecCards(){
+  const grid=document.getElementById("recCardsGrid");
+  if(!grid)return;
+  if(!recAllResults.length){
+    grid.className="rec-cards-grid";
+    grid.innerHTML=`<div class="empty-small" style="grid-column:1/-1">
+      <i class="fa-solid fa-calendar-xmark" style="font-size:22px;display:block;margin-bottom:8px;color:var(--text-light)"></i>
+      No personalised recommendations yet.<br>
+      <span style="font-size:11px">Register for events or add interests to your profile to get picks.</span>
+    </div>`;
+    return;
+  }
+  const items=recShowAll?recAllResults:recAllResults.slice(0,2);
+  grid.className=recShowAll?"rec-all-grid":"rec-cards-grid";
+  grid.innerHTML=items.map((ev,i)=>buildRecCard(ev,i)).join("");
+
+  const btn=document.getElementById("recSeeAllBtn");
+  if(btn){
+    if(recShowAll){
+      btn.innerHTML=`<i class="fa-solid fa-chevron-up"></i> Show Less`;
+    } else {
+      btn.innerHTML=`<i class="fa-solid fa-grid-2"></i> See All ${recAllResults.length} Recommendations`;
+    }
+  }
+}
+
+function toggleSeeAll(){
+  recShowAll=!recShowAll;
+  renderRecCards();
+  /* scroll to top of popup body */
+  const body=document.querySelector(".rec-popup-body");
+  if(body)body.scrollTop=0;
+}
+
+function renderRecInterestChips(){
+  const wrap=document.getElementById("recInterestChips");
+  if(!wrap)return;
+  if(!recUserInterests.length){
+    wrap.innerHTML=`<span style="font-size:12px;color:var(--text-muted)">No interests set — <a href="UserSprofile.html" style="color:var(--accent-blue);font-weight:700">add in your profile</a></span>`;
+    return;
+  }
+  wrap.innerHTML=recUserInterests.map(i=>`<span class="rec-chip"><i class="fa-solid fa-tag"></i>${sanitize(i.interest_name)}</span>`).join("");
+}
+
+async function loadRecommendations(){
+  try{
+    /* 1. User interests */
+    const intRes=await fetch(`${BASE_URL}/api/recommendations/${userId}/interests`,{headers:{Authorization:"Bearer "+token}});
+    if(intRes.ok){
+      const intData=await intRes.json();
+      recUserInterests=intData.interests||[];
+    }
+  }catch(e){console.warn("Interests fetch failed",e);}
+
+  renderRecInterestChips();
+
+  /* 2. Score events already loaded */
+  const interests=recUserInterests;
+  const registeredCats=(lastRegsForActivity||[]).map(r=>(r.category||"").toLowerCase()).filter(Boolean);
+  recAllResults=scoreEvents(allEvents,interests,registeredCats);
+
+  /* update badge & stat */
+  const count=recAllResults.length;
+  safeSet("recCount",count);
+  const badge=document.getElementById("recTriggerBadge");
+  if(badge){badge.innerText=count;badge.style.display=count>0?"flex":"none";}
+
+  /* update sub-heading */
+  const sub=document.getElementById("recPopupSub");
+  if(sub)sub.innerText=count>0?`${count} events match your interests and activity`:"No recommendations yet — explore more events!";
+
+  renderRecCards();
+}
+
+/* ── Popup open/close ── */
+function openRecPopup(){
+  const overlay=document.getElementById("recPopupOverlay");
+  overlay.classList.add("open");
+  document.body.style.overflow="hidden";
+  /* Escape key */
+  document.addEventListener("keydown",recKeyClose);
+}
+function closeRecPopup(){
+  const overlay=document.getElementById("recPopupOverlay");
+  overlay.classList.remove("open");
+  document.body.style.overflow="";
+  document.removeEventListener("keydown",recKeyClose);
+}
+function recKeyClose(e){if(e.key==="Escape")closeRecPopup();}
+function recOverlayClick(e){if(e.target===document.getElementById("recPopupOverlay"))closeRecPopup();}
+
+/* Register from recommendation popup */
+function recRegister(eventId){
+  closeRecPopup();
+  openDashRegisterModal(eventId);
+}
+
+/* ── EVENT CARD ── */
+function eventCardHTML(ev,registeredIds){
+  const today=todayStr();const evDate=formatDate(ev.event_date);const isToday=evDate===today;
+  const badgeType=isToday?"open":"upcoming";const badgeLabel=isToday?"Live Today":"Upcoming";
+  const isReg=registeredIds.includes(Number(ev.event_id));
+  const imgSrc=ev.image_url?`${BASE_URL}${ev.image_url}`:`https://picsum.photos/seed/${ev.event_id}/400/250`;
+  const slots=ev.max_participants?`${ev.max_participants-(ev.registrant_count||0)} slots left`:"Open";
+  const title=sanitize(ev.title||"Untitled");const desc=sanitize((ev.description||"No description provided.").substring(0,100));
+  const dept=sanitize(ev.department_name||"—");const venue=sanitize(ev.venue||"—");const category=sanitize(ev.category||"General");
+  return`<div class="event-card"><div class="event-image-box"><img src="${imgSrc}" alt="${title}" onerror="this.src='https://picsum.photos/seed/${ev.event_id}/400/250'"><div class="event-badge ${badgeType}">${badgeLabel}</div>${isReg?'<div class="reg-checkmark"><i class="fa-solid fa-check"></i></div>':""}</div><div class="event-content"><div class="event-tags"><span>${category}</span>${ev.allow_other_departments==1?'<span style="background:#dbeafe;color:#1d4ed8;border-color:#93c5fd">Open to All</span>':""}<span style="background:var(--success-bg);color:var(--success)">${slots}</span></div><h3>${title}</h3><p class="event-desc">${desc}…</p><div class="event-meta"><div><i class="fa-solid fa-building"></i> ${dept}</div><div><i class="fa-solid fa-location-dot"></i> ${venue}</div><div><i class="fa-solid fa-calendar"></i> ${evDate}${ev.start_time?" · "+ev.start_time:""}</div></div><div class="event-actions"><button class="details-btn" onclick="viewEvent(${ev.event_id})">View Details</button><button class="register-btn ${isReg?"registered":""}" onclick="${isReg?"":"openDashRegisterModal("+ev.event_id+")"}"> ${isReg?'<i class="fa-solid fa-check"></i> Registered':"Register"}</button></div></div></div>`;
+}
+
+/* ── SHARED STATE ── */
+let myRegisteredIds=[];let allEvents=[];
+
+/* ══════════════════════════════════════════════════
+   LOAD DASHBOARD
+   NOTE: registrations now come from /api/activities/student/:userId
+   (same endpoint Myactivities.html uses), which returns a full
+   {success, registrations, volunteers, tickets, attendance, stats}
+   object with complete event details for every registration row —
+   instead of the older /api/registrations/student/:userId endpoint.
+══════════════════════════════════════════════════ */
+function loadDashboard(){
+  const eventBox=document.getElementById("eventList");
+  if(eventBox)eventBox.innerHTML=`<div class="empty-box" style="grid-column:1/-1"><i class="fa-solid fa-spinner fa-spin"></i><span style="margin-top:8px;display:block">Loading events…</span></div>`;
+
+  const regsPromise=fetch(`${BASE_URL}/api/activities/student/${userId}`,{headers:{Authorization:"Bearer "+token}})
+    .then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
+    .then(d=>(d&&d.success&&Array.isArray(d.registrations))?d.registrations:[])
+    .catch(err=>{console.warn("Activities load failed:",err);return [];});
+
+  const eventsPromise=fetch(`${BASE_URL}/api/events`,{headers:{Authorization:"Bearer "+token}}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).catch(()=>[]);
+
+  Promise.all([regsPromise,eventsPromise]).then(([regData,evData])=>{
+    const regs=Array.isArray(regData)?regData:(regData.registrations||regData.data||[]);
+    myRegisteredIds=regs.map(r=>Number(r.event_id));
+    safeSet("myRegCount",regs.length);safeSet("myRegBadge",regs.length);safeSet("heroMyRegs",regs.length);
+    const pending=regs.filter(r=>(r.status||"").toLowerCase()==="pending").length;
+    if(pending>0){const b=document.getElementById("regBadge");if(b){b.style.display="flex";b.innerText=pending;}}
+    renderMyRegistrations(regs);loadTodayEvents(regs);
+    lastRegsForActivity=regs;renderActivityLog();
+
+    allEvents=Array.isArray(evData)?evData:(evData.events||evData.data||[]);
+
+    /* ──────────────────────────────────────────────
+       UNIVERSITY-ONLY FILTER
+       Only events whose `university` field exactly
+       matches the logged-in student's `university`
+       (from Users table) are counted / shown.
+       No fallback for "open to other departments" or
+       blank/empty university values — those are no
+       longer treated as visible-to-everyone.
+    ────────────────────────────────────────────── */
+    const today=todayStr();
+    const uni=currentUserUniversity||(sessionStorage.getItem("uni_name")||"").toLowerCase().trim();
+    const uniEvents=allEvents.filter(ev=>{
+      const evUni=(ev.university||"").toLowerCase().trim();
+      const evDate=formatDate(ev.event_date);
+      if(evDate<today)return false;
+      if(!uni)return false;
+      return evUni===uni;
+    });
+
+    safeSet("totalEvents",uniEvents.length);safeSet("upcomingCount",uniEvents.length);safeSet("heroTotalEvents",uniEvents.length);
+    renderEventGrid(allEvents);
+
+    /* refresh recommendations with latest data */
+    loadRecommendations();
+  });
+}
+loadDashboard();
+
+function renderEventGrid(events){
+  const box=document.getElementById("eventList");if(!box)return;
+  const today=todayStr();
+  const uni=currentUserUniversity||(sessionStorage.getItem("uni_name")||"").toLowerCase().trim();
+
+  /* ──────────────────────────────────────────────
+     UNIVERSITY-ONLY FILTER
+     Only show upcoming events whose `university`
+     field exactly matches the student's own
+     university. If the student has no university
+     set on their profile, show nothing (instead of
+     defaulting to "show everything").
+  ────────────────────────────────────────────── */
+  let filtered=events.filter(ev=>formatDate(ev.event_date)>=today);
+
+  if(uni){
+    filtered=filtered.filter(ev=>{
+      const evUni=(ev.university||"").toLowerCase().trim();
+      return evUni===uni;
+    });
+  }else{
+    filtered=[];
+  }
+
+  const sorted=[...filtered].sort((a,b)=>{const da=formatDate(a.event_date);const db=formatDate(b.event_date);return da<db?-1:da>db?1:0;}).slice(0,6);
+
+  if(sorted.length===0){
+    const uniLabel=(sessionStorage.getItem("uni_name")||"").trim()||"your university";
+    box.innerHTML=`<div class="empty-box" style="grid-column:1/-1"><i class="fa-solid fa-calendar-xmark"></i><p style="margin-top:8px;font-weight:600;color:var(--navy-deep)">No upcoming events at ${sanitize(uniLabel)}</p><p style="font-size:12px;margin-top:4px;color:var(--text-muted)">There are no upcoming events right now. Check back later or browse all events.</p><button class="view-btn" style="margin-top:14px" onclick="window.location.href='Allevents.html'">Browse All Events</button></div>`;
+    return;
+  }
+  box.innerHTML=sorted.map(ev=>eventCardHTML(ev,myRegisteredIds)).join("");
+}
+
+/* ══════════════════════════════════════════════════
+   MY REGISTRATIONS — shows EVERY registration returned
+   by /api/activities/student/:userId (same data source
+   and same fields used by Myactivities.html's registration
+   cards: event_title, image_url, venue, event_date, status,
+   event_id, registration_id, etc.)
+══════════════════════════════════════════════════ */
+function renderMyRegistrations(regs){
+  const box=document.getElementById("myRegistrations");if(!box)return;
+  if(!regs||regs.length===0){
+    box.innerHTML=`<div class="empty-small">You haven't registered for any events yet.<br><button class="view-btn" style="margin-top:10px;font-size:11px;padding:7px 14px" onclick="window.location.href='Allevents.html'">Browse Events</button></div>`;
+    return;
+  }
+
+  // Sort: upcoming first (soonest first), then past events (most recent first)
+  const today=todayStr();
+  const sorted=[...regs].sort((a,b)=>{
+    const da=formatDate(a.event_date), db=formatDate(b.event_date);
+    const aUpcoming=da>=today, bUpcoming=db>=today;
+    if(aUpcoming && !bUpcoming) return -1;
+    if(!aUpcoming && bUpcoming) return 1;
+    return aUpcoming ? (da<db?-1:1) : (da>db?-1:1);
+  });
+
+  // Show up to 5 in the widget, with a "View all" link to the full Activity Log
+  const visible = sorted.slice(0,5);
+
+  const itemsHTML = visible.map(item=>{
+    const sc=(item.status||"pending").toLowerCase();
+    const imgSrc=item.image_url?getImageUrl(item.image_url):`https://picsum.photos/seed/reg${item.event_id}/100/100`;
+    const title=sanitize(item.event_title||item.title||"Event");
+    const venue=item.venue?` · ${sanitize(item.venue)}`:"";
+    return `<div class="my-reg-item" onclick="viewEvent(${item.event_id})">
+      <img src="${imgSrc}" alt="${title}" onerror="this.src='https://picsum.photos/seed/reg${item.event_id}/100/100'">
+      <div class="my-reg-info">
+        <h4>${title}</h4>
+        <span>${formatDate(item.event_date)}${venue}</span>
+      </div>
+      <span class="reg-status ${sc}">${sanitize(item.status||"pending")}</span>
+    </div>`;
+  }).join("");
+
+  const viewAllHTML = `<a href="Myactivities.html" class="reg-view-all">
+      <i class="fa-solid fa-list"></i> View all ${sorted.length} registration${sorted.length!==1?"s":""}
+    </a>`;
+
+  box.innerHTML = itemsHTML + viewAllHTML;
+}
+
+function loadTodayEvents(myRegs){
+  const box=document.getElementById("todayEvents");if(!box)return;
+  const today=todayStr();const todayRegs=myRegs.filter(r=>formatDate(r.event_date)===today);
+  if(todayRegs.length===0){box.innerHTML=`<div class="empty-small">No events you're registered for today</div>`;return;}
+  box.innerHTML=todayRegs.map(e=>{const title=sanitize(e.event_title||e.title||"Event");const venue=sanitize(e.venue||"—");return`<div class="today-item" onclick="viewEvent(${e.event_id})"><div class="today-item-header"><h4>${title}</h4><div class="today-dot"></div></div><span>${e.start_time||""} · ${venue}</span></div>`;}).join("");
+}
+
+fetch(`${BASE_URL}/api/volunteers`,{headers:{Authorization:"Bearer "+token}})
+.then(r=>r.json()).then(d=>{
+  const list=Array.isArray(d)?d:(d.opportunities||d.data||[]);safeSet("volCount",list.length);
+  const box=document.getElementById("volunteerList");if(!box)return;
+  if(list.length===0){box.innerHTML=`<div class="empty-small">No volunteer opportunities right now</div>`;return;}
+  box.innerHTML=list.slice(0,4).map(v=>{const title=sanitize(v.title||v.role||"Volunteer Role");const desc=sanitize(v.event_title||v.description||"Help make events successful!");return`<div class="vol-item"><h4>${title}</h4><p>${desc}</p><button class="vol-apply-btn" onclick="window.location.href='Volunteer.html'">Apply &rarr;</button></div>`;}).join("");
+}).catch(()=>{const el=document.getElementById("volunteerList");if(el)el.innerHTML=`<div class="empty-small">Could not load opportunities</div>`;});
+
+/* ── NOTIFICATIONS ── */
+const NOTIF_COLOR={registration:"#3b82f6",event_registration:"#3b82f6",registration_confirmed:"#10b981",registration_pending:"#f59e0b",registration_cancelled:"#ef4444",volunteer:"#8b5cf6",volunteer_approved:"#10b981",volunteer_rejected:"#ef4444",volunteer_task_updated:"#f59e0b",volunteer_message:"#8b5cf6",payment:"#0ea5e9",feedback:"#f59e0b",event_reminder:"#3b82f6",general:"#64748b"};
+const NOTIF_ICON={registration:"fa-calendar-check",event_registration:"fa-calendar-check",registration_confirmed:"fa-circle-check",registration_pending:"fa-clock",registration_cancelled:"fa-calendar-xmark",volunteer:"fa-hands-helping",volunteer_approved:"fa-check-circle",volunteer_rejected:"fa-times-circle",volunteer_task_updated:"fa-pen-to-square",volunteer_message:"fa-comment-dots",payment:"fa-credit-card",feedback:"fa-star",event_reminder:"fa-bell",general:"fa-bell"};
+
+function loadNotifications(){
+  const box=document.getElementById("notificationList");const badge=document.getElementById("notificationCount");
+  fetch(`${BASE_URL}/api/notifications/user/${userId}`,{headers:{Authorization:"Bearer "+token}})
+  .then(r=>r.json()).then(d=>{
+    const arr=Array.isArray(d)?d:(d.notifications||d.data||[]);const unread=arr.filter(n=>!n.is_read).length;
+    safeSet("noteCount",arr.length);safeSet("unreadNotifCount",unread);
+    if(badge){if(unread>0){badge.style.display="flex";badge.innerText=unread;}else{badge.style.display="none";}}
+    if(!box)return;if(arr.length===0){box.innerHTML=`<div class="empty-small">No notifications yet</div>`;return;}
+    const items=arr.slice(0,5).map(n=>{const type=(n.type||n.notification_type||"general").toLowerCase().replace(/\s+/g,"_");const color=NOTIF_COLOR[type]||"#3b82f6";const icon=NOTIF_ICON[type]||"fa-bell";const msg=sanitize(n.message||n.body||n.content||"");const time=n.created_at?`<span style="font-size:10px;color:var(--text-light);display:block;margin-top:2px">${formatDate(n.created_at)}</span>`:"";return`<div class="note-item ${n.is_read?"read":"unread"}" style="border-left:3px solid ${color};border-radius:0;cursor:pointer" onclick="window.location.href='NotificationsPart.html'"><i class="fa-solid ${icon}" style="color:${color};margin-top:2px;flex-shrink:0"></i><span style="flex:1">${msg}${time}</span>${!n.is_read?`<span style="width:7px;height:7px;border-radius:50%;background:${color};flex-shrink:0;display:inline-block;margin-top:4px"></span>`:""}</div>`;}).join("");
+    const viewAllBtn=`<a href="NotificationsPart.html" style="display:flex;align-items:center;justify-content:center;gap:5px;margin-top:8px;padding:8px;border-radius:9px;background:#f0f4ff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;font-weight:700;text-decoration:none"><i class="fa-solid fa-bell"></i> View all notifications${unread>0?`<span style="background:#ef4444;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:99px">${unread} new</span>`:""}</a>`;
+    box.innerHTML=items+viewAllBtn;
+  }).catch(()=>{if(box)box.innerHTML=`<div class="empty-small">Could not load notifications</div>`;});
+}
+loadNotifications();
+
+/* ── MY TICKETS ── */
+function loadMyTickets(){
+  const box=document.getElementById("myTicketsList");const badge=document.getElementById("myTicketBadge");
+  if(box)box.innerHTML=`<div class="empty-small"><i class="fa-solid fa-spinner fa-spin"></i> Loading tickets…</div>`;
+  fetch(`${BASE_URL}/api/tickets/user/${userId}`,{headers:{Authorization:"Bearer "+token}})
+  .then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();})
+  .then(d=>{
+    let tickets=[];
+    if(Array.isArray(d))tickets=d;
+    else if(Array.isArray(d.data))tickets=d.data;
+    else if(d.data&&Array.isArray(d.data.tickets))tickets=d.data.tickets;
+    else if(Array.isArray(d.tickets))tickets=d.tickets;
+    else if(d.data&&typeof d.data==="object")tickets=Object.values(d.data);
+    const active=tickets.filter(t=>!["cancelled","available"].includes((t.booking_status||t.status||"").toLowerCase()));
+    const cancelled=tickets.filter(t=>["cancelled","available"].includes((t.booking_status||t.status||"").toLowerCase()));
+    const ordered=[...active,...cancelled];
+    if(badge)badge.innerText=active.length;
+    if(!box)return;
+    if(ordered.length===0){box.innerHTML=`<div class="empty-small">No tickets booked yet.<br><button class="view-btn" style="margin-top:10px;font-size:11px;padding:7px 14px" onclick="window.location.href='Allevents.html'">Browse Events</button></div>`;return;}
+    const statusClass={confirmed:"confirmed",pending_payment:"pending",pending:"pending",cancelled:"cancelled",available:"cancelled"};
+    box.innerHTML=ordered.slice(0,6).map(t=>{
+      const rawStatus=(t.booking_status||t.status||"pending").toLowerCase();const sc=statusClass[rawStatus]||"pending";const isCancelled=sc==="cancelled";
+      const title=sanitize(t.event_title||t.title||"Event");const date=formatDate(t.event_date);const price=Number(t.total_amount||t.price||0);
+      const priceStr=price>0?`LKR ${price.toLocaleString("en-LK",{minimumFractionDigits:2})}`:"Free";
+      const ticketNum=t.ticket_number?`<span style="font-size:10px;color:var(--text-light);font-family:monospace">#${sanitize(String(t.ticket_number))}</span>`:"";
+      const canCancel=!isCancelled;
+      return`<div class="ticket-item" style="${isCancelled?"opacity:.55":""}"><div class="ticket-icon-box" style="${isCancelled?"background:var(--danger-bg)":""}"><i class="fa-solid fa-ticket" style="color:${isCancelled?"var(--danger)":"var(--accent-blue)"};font-size:16px"></i></div><div class="ticket-info"><h4>${title}</h4><span>${date} · ${priceStr}</span>${ticketNum}</div><div class="ticket-actions"><span class="reg-status ${sc}">${sanitize(t.booking_status||t.status||"pending")}</span>${canCancel?`<button class="cancel-ticket-btn" onclick="openCancelModal(${t.ticket_id},'${title.replace(/'/g,"\\'")}',event)">Cancel</button>`:""}</div></div>`;
+    }).join("");
+    if(ordered.length>6){box.innerHTML+=`<a href="Myregistrations_Student.html" style="display:flex;align-items:center;justify-content:center;gap:5px;margin-top:6px;padding:8px;border-radius:9px;background:#f0f4ff;border:1px solid #dbeafe;color:#1e3a8a;font-size:12px;font-weight:700;text-decoration:none"><i class="fa-solid fa-ticket"></i> View all ${ordered.length} tickets</a>`;}
+  }).catch(err=>{console.error("Tickets load error:",err);if(box)box.innerHTML=`<div class="empty-small">Could not load tickets.<br><span style="font-size:11px;color:var(--text-light)">${err.message}</span></div>`;});
+}
+loadMyTickets();
+
+/* ── CANCEL TICKET ── */
+let ticketToCancel=null;let ticketToCancelName="";
+function openCancelModal(ticketId,eventName,e){if(e)e.stopPropagation();ticketToCancel=ticketId;ticketToCancelName=eventName;const nameEl=document.getElementById("cancelTicketEventName");if(nameEl)nameEl.textContent=eventName;document.getElementById("cancelTicketModal").style.display="flex";}
+function closeCancelModal(){document.getElementById("cancelTicketModal").style.display="none";ticketToCancel=null;}
+async function confirmCancelTicket(){
+  if(!ticketToCancel)return;const btn=document.getElementById("confirmCancelBtn");btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Cancelling…';
+  try{
+    const res=await fetch(`${BASE_URL}/api/tickets/${ticketToCancel}/cancel`,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({user_id:Number(userId)})});
+    const data=await res.json();const cancelledName=ticketToCancelName;closeCancelModal();
+    if(res.ok&&data.success!==false){showDashPopup("Ticket Cancelled","Your ticket has been cancelled successfully.","success");logActivity("cancel",`Cancelled ticket for "${cancelledName}"`);loadMyTickets();}
+    else{showDashPopup("Cancel Failed",data.message||"Could not cancel ticket.","error");}
+  }catch(err){closeCancelModal();showDashPopup("Error","A server error occurred. Please try again.","error");}
+  finally{btn.disabled=false;btn.innerHTML="Yes, Cancel";}
+}
+window.addEventListener("click",e=>{if(e.target===document.getElementById("cancelTicketModal"))closeCancelModal();});
+
+/* ── NAVIGATION ── */
+function viewEvent(id){window.location.href=`Availableeventdetails.html?id=${id}`;}
+
+/* ── REGISTRATION MODAL ── */
+let dashCurrentEventId=null;
+function openDashRegisterModal(eventId){
+  dashCurrentEventId=eventId;const ev=allEvents.find(e=>Number(e.event_id)===Number(eventId));
+  if(!ev){showDashPopup("Event Error","Event details not found.","error");return;}
+  document.getElementById("dashModalTitle").innerText=ev.title||"Untitled Event";
+  document.getElementById("dashModalDesc").innerText=ev.description||"";
+  document.getElementById("dashModalDate").innerText=`📅 ${formatDate(ev.event_date)}`;
+  document.getElementById("dashModalVenue").innerText=`📍 ${ev.venue||"—"}`;
+  document.getElementById("dashModalCategory").innerText=ev.category||"General";
+  document.getElementById("dashModalImage").src=getImageUrl(ev.image_url);
+  const user=currentUserProfile;
+  document.getElementById("dashParticipantType").value="participant";
+  document.getElementById("dashFaculty").value=user?(user.department_name||""):"";
+  document.getElementById("dashUniversity").value=user?(user.university||user.university_name||""):"";
+  document.getElementById("dashPhone").value=user?(user.phone||sessionStorage.getItem("user_phone")||""):"";
+  document.getElementById("dashNotes").value="";
+  document.getElementById("dashEventModal").style.display="flex";
+  document.addEventListener("keydown",handleModalKey);
+}
+function handleModalKey(e){if(e.key==="Escape")closeDashModal();}
+function closeDashModal(){document.getElementById("dashEventModal").style.display="none";document.removeEventListener("keydown",handleModalKey);}
+window.addEventListener("click",e=>{if(e.target===document.getElementById("dashEventModal"))closeDashModal();});
+
+/* ── REGISTER PARTICIPANT ── */
+let isSubmitting=false;
+async function dashRegisterParticipant(){
+  if(isSubmitting)return;const btn=document.getElementById("dashRegisterBtn");
+  const participantType=document.getElementById("dashParticipantType").value.trim();
+  const faculty=document.getElementById("dashFaculty").value.trim();
+  const university_name=document.getElementById("dashUniversity").value.trim();
+  const phone=document.getElementById("dashPhone").value.trim();
+  const notes=document.getElementById("dashNotes").value.trim();
+  if(!participantType||!faculty||!phone){showDashPopup("Incomplete Form","Please fill in Faculty and Phone number before submitting.","error");return;}
+  isSubmitting=true;btn.disabled=true;btn.innerHTML=`<i class="fa-solid fa-spinner fa-spin"></i> Registering…`;
+  try{
+    const res=await fetch(`${BASE_URL}/api/events/${dashCurrentEventId}/register`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({user_id:userId,participant_type:participantType,faculty,phone,notes,university_name})});
+    const data=await res.json();
+    if(data.success){
+      const registeredEvent=allEvents.find(e=>Number(e.event_id)===Number(dashCurrentEventId));
+      const registeredTitle=registeredEvent?(registeredEvent.title||"Event"):"Event";
+      closeDashModal();document.getElementById("dashSuccessPopup").style.display="block";dashSuccessAnim.stop();dashSuccessAnim.play();
+      if(!myRegisteredIds.includes(Number(dashCurrentEventId)))myRegisteredIds.push(Number(dashCurrentEventId));
+      renderEventGrid(allEvents);logActivity("registration",`Registered for "${registeredTitle}"`);loadNotifications();
+
+      /* refresh registrations from the activities endpoint so the
+         "My Registrations" widget instantly includes the new entry
+         with full event details */
+      fetch(`${BASE_URL}/api/activities/student/${userId}`,{headers:{Authorization:"Bearer "+token}})
+        .then(r=>r.json())
+        .then(rd=>{
+          const regs=(rd&&rd.success&&Array.isArray(rd.registrations))?rd.registrations:[];
+          myRegisteredIds=regs.map(r=>Number(r.event_id));
+          safeSet("myRegCount",regs.length);safeSet("myRegBadge",regs.length);safeSet("heroMyRegs",regs.length);
+          renderMyRegistrations(regs);renderEventGrid(allEvents);lastRegsForActivity=regs;renderActivityLog();
+          /* refresh recommendations — this event is now registered, remove from list */
+          loadRecommendations();
+        }).catch(()=>{});
+    }else{showDashPopup("Registration Failed",data.message||"Registration could not be completed.","error");}
+  }catch(err){console.error(err);showDashPopup("Server Error","A server error occurred. Please try again.","error");}
+  finally{isSubmitting=false;btn.disabled=false;btn.innerHTML=`<i class="fa-solid fa-check"></i> Complete Registration`;}
+}
+
+/* ── GOOGLE TRANSLATE ── */
+function doGoogleTranslate(lang){
+  if(!lang||lang==="en"){localStorage.setItem("uc_lang","en");document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain="+location.hostname+";";document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=."+location.hostname+";";const combo=document.querySelector("select.goog-te-combo");if(combo){combo.value="en";combo.dispatchEvent(new Event("change"));setTimeout(()=>location.reload(),400);}else{location.reload();}return;}
+  localStorage.setItem("uc_lang",lang);_applyTranslate(lang);
+}
+function _applyTranslate(lang){const tryApply=(attempts)=>{const combo=document.querySelector("select.goog-te-combo");if(combo){combo.value=lang;combo.dispatchEvent(new Event("change"));}else if(attempts>0){setTimeout(()=>tryApply(attempts-1),600);}};tryApply(15);}
+document.addEventListener("DOMContentLoaded",()=>{
+  const saved=localStorage.getItem("uc_lang");const picker=document.getElementById("langSelect");
+  if(!saved||saved==="en"){document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain="+location.hostname+";";document.cookie="googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=."+location.hostname+";";if(picker)picker.value="en";return;}
+  if(picker)picker.value=saved;setTimeout(()=>_applyTranslate(saved),2000);
+});
+</script>
+</body>
+</html>

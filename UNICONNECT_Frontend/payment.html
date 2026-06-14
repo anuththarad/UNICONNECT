@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect — Secure Payment</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:#050d1a; --navy2:#0c1a2e; --ink3:#0d1f38;
+  --blue:#1a4fd6; --indigo:#3730a3; --violet:#4c1d95;
+  --accent:#818cf8; --light:#e0e7ff;
+  --muted:rgba(255,255,255,.38);
+  --surface:rgba(255,255,255,.04);
+  --border:rgba(255,255,255,.09);
+  --text:#e2e8f0;
+  --green:#34d399; --red:#f87171; --amber:#fcd34d;
+  --r:14px; --ease:cubic-bezier(.4,0,.2,1);
+}
+html{height:100%}
+body{
+  min-height:100vh; font-family:'Instrument Sans',sans-serif;
+  color:var(--text); background:var(--navy); overflow-x:hidden;
+}
+body::before{
+  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% -10%,rgba(26,79,214,.22),transparent 55%),
+    radial-gradient(ellipse 55% 45% at 90% 110%,rgba(55,48,163,.18),transparent 50%),
+    linear-gradient(175deg,var(--navy) 0%,#07111e 100%);
+}
+button,input,select,textarea{font-family:inherit}
+
+/* ── TOPBAR ── */
+.topbar{
+  min-height:62px; display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:14px 36px; background:rgba(5,13,26,.88);
+  backdrop-filter:blur(14px); border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:50;
+}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo img{height:88px;width:auto}
+.logo-fallback{font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#fff}
+.top-nav{display:flex;gap:6px;align-items:center}
+.nav-btn{
+  display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:8px 16px;
+  border-radius:10px;border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);color:rgba(255,255,255,.75);
+  font-size:13px;font-weight:600;text-decoration:none;cursor:pointer;transition:.2s var(--ease);
+}
+.nav-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+
+/* ── PAGE ── */
+.page{width:min(1080px,calc(100% - 48px));margin:0 auto;padding:40px 0 72px;position:relative;z-index:1}
+
+/* ── HERO ── */
+.hero{display:flex;align-items:center;gap:18px;margin-bottom:28px}
+.hero-icon{
+  width:56px;height:56px;border-radius:16px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),var(--indigo));
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:#fff;box-shadow:0 8px 28px rgba(26,79,214,.4);
+}
+.hero h1{font-family:'Sora',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:3px}
+.hero p{font-size:13.5px;color:var(--muted)}
+.sec-badge{
+  display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:30px;
+  background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);
+  font-size:11.5px;font-weight:600;color:var(--green);margin-bottom:26px;
+}
+
+/* ── STEPS ── */
+.steps{
+  display:flex;gap:0;margin-bottom:30px;
+  background:rgba(255,255,255,.03);border-radius:12px;
+  border:1px solid var(--border);overflow:hidden;
+}
+.step{
+  flex:1;display:flex;align-items:center;gap:8px;
+  padding:12px 16px;font-size:12px;font-weight:600;color:var(--muted);
+}
+.step.done{color:var(--green)}
+.step.active{color:#fff;background:rgba(255,255,255,.04)}
+.step-num{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;background:var(--border);color:var(--muted);
+}
+.step.done  .step-num{background:rgba(52,211,153,.2);color:var(--green)}
+.step.active .step-num{background:var(--blue);color:#fff}
+
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+
+/* ── PANEL ── */
+.panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;margin-bottom:20px;
+}
+.panel-head{
+  padding:16px 22px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.panel-head h2{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:#fff}
+.panel-body{padding:22px}
+
+/* ── METHOD TABS ── */
+.method-tabs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.method-tab{
+  border:2px solid var(--border);border-radius:12px;padding:16px;
+  cursor:pointer;transition:all .2s;background:transparent;text-align:left;color:var(--text);
+}
+.method-tab:hover{border-color:rgba(129,140,248,.4)}
+.method-tab.active{border-color:var(--accent);background:rgba(129,140,248,.08)}
+.method-tab .mt-icon{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;margin-bottom:10px;
+}
+.method-tab.card-tab .mt-icon{background:rgba(26,79,214,.25);color:#93c5fd}
+.method-tab.bank-tab .mt-icon{background:rgba(52,211,153,.15);color:var(--green)}
+.method-tab .mt-label{font-size:13px;font-weight:700;color:#fff}
+.method-tab .mt-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+.pay-panel{display:none}
+.pay-panel.show{display:block}
+
+/* ── FIELDS ── */
+.field{margin-bottom:16px}
+.field label{
+  display:block;font-size:11px;font-weight:700;
+  color:var(--accent);letter-spacing:.5px;text-transform:uppercase;margin-bottom:7px;
+}
+.field input,.field select,.field textarea{
+  width:100%;padding:11px 14px;
+  background:rgba(255,255,255,.05);border:1.5px solid var(--border);
+  border-radius:10px;color:#fff;font-size:14px;outline:none;
+  transition:border-color .2s;-webkit-appearance:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--accent);background:rgba(129,140,248,.06);
+}
+.field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,.22)}
+.field select option{background:#1e293b}
+.field textarea{resize:vertical;min-height:80px;line-height:1.5}
+.card-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card-wrap{position:relative}
+.card-wrap input{padding-right:48px}
+.card-brand{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:20px;color:var(--muted);pointer-events:none}
+#cardNumber{font-family:'Courier New',monospace;letter-spacing:2px}
+
+/* ── BANK INFO ── */
+.bank-info{
+  background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);
+  border-radius:12px;padding:18px;margin-bottom:18px;
+}
+.bank-info h4{font-size:13px;font-weight:700;color:var(--green);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.bank-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
+.bank-row:last-child{border-bottom:none}
+.bank-row .bk-lbl{color:var(--muted)}
+.bank-row .bk-val{font-weight:600;color:#fff}
+.copy-btn{
+  background:rgba(129,140,248,.15);border:none;color:var(--accent);
+  border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;transition:background .2s;
+}
+.copy-btn:hover{background:rgba(129,140,248,.3)}
+
+/* ── SLIP ZONE ── */
+.slip-zone{
+  border:2px dashed var(--border);border-radius:12px;padding:30px 20px;
+  text-align:center;cursor:pointer;transition:all .2s;position:relative;margin-bottom:14px;
+}
+.slip-zone:hover,.slip-zone.drag-over{border-color:var(--accent);background:rgba(129,140,248,.05)}
+.slip-zone input[type="file"]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.slip-zone .sz-icon{font-size:30px;color:var(--accent);margin-bottom:10px}
+.slip-zone .sz-label{font-size:13px;color:var(--muted)}
+.slip-zone .sz-label strong{color:var(--accent)}
+.slip-zone .sz-types{font-size:11px;color:rgba(255,255,255,.2);margin-top:6px}
+
+.slip-preview{
+  display:none;align-items:center;gap:12px;padding:12px 16px;
+  background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);
+  border-radius:10px;margin-bottom:14px;
+}
+.slip-preview.show{display:flex}
+.slip-preview .sp-icon{font-size:24px;color:var(--green)}
+.sp-name{font-size:13px;color:#fff;font-weight:600;flex:1}
+.sp-size{font-size:11px;color:var(--muted)}
+.sp-remove{background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:4px}
+
+/* ── EXISTING SLIP STATUS ── */
+.slip-status-card{
+  display:none;align-items:center;gap:14px;padding:16px 18px;
+  border-radius:12px;margin-bottom:16px;
+}
+.slip-status-card.show{display:flex}
+.slip-status-card.pending{background:rgba(252,211,77,.07);border:1px solid rgba(252,211,77,.25)}
+.slip-status-card.approved{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.25)}
+.slip-status-card.rejected{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.25)}
+.ssc-icon{font-size:26px}
+.slip-status-card.pending  .ssc-icon{color:var(--amber)}
+.slip-status-card.approved .ssc-icon{color:var(--green)}
+.slip-status-card.rejected .ssc-icon{color:var(--red)}
+.ssc-title{font-size:14px;font-weight:700;color:#fff}
+.ssc-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.btn-view-slip{
+  margin-left:auto;background:rgba(129,140,248,.15);border:1px solid rgba(129,140,248,.3);
+  color:var(--accent);padding:6px 14px;border-radius:8px;font-size:12px;
+  font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;
+  white-space:nowrap;
+}
+.btn-view-slip:hover{background:rgba(129,140,248,.25)}
+
+/* ── NOTICE ── */
+.notice{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:13px 16px;border-radius:10px;font-size:13px;margin-bottom:14px;line-height:1.55;
+}
+.notice-warn{background:rgba(252,211,77,.08);border:1px solid rgba(252,211,77,.25);color:var(--amber)}
+.notice-info{background:rgba(129,140,248,.08);border:1px solid rgba(129,140,248,.25);color:var(--accent)}
+.notice-green{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.25);color:var(--green)}
+.notice i{margin-top:1px;flex-shrink:0}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 22px;border-radius:10px;font-size:13.5px;font-weight:700;
+  cursor:pointer;border:none;transition:all .2s;text-decoration:none;white-space:nowrap;
+}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--indigo));color:#fff;box-shadow:0 4px 20px rgba(26,79,214,.38)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 26px rgba(26,79,214,.5)}
+.btn-success{background:linear-gradient(135deg,#059669,#047857);color:#fff;box-shadow:0 4px 18px rgba(5,150,105,.32)}
+.btn-success:hover:not(:disabled){transform:translateY(-1px)}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--text)}
+.btn-ghost:hover{background:rgba(255,255,255,.08)}
+.btn-full{width:100%}
+
+/* ── SUMMARY CARD ── */
+.sum-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;position:sticky;top:78px;
+}
+.sum-head{
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:#fff;
+  display:flex;align-items:center;gap:8px;
+}
+.sum-body{padding:18px 20px}
+.sum-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--border)}
+.sum-row:last-of-type{border-bottom:none}
+.sum-row .s-lbl{color:var(--muted)}
+.sum-row .s-val{color:#fff;font-weight:500;text-align:right;word-break:break-all;max-width:200px;font-size:12.5px}
+.sum-total{
+  display:flex;justify-content:space-between;align-items:center;
+  margin:14px 0 0;padding:14px 16px;
+  background:rgba(26,79,214,.15);border:1px solid rgba(26,79,214,.3);border-radius:10px;
+}
+.sum-total .t-lbl{font-size:12px;color:var(--muted);font-weight:600}
+.sum-total .t-amt{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:var(--accent)}
+
+/* ── STATUS PILL ── */
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.sp-pending{background:rgba(252,211,77,.12);color:var(--amber)}
+.sp-slip{background:rgba(129,140,248,.12);color:var(--accent)}
+.sp-approved{background:rgba(52,211,153,.12);color:var(--green)}
+.sp-rejected{background:rgba(248,113,113,.12);color:var(--red)}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{height:3px;background:var(--border);border-radius:3px;margin:18px 0 22px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--accent));border-radius:3px;width:0;transition:width 1.5s ease}
+
+/* ── DIVIDER ── */
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:20px;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:#0f1f35;border:1px solid var(--border);
+  border-radius:20px;padding:30px;max-width:440px;width:100%;
+  animation:pop .18s var(--ease);
+}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.modal-icon-wrap{
+  width:52px;height:52px;border-radius:16px;display:flex;align-items:center;
+  justify-content:center;font-size:22px;margin-bottom:14px;
+}
+.modal-icon-wrap.success{background:rgba(52,211,153,.15);color:var(--green)}
+.modal-icon-wrap.error{background:rgba(248,113,113,.15);color:var(--red)}
+.modal-icon-wrap.warn{background:rgba(252,211,77,.12);color:var(--amber)}
+.modal-icon-wrap.info{background:rgba(129,140,248,.12);color:var(--accent)}
+.modal h3{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;color:#fff;margin-bottom:8px}
+.modal p{font-size:13.5px;color:var(--muted);line-height:1.65}
+.modal-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+
+/* ── LOADER ── */
+.loader-overlay{position:fixed;inset:0;background:rgba(5,13,26,.82);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:300}
+.loader-overlay.show{display:flex}
+.loader-box{display:flex;flex-direction:column;align-items:center;gap:14px}
+.loader-box i{font-size:34px;color:var(--accent)}
+.loader-box p{font-size:14px;color:var(--muted)}
+
+/* ── SLIP VIEWER MODAL ── */
+.slip-viewer{
+  position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);
+  display:none;align-items:center;justify-content:center;z-index:250;padding:20px;
+}
+.slip-viewer.show{display:flex}
+.slip-viewer-inner{
+  background:#0f1f35;border:1px solid var(--border);border-radius:20px;
+  max-width:700px;width:100%;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;
+}
+.sv-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+}
+.sv-head h3{font-family:'Sora',sans-serif;font-size:15px;color:#fff;font-weight:700}
+.sv-close{
+  width:34px;height:34px;background:rgba(255,255,255,.07);border:1px solid var(--border);
+  color:rgba(255,255,255,.6);border-radius:10px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;font-size:13px;
+}
+.sv-close:hover{background:rgba(255,255,255,.12);color:#fff}
+.sv-body{flex:1;overflow:auto;padding:20px;display:flex;align-items:center;justify-content:center}
+.sv-body img{max-width:100%;max-height:60vh;border-radius:10px;object-fit:contain}
+.sv-body embed{width:100%;height:60vh;border-radius:10px}
+.sv-foot{padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:10px}
+
+@media(max-width:600px){.topbar{padding:12px 16px}.page{width:calc(100% - 24px)}.card-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="Eventpage.html">
+    <img src="images/UClogo.png" alt="UniConnect"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <span class="logo-fallback" style="display:none">UniConnect</span>
+  </a>
+  <nav class="top-nav">
+    <a class="nav-btn" id="eventsLink" href="Eventpage.html">
+      <i class="fa-solid fa-calendar-days"></i> Events
+    </a>
+    <a class="nav-btn" id="bookingLink" href="#">
+      <i class="fa-solid fa-ticket"></i> My Booking
+    </a>
+  </nav>
+</header>
+
+<main class="page">
+
+  <div class="hero">
+    <div class="hero-icon"><i class="fa-solid fa-lock"></i></div>
+    <div>
+      <h1>Secure Payment</h1>
+      <p>Complete your payment to confirm your event ticket</p>
+    </div>
+  </div>
+
+  <div class="sec-badge">
+    <i class="fa-solid fa-shield-halved"></i>
+    256-bit encrypted · Your details are safe
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step done" id="step1">
+      <div class="step-num"><i class="fa-solid fa-check" style="font-size:9px"></i></div>
+      Ticket Booked
+    </div>
+    <div class="step active" id="step2">
+      <div class="step-num">2</div>
+      Payment
+    </div>
+    <div class="step" id="step3">
+      <div class="step-num">3</div>
+      Confirmed
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- LEFT -->
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <i class="fa-solid fa-credit-card" style="color:var(--accent)"></i>
+          <h2>Choose Payment Method</h2>
+        </div>
+        <div class="panel-body">
+
+          <div class="method-tabs">
+            <button class="method-tab card-tab active" onclick="selectMethod('card')">
+              <div class="mt-icon"><i class="fa-solid fa-credit-card"></i></div>
+              <div class="mt-label">Card Payment</div>
+              <div class="mt-sub">Visa / Mastercard</div>
+            </button>
+            <button class="method-tab bank-tab" onclick="selectMethod('bank')">
+              <div class="mt-icon"><i class="fa-solid fa-building-columns"></i></div>
+              <div class="mt-label">Bank Transfer</div>
+              <div class="mt-sub">Upload payment slip</div>
+            </button>
+          </div>
+
+          <!-- ── CARD PANEL ── -->
+          <div id="cardPanel" class="pay-panel show">
+            <div class="notice notice-warn">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <div><strong>Do not share your OTP with anyone.</strong> Your card details are protected.</div>
+            </div>
+            <div class="field">
+              <label>Cardholder Name</label>
+              <input id="cardHolder" type="text" placeholder="Name as on card" autocomplete="cc-name">
+            </div>
+            <div class="field card-wrap">
+              <label>Card Number</label>
+              <input id="cardNumber" type="text" maxlength="19" placeholder="0000  0000  0000  0000"
+                     autocomplete="cc-number" oninput="formatCard(this)" onkeyup="detectBrand(this)">
+              <span class="card-brand" id="cardBrandIcon"><i class="fa-regular fa-credit-card"></i></span>
+            </div>
+            <div class="card-row">
+              <div class="field">
+                <label>Expiry Month</label>
+                <select id="expMonth" autocomplete="cc-exp-month">
+                  <option value="">MM</option>
+                  <option value="1">01</option><option value="2">02</option><option value="3">03</option>
+                  <option value="4">04</option><option value="5">05</option><option value="6">06</option>
+                  <option value="7">07</option><option value="8">08</option><option value="9">09</option>
+                  <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Expiry Year</label>
+                <select id="expYear" autocomplete="cc-exp-year">
+                  <option value="">YYYY</option>
+                  <option>2025</option><option>2026</option><option>2027</option>
+                  <option>2028</option><option>2029</option><option>2030</option>
+                  <option>2031</option><option>2032</option><option>2033</option><option>2034</option>
+                </select>
+              </div>
+            </div>
+            <div class="field" style="max-width:160px">
+              <label>CVV / CVC</label>
+              <input id="cvv" type="password" maxlength="4" placeholder="•••" autocomplete="cc-csc">
+            </div>
+            <div class="progress-wrap" id="progressWrap" style="display:none">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <button class="btn btn-primary btn-full" id="cardPayBtn" onclick="submitCardPayment()">
+              <i class="fa-solid fa-lock"></i>
+              <span id="cardBtnText">Pay Now</span>
+            </button>
+          </div>
+
+          <!-- ── BANK TRANSFER PANEL ── -->
+          <div id="bankPanel" class="pay-panel">
+
+            <!-- Existing slip status (shown if slip already uploaded) -->
+            <div class="slip-status-card" id="slipStatusCard">
+              <div class="ssc-icon" id="sscIcon"><i class="fa-solid fa-clock"></i></div>
+              <div>
+                <div class="ssc-title" id="sscTitle">Slip Under Review</div>
+                <div class="ssc-sub" id="sscSub">Your payment slip has been submitted and is awaiting organizer approval.</div>
+              </div>
+              <a class="btn-view-slip" id="btnViewExistingSlip" href="#" onclick="viewExistingSlip(event)">
+                <i class="fa-solid fa-eye"></i> View Slip
+              </a>
+            </div>
+
+            <div class="bank-info">
+              <h4><i class="fa-solid fa-building-columns"></i> Bank Transfer Details</h4>
+              <div class="bank-row">
+                <span class="bk-lbl">Bank</span>
+                <span class="bk-val">Bank of Ceylon</span>
+              </div>
+              <div class="bank-row">
+                <span class="bk-lbl">Account Name</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span class="bk-val">UniConnect Events Fund</span>
+                  <button class="copy-btn" onclick="copyText('UniConnect Events Fund')">
+                    <i class="fa-regular fa-copy"></i> Copy
+                  </button>
+                </div>
+              </div>
+              <div class="bank-row">
+                <span class="bk-lbl">Account Number</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span class="bk-val" id="bankAccNum">7654-3210-9876</span>
+                  <button class="copy-btn" onclick="copyText('765432109876')">
+                    <i class="fa-regular fa-copy"></i> Copy
+                  </button>
+                </div>
+              </div>
+              <div class="bank-row">
+                <span class="bk-lbl">Branch</span><span class="bk-val">Colombo Fort</span>
+              </div>
+              <div class="bank-row">
+                <span class="bk-lbl">Reference (use this!)</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span class="bk-val" id="bankRef" style="color:var(--amber)">—</span>
+                  <button class="copy-btn" onclick="copyText(document.getElementById('bankRef').textContent)">
+                    <i class="fa-regular fa-copy"></i> Copy
+                  </button>
+                </div>
+              </div>
+              <div class="bank-row">
+                <span class="bk-lbl">Amount Due</span>
+                <span class="bk-val" style="color:var(--accent);font-size:16px" id="bankAmount">—</span>
+              </div>
+            </div>
+
+            <div class="notice notice-info">
+              <i class="fa-solid fa-circle-info"></i>
+              <div>Use your <strong>User ID (Reference)</strong> when making the transfer. Upload your slip below — the organizer will verify within 24 hours and you'll receive a confirmation email.</div>
+            </div>
+
+            <!-- Upload new slip (hidden if already uploaded & pending/approved) -->
+            <div id="uploadSection">
+              <div class="divider">Upload Payment Slip</div>
+
+              <div class="slip-zone" id="slipZone"
+                   ondragover="event.preventDefault();this.classList.add('drag-over')"
+                   ondragleave="this.classList.remove('drag-over')"
+                   ondrop="handleDrop(event)">
+                <input type="file" id="slipFile" accept=".jpg,.jpeg,.png,.pdf,.webp"
+                       onchange="handleSlipSelect(this)">
+                <div class="sz-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <div class="sz-label"><strong>Click to upload</strong> or drag &amp; drop</div>
+                <div class="sz-types">JPG · PNG · PDF · WEBP &nbsp;·&nbsp; Max 10 MB</div>
+              </div>
+
+              <div class="slip-preview" id="slipPreview">
+                <i class="fa-regular fa-file-image sp-icon" id="spIcon"></i>
+                <div>
+                  <div class="sp-name" id="spName">—</div>
+                  <div class="sp-size" id="spSize">—</div>
+                </div>
+                <button class="sp-remove" onclick="removeSlip()"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+
+              <button class="btn btn-success btn-full" id="slipSubmitBtn" onclick="submitSlip()" disabled>
+                <i class="fa-solid fa-paper-plane"></i>
+                <span id="slipBtnText">Submit Payment Slip</span>
+              </button>
+            </div>
+
+          </div><!-- /bankPanel -->
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Summary -->
+    <aside>
+      <div class="sum-card">
+        <div class="sum-head">
+          <i class="fa-solid fa-receipt" style="color:var(--accent)"></i>
+          Order Summary
+        </div>
+        <div class="sum-body">
+          <div class="sum-row"><span class="s-lbl">Event</span>      <span class="s-val" id="sumEvent">—</span></div>
+          <div class="sum-row"><span class="s-lbl">Date</span>       <span class="s-val" id="sumDate">—</span></div>
+          <div class="sum-row"><span class="s-lbl">Venue</span>      <span class="s-val" id="sumVenue">—</span></div>
+          <div class="sum-row"><span class="s-lbl">Student</span>    <span class="s-val" id="sumName">—</span></div>
+          <div class="sum-row"><span class="s-lbl">Email</span>      <span class="s-val" id="sumEmail">—</span></div>
+          <div class="sum-row"><span class="s-lbl">Qty</span>        <span class="s-val" id="sumQty">—</span></div>
+          <div class="sum-row"><span class="s-lbl">Payment</span>
+            <span class="status-pill sp-pending" id="sumStatus">
+              <i class="fa-solid fa-clock"></i> Pending
+            </span>
+          </div>
+          <div class="sum-total">
+            <span class="t-lbl">Total</span>
+            <span class="t-amt" id="sumTotal">—</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- SLIP VIEWER MODAL -->
+<div class="slip-viewer" id="slipViewer">
+  <div class="slip-viewer-inner">
+    <div class="sv-head">
+      <h3><i class="fa-solid fa-file-image" style="color:var(--accent);margin-right:8px"></i>Payment Slip</h3>
+      <button class="sv-close" onclick="closeSlipViewer()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sv-body" id="svBody">
+      <div style="text-align:center;color:var(--muted)">Loading slip…</div>
+    </div>
+    <div class="sv-foot">
+      <a class="btn btn-ghost" id="svDownload" href="#" target="_blank">
+        <i class="fa-solid fa-download"></i> Download
+      </a>
+      <button class="btn btn-ghost" onclick="closeSlipViewer()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="overlayClose(event)">
+  <div class="modal">
+    <div class="modal-icon-wrap info" id="modalIconWrap">
+      <i class="fa-solid fa-circle-info" id="modalIconI"></i>
+    </div>
+    <h3 id="modalTitle">Message</h3>
+    <p id="modalMsg">—</p>
+    <div class="modal-actions">
+      <a class="btn btn-primary" id="modalAction" href="#" style="display:none">Continue</a>
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADER -->
+<div class="loader-overlay" id="loaderOverlay">
+  <div class="loader-box">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <p id="loaderMsg">Processing…</p>
+  </div>
+</div>
+
+<script>
+/* ── CONFIG ── */
+const API    = "http://localhost:3000";
+const params = new URLSearchParams(location.search);
+
+let eventData    = null;
+let ticketData   = null;
+let userData     = null;
+let paymentId    = null;
+let slipFileObj  = null;
+let existingSlipUrl = null;
+let existingPaymentStatus = null;
+
+/* ── INIT ── */
+document.addEventListener("DOMContentLoaded", async () => {
+  updateLinks();
+  const eventId = params.get("event_id");
+  const userId  = params.get("user_id");
+
+  if (!eventId || !userId) {
+    showModal("Missing Info", "Event ID or User ID missing. Please go back to your booking.", "error");
+    return;
+  }
+
+  showLoader("Loading your booking details…");
+  try {
+    await Promise.all([loadEvent(eventId), loadUser(userId), loadTicket(eventId, userId)]);
+    populateSummary();
+    await checkExistingPayment();
+  } catch (e) {
+    showModal("Error", e.message, "error");
+  } finally {
+    hideLoader();
+  }
+});
+
+/* ── DATA LOADING ── */
+async function loadEvent(id) {
+  const res  = await fetch(`${API}/api/events/${id}`);
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.message || "Could not load event");
+  eventData = body.data?.event || body.event || body.data || {};
+}
+
+async function loadUser(id) {
+  const res  = await fetch(`${API}/api/users/${id}`);
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.message || "Could not load user");
+  userData = body.data?.user || body.user || body.data || {};
+}
+
+async function loadTicket(eventId, userId) {
+  const res  = await fetch(`${API}/api/tickets/user/${userId}`);
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.message || "Could not load tickets");
+  const tickets = Array.isArray(body.data?.tickets) ? body.data.tickets :
+                  Array.isArray(body.data)           ? body.data : [];
+  ticketData = tickets.find(t =>
+    String(t.event_id) === String(eventId) && t.booking_status !== "cancelled"
+  );
+  if (!ticketData) throw new Error("No active booking found for this event.");
+}
+
+/* ── CHECK EXISTING PAYMENT ── */
+async function checkExistingPayment() {
+  try {
+    const res  = await fetch(`${API}/api/payments/ticket/${ticketData.ticket_id}`);
+    const body = await res.json().catch(() => ({}));
+    const payments = body.data?.payments || body.data || [];
+    const active = Array.isArray(payments)
+      ? payments.find(p => !["failed","rejected"].includes((p.payment_status||"").toLowerCase()))
+      : null;
+
+    if (active) {
+      paymentId = active.payment_id;
+      existingPaymentStatus = (active.payment_status || "").toLowerCase();
+      existingSlipUrl = active.slip_url || active.bank_slip_url || null;
+
+      if (existingPaymentStatus === "sliuploaded" || existingPaymentStatus === "slipuploaded" ||
+          existingPaymentStatus === "slip_uploaded" || existingPaymentStatus === "pending") {
+        showSlipStatus("pending", "Slip Under Review",
+          "Your payment slip has been submitted. The organizer will verify within 24 hours.");
+        setStatusPill("sp-slip", "fa-clock-rotate-left", "Slip Uploaded");
+        // Hide upload section if already submitted and not rejected
+        document.getElementById("uploadSection").style.display = "none";
+      } else if (existingPaymentStatus === "completed" || existingPaymentStatus === "approved") {
+        showSlipStatus("approved", "Payment Approved! 🎉",
+          "Your payment has been verified. Check your email for your ticket and event details.");
+        setStatusPill("sp-approved", "fa-check", "Confirmed");
+        markStep3Done();
+        document.getElementById("uploadSection").style.display = "none";
+      } else if (existingPaymentStatus === "rejected") {
+        showSlipStatus("rejected", "Slip Rejected",
+          "Your payment slip was rejected. Please re-upload a valid slip.");
+        setStatusPill("sp-rejected", "fa-xmark", "Rejected");
+        // Allow re-upload
+      }
+    }
+  } catch (_) {
+    // No existing payment — fresh start
+  }
+}
+
+/* ── POPULATE SUMMARY ── */
+function populateSummary() {
+  setText("sumEvent", eventData.title || "—");
+  setText("sumDate",  formatDate(eventData.event_date));
+  setText("sumVenue", eventData.venue || "—");
+  setText("sumName",  userData.full_name || "—");
+  setText("sumEmail", userData.email || "—");
+  setText("sumQty",   String(ticketData.quantity || 1));
+  setText("sumTotal", money(ticketData.total_amount));
+
+  const ref = `UC-${ticketData.event_id}-${ticketData.user_id}`;
+  setText("bankRef",    ref);
+  setText("bankAmount", money(ticketData.total_amount));
+  setText("cardBtnText", `Pay ${money(ticketData.total_amount)}`);
+}
+
+/* ── METHOD SELECTION ── */
+function selectMethod(method) {
+  document.querySelectorAll(".method-tab").forEach(t => t.classList.remove("active"));
+  document.querySelector(`.${method}-tab`).classList.add("active");
+  document.getElementById("cardPanel").classList.toggle("show", method === "card");
+  document.getElementById("bankPanel").classList.toggle("show", method === "bank");
+}
+
+/* ── CARD UTILS ── */
+function formatCard(el) {
+  let v = el.value.replace(/\D/g, "").slice(0, 16);
+  el.value = v.replace(/(.{4})/g, "$1  ").trim();
+}
+function detectBrand(el) {
+  const v = el.value.replace(/\D/g, "");
+  const icon = document.getElementById("cardBrandIcon");
+  if (/^4/.test(v))            icon.innerHTML = '<i class="fa-brands fa-cc-visa" style="color:#1a56db"></i>';
+  else if (/^5[1-5]/.test(v)) icon.innerHTML = '<i class="fa-brands fa-cc-mastercard" style="color:#eb001b"></i>';
+  else                         icon.innerHTML = '<i class="fa-regular fa-credit-card"></i>';
+}
+
+/* ── CARD PAYMENT ── */
+async function submitCardPayment() {
+  const holder = document.getElementById("cardHolder").value.trim();
+  const number = document.getElementById("cardNumber").value.replace(/\s/g, "");
+  const month  = document.getElementById("expMonth").value;
+  const year   = document.getElementById("expYear").value;
+  const cvv    = document.getElementById("cvv").value.trim();
+
+  if (!holder)             return showModal("Validation", "Cardholder name is required.", "warn");
+  if (number.length < 13)  return showModal("Validation", "Enter a valid card number.", "warn");
+  if (!month || !year)     return showModal("Validation", "Enter the card expiry date.", "warn");
+  if (!cvv)                return showModal("Validation", "Enter the CVV.", "warn");
+
+  const btn = document.getElementById("cardPayBtn");
+  btn.disabled = true; setText("cardBtnText", "Processing…");
+  const pw = document.getElementById("progressWrap"), pb = document.getElementById("progressBar");
+  pw.style.display = "block";
+  setTimeout(() => pb.style.width = "80%", 50);
+
+  try {
+    // Ensure payment record exists
+    if (!paymentId) await initiatePayment("card");
+
+    const res  = await fetch(`${API}/api/payments/card`, {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        payment_id: paymentId, card_holder: holder,
+        card_number: number, expiry_month: Number(month),
+        expiry_year: Number(year), cvv
+      })
+    });
+    const body = await res.json().catch(() => ({}));
+    pb.style.width = "100%";
+    await delay(400);
+    pw.style.display = "none"; pb.style.width = "0";
+    if (!res.ok) throw new Error(body.message || "Card payment failed");
+
+    setStatusPill("sp-approved","fa-check","Confirmed");
+    markStep3Done();
+    showModal("Payment Successful",
+      `Payment confirmed for <strong>${esc(eventData?.title || "this event")}</strong>. Your ticket will be emailed to <strong>${esc(userData?.email || "")}</strong>.`,
+      "success", "Eventpage.html", "Back to Events");
+  } catch (err) {
+    pb.style.width = "0"; pw.style.display = "none";
+    showModal("Payment Failed", err.message, "error");
+  } finally {
+    btn.disabled = false;
+    setText("cardBtnText", `Pay ${money(ticketData?.total_amount)}`);
+  }
+}
+
+/* ── INITIATE PAYMENT ── */
+async function initiatePayment(method) {
+  const res  = await fetch(`${API}/api/payments/initiate`, {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      ticket_id: ticketData.ticket_id, user_id: userData.user_id,
+      event_id: eventData.event_id, amount: ticketData.total_amount,
+      payment_method: method
+    })
+  });
+  const body = await res.json().catch(() => ({}));
+  if (body.payment_id) { paymentId = body.payment_id; return; }
+  if (!res.ok) throw new Error(body.message || "Could not initiate payment");
+  paymentId = body.data?.payment_id || body.payment_id;
+}
+
+/* ── SLIP UPLOAD ── */
+function handleSlipSelect(input) {
+  const file = input.files[0]; if (file) setSlipFile(file);
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById("slipZone").classList.remove("drag-over");
+  const file = e.dataTransfer.files[0]; if (file) setSlipFile(file);
+}
+function setSlipFile(file) {
+  const allowed = ["image/jpeg","image/png","image/webp","application/pdf"];
+  if (!allowed.includes(file.type)) { showModal("Invalid File", "Please upload JPG, PNG, PDF, or WEBP.", "warn"); return; }
+  if (file.size > 10 * 1024 * 1024) { showModal("Too Large", "Max file size is 10 MB.", "warn"); return; }
+  slipFileObj = file;
+  document.getElementById("slipZone").style.display = "none";
+  document.getElementById("slipPreview").classList.add("show");
+  document.getElementById("spIcon").className = `${file.type === "application/pdf" ? "fa-regular fa-file-pdf" : "fa-regular fa-file-image"} sp-icon`;
+  setText("spName", file.name);
+  setText("spSize", formatBytes(file.size));
+  document.getElementById("slipSubmitBtn").disabled = false;
+}
+function removeSlip() {
+  slipFileObj = null;
+  document.getElementById("slipFile").value = "";
+  document.getElementById("slipZone").style.display = "";
+  document.getElementById("slipPreview").classList.remove("show");
+  document.getElementById("slipSubmitBtn").disabled = true;
+}
+
+async function submitSlip() {
+  if (!slipFileObj) { showModal("No File", "Please select a payment slip file.", "warn"); return; }
+
+  const btn = document.getElementById("slipSubmitBtn");
+  btn.disabled = true; setText("slipBtnText", "Uploading…");
+  showLoader("Uploading payment slip…");
+
+  try {
+    // Ensure payment record exists for bank method
+    if (!paymentId) await initiatePayment("bank_transfer");
+
+    const fd = new FormData();
+    fd.append("slip", slipFileObj);
+    // Include meta for server reference
+    fd.append("payment_id",  paymentId);
+    fd.append("ticket_id",   ticketData.ticket_id);
+    fd.append("user_id",     userData.user_id);
+    fd.append("event_id",    eventData.event_id);
+
+    const res  = await fetch(`${API}/api/payments/${paymentId}/upload-slip`, {
+      method: "POST", body: fd
+    });
+    const body = await res.json().catch(() => ({}));
+    hideLoader();
+
+    if (!res.ok) throw new Error(body.message || "Upload failed");
+
+    existingSlipUrl = body.data?.slip_url || body.slip_url || null;
+    setStatusPill("sp-slip", "fa-clock-rotate-left", "Slip Uploaded");
+
+    // Show status card, hide upload section
+    showSlipStatus("pending", "Slip Under Review",
+      "Your payment slip has been submitted. The organizer will verify within 24 hours. You will receive an email once approved.");
+    document.getElementById("uploadSection").style.display = "none";
+
+    showModal("Slip Submitted ✓",
+      "Your payment slip has been uploaded successfully.<br><br>"
+      + "The event organizer will review it within <strong>24 hours</strong>. "
+      + "Once approved, you'll receive a confirmation email with your ticket and event details.",
+      "success");
+
+  } catch (err) {
+    hideLoader();
+    showModal("Upload Failed", err.message, "error");
+  } finally {
+    btn.disabled = false; setText("slipBtnText", "Submit Payment Slip");
+  }
+}
+
+/* ── VIEW EXISTING SLIP ── */
+function viewExistingSlip(e) {
+  e.preventDefault();
+  if (!existingSlipUrl) {
+    showModal("Not Available", "Slip URL not available. Please contact support.", "warn"); return;
+  }
+  openSlipViewer(existingSlipUrl);
+}
+function openSlipViewer(url) {
+  const body = document.getElementById("svBody");
+  document.getElementById("svDownload").href = url;
+  const isPdf = url.toLowerCase().includes(".pdf") || url.toLowerCase().includes("pdf");
+  body.innerHTML = isPdf
+    ? `<embed src="${esc(url)}" type="application/pdf" style="width:100%;height:60vh;border-radius:10px">`
+    : `<img src="${esc(url)}" alt="Payment slip" onerror="this.parentElement.innerHTML='<div style=color:var(--muted);text-align:center>Could not load image. <a href=${esc(url)} target=_blank style=color:var(--accent)>Open directly</a></div>'">`;
+  document.getElementById("slipViewer").classList.add("show");
+}
+function closeSlipViewer() { document.getElementById("slipViewer").classList.remove("show"); }
+
+/* ── UI HELPERS ── */
+function showSlipStatus(type, title, sub) {
+  const card = document.getElementById("slipStatusCard");
+  card.className = `slip-status-card show ${type}`;
+  const icons = {pending:"fa-clock",approved:"fa-check-circle",rejected:"fa-circle-xmark"};
+  document.getElementById("sscIcon").innerHTML = `<i class="fa-solid ${icons[type]||"fa-clock"}"></i>`;
+  setText("sscTitle", title);
+  setText("sscSub", sub);
+  // Show/hide view slip button
+  document.getElementById("btnViewExistingSlip").style.display = existingSlipUrl ? "flex" : "none";
+}
+
+function setStatusPill(cls, icon, label) {
+  const el = document.getElementById("sumStatus");
+  el.className = `status-pill ${cls}`;
+  el.innerHTML = `<i class="fa-solid ${icon}"></i> ${label}`;
+}
+
+function markStep3Done() {
+  const s = document.getElementById("step3");
+  s.classList.remove("active"); s.classList.add("done");
+  s.querySelector(".step-num").innerHTML = '<i class="fa-solid fa-check" style="font-size:9px"></i>';
+  document.getElementById("step2").classList.add("done");
+  document.getElementById("step2").classList.remove("active");
+}
+
+function copyText(text) {
+  if (navigator.clipboard) navigator.clipboard.writeText(text);
+}
+
+function showModal(title, msg, type="info", actionHref="", actionLabel="") {
+  const types = {
+    success:{wrap:"success",icon:"fa-circle-check"},
+    error:  {wrap:"error",  icon:"fa-circle-xmark"},
+    warn:   {wrap:"warn",   icon:"fa-triangle-exclamation"},
+    info:   {wrap:"info",   icon:"fa-circle-info"}
+  };
+  const t = types[type] || types.info;
+  const wrap = document.getElementById("modalIconWrap");
+  wrap.className = `modal-icon-wrap ${t.wrap}`;
+  document.getElementById("modalIconI").className = `fa-solid ${t.icon}`;
+  setText("modalTitle", title);
+  document.getElementById("modalMsg").innerHTML = msg;
+  const btn = document.getElementById("modalAction");
+  if (actionHref) {
+    btn.href = actionHref; btn.textContent = actionLabel || "Continue";
+    btn.style.display = "inline-flex";
+  } else { btn.style.display = "none"; }
+  document.getElementById("modalOverlay").classList.add("show");
+}
+function closeModal()    { document.getElementById("modalOverlay").classList.remove("show"); }
+function overlayClose(e) { if (e.target.id === "modalOverlay") closeModal(); }
+function showLoader(msg) { setText("loaderMsg", msg||"Processing…"); document.getElementById("loaderOverlay").classList.add("show"); }
+function hideLoader()    { document.getElementById("loaderOverlay").classList.remove("show"); }
+
+function updateLinks() {
+  const eid = params.get("event_id") || "";
+  const uid = params.get("user_id")  || "";
+  const el = document.getElementById("eventsLink"), bl = document.getElementById("bookingLink");
+  if (el) el.href = eid ? `Eventpage.html?id=${eid}` : "Eventpage.html";
+  if (bl) bl.href = eid ? `Booking.html?event_id=${eid}&user_id=${uid}` : "#";
+}
+
+function setText(id, val) { const el=document.getElementById(id); if(el) el.textContent = val??'—'; }
+
+function formatDate(v) {
+  if (!v) return "—";
+  try { return new Date(v).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}); }
+  catch(_) { return String(v).split("T")[0]; }
+}
+function money(v) {
+  const n = Number(v||0);
+  return n>0 ? `LKR ${n.toLocaleString("en-LK",{minimumFractionDigits:2,maximumFractionDigits:2})}` : "Free";
+}
+function formatBytes(b) {
+  if (b<1024) return `${b} B`;
+  if (b<1048576) return `${(b/1024).toFixed(1)} KB`;
+  return `${(b/1048576).toFixed(1)} MB`;
+}
+function esc(v) {
+  return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
+function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
+</script>
+</body>
+</html>

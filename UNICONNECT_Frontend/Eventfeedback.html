@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UniConnect-Event Feedback</title>
+<script src="uc-translate.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+/* ═══════════════════════════════
+   ROOT — same tokens as Allevents.html
+═══════════════════════════════ */
+:root {
+  --primary:      #1f276f;
+  --primary-dark: #040c30;
+  --accent:       #4f7cff;
+  --bg:           #e9f3fc;
+  --card:         #ffffff;
+  --soft:         #f0f4ff;
+  --text:         #1f2937;
+  --muted:        #6b7280;
+  --border:       #e5e7eb;
+  --success:      #22c55e;
+  --danger:       #ef4444;
+  --amber:        #f59e0b;
+  --shadow:       0 10px 30px rgba(0,0,0,0.08);
+  --ease:         cubic-bezier(.4,0,.2,1);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+/* ═══ TOPBAR — identical to Allevents ═══ */
+.topbar {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0 50px; height:100px;
+  background:#fff; border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 16px rgba(4,12,48,.05);
+}
+.logo img { width:100px; }
+.top-actions { display:flex; gap:8px; }
+.top-actions a {
+  text-decoration:none; padding:9px 18px; border-radius:10px;
+  font-weight:600; font-size:13px; color:var(--primary);
+  background:var(--soft); transition:.2s var(--ease);
+  display:inline-flex; align-items:center; gap:7px;
+}
+.top-actions a:hover { background:var(--primary); color:#fff; }
+.top-actions a.active { background:var(--primary); color:#fff; }
+
+/* ═══ HERO — same style as Allevents ═══ */
+.hero { text-align:center; padding:64px 20px 36px; }
+.hero-badge {
+  display:inline-flex; gap:8px; align-items:center;
+  padding:7px 16px; border-radius:999px;
+  background:var(--soft); color:var(--primary);
+  font-size:12px; font-weight:700;
+  letter-spacing:.5px; text-transform:uppercase;
+  margin-bottom:18px; border:1px solid #dce4ff;
+}
+.hero h1 {
+  font-family:'Sora',sans-serif; font-size:48px; font-weight:800;
+  color:var(--primary-dark); letter-spacing:-.5px;
+}
+.hero p { color:var(--muted); max-width:680px; margin:14px auto 0; line-height:1.75; font-size:15px; }
+
+/* Search */
+.search-box { max-width:640px; margin:28px auto 0; position:relative; }
+.search-box input {
+  width:100%; padding:15px 20px 15px 48px;
+  border-radius:14px; border:1.5px solid var(--border);
+  background:#fff; font-family:'DM Sans',sans-serif;
+  font-size:14px; color:var(--text); box-shadow:var(--shadow);
+  outline:none; transition:.2s var(--ease);
+}
+.search-box input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,124,255,.12); }
+.search-box i { position:absolute; left:17px; top:50%; transform:translateY(-50%); color:#aaa; font-size:15px; }
+
+/* === LANGUAGE PICKER — prominent === */
+.sidebar-lang{padding:10px 16px;margin:4px 0}
+.sidebar-lang label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;padding-left:2px}
+.lang-select-wrap{position:relative;display:flex;align-items:center}
+.lang-select-wrap i{position:absolute;left:11px;color:var(--accent-blue);font-size:14px;pointer-events:none;z-index:1}
+.sidebar-lang select{
+  width:100%;
+  padding:10px 12px 10px 34px;
+  border-radius:10px;
+  border:1.5px solid var(--border);
+  background:#f8fafc;
+  color:var(--text-main);
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  outline:none;
+  font-family:inherit;
+  transition:var(--trans-fast);
+  appearance:none;
+  -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+}
+.sidebar-lang select:hover{border-color:var(--accent-blue);background:#fff}
+.sidebar-lang select:focus{border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(59,130,246,.15);background:#fff}
+
+.sidebar-logout{display:flex;align-items:center;gap:10px;margin:8px 16px 20px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--danger);font-weight:500;font-size:13px;transition:var(--trans-fast);background:transparent;border:1px solid transparent}
+.sidebar-logout:hover{background:var(--danger-bg);border-color:#fecaca}
+
+/* ═══ EVENTS GRID — same as Allevents ═══ */
+.events {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:22px; padding:36px 40px 60px;
+}
+
+/* ═══ EVENT CARD — same as Allevents ═══ */
+.event-card {
+  background:#fff; border-radius:20px; overflow:hidden;
+  box-shadow:var(--shadow); border:1px solid var(--border);
+  transition:.25s var(--ease); position:relative;
+}
+.event-card:hover { transform:translateY(-6px); box-shadow:0 18px 48px rgba(4,12,48,.13); }
+.event-image { width:100%; height:210px; object-fit:cover; display:block; }
+.card-content { padding:18px; }
+.card-content h2 { font-family:'Sora',sans-serif; font-size:17px; font-weight:700; margin-bottom:7px; }
+.card-content p { color:var(--muted); font-size:13px; line-height:1.65; }
+.tags { display:flex; flex-wrap:wrap; gap:7px; margin:13px 0; }
+.tag { padding:5px 11px; font-size:12px; border-radius:999px; background:var(--soft); color:var(--primary); font-weight:600; }
+
+.card-buttons { display:flex; gap:9px; flex-wrap:wrap; }
+.card-buttons button {
+  flex:1; min-width:90px; padding:10px; border:none; border-radius:11px;
+  font-family:'DM Sans',sans-serif; font-weight:700; cursor:pointer;
+  transition:.2s var(--ease); font-size:12.5px;
+}
+.details-btn { background:#f3f4f6; color:var(--text); }
+.details-btn:hover { background:#e5e7eb; }
+.feedback-btn {
+  background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+  color:#fff;
+}
+.feedback-btn:hover { opacity:.9; transform:translateY(-1px); }
+
+/* Ended badge */
+.badge-stack { position:absolute; top:12px; left:12px; display:flex; flex-direction:column; gap:5px; }
+.card-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; font-size:10.5px; border-radius:999px;
+  font-weight:700; white-space:nowrap; border:1px solid;
+  backdrop-filter:blur(4px);
+}
+.badge-ended { background:rgba(4,12,48,.8); color:#fff; border-color:rgba(255,255,255,.2); }
+
+/* ═══ MODAL BACKDROP ═══ */
+.modal {
+  position:fixed; inset:0;
+  background:rgba(4,12,48,.6); backdrop-filter:blur(8px);
+  display:none; justify-content:center; align-items:center;
+  padding:20px; z-index:999;
+}
+.modal.open { display:flex; }
+
+/* ═══ FEEDBACK MODAL — matches participant modal layout ═══ */
+.modal-box {
+  width:100%; max-width:820px; background:#fff; border-radius:26px;
+  overflow:hidden; display:grid; grid-template-columns:1fr 1fr;
+  box-shadow:0 24px 64px rgba(4,12,48,.22); position:relative;
+  animation:modalIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes modalIn {
+  from { opacity:0; transform:translateY(22px) scale(.95); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.close-btn {
+  position:absolute; top:16px; right:16px; width:34px; height:34px;
+  border-radius:10px; background:#f3f4f6; border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:.2s; z-index:10; font-size:14px; color:#555;
+}
+.close-btn:hover { background:var(--primary); color:#fff; }
+
+/* Left info panel */
+.modal-left {
+  padding:32px 28px; background:#f8faff;
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column; gap:14px;
+}
+.modal-left h2 { font-family:'Sora',sans-serif; font-size:22px; font-weight:800; line-height:1.3; color:var(--primary-dark); }
+.modal-left p { color:var(--muted); font-size:14px; line-height:1.65; }
+.event-meta { display:flex; flex-direction:column; gap:9px; margin-top:10px; }
+.event-meta .meta-row {
+  display:flex; align-items:center; gap:10px;
+  background:#eef2ff; color:var(--primary);
+  font-size:13px; font-weight:600;
+  padding:9px 13px; border-radius:11px;
+}
+.event-meta .meta-row i { width:14px; text-align:center; color:var(--accent); }
+
+/* Right form panel */
+.modal-right {
+  padding:28px; background:#fff;
+  display:flex; flex-direction:column; gap:16px;
+  overflow-y:auto; max-height:88vh;
+}
+.modal-image { width:100%; height:170px; object-fit:cover; border-radius:14px; display:block; }
+
+.form-section-title { font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:var(--primary-dark); }
+.field-label { font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:7px; }
+
+.input-group { position:relative; display:flex; align-items:center; }
+.input-group > i { position:absolute; left:14px; color:#94a3b8; font-size:13px; pointer-events:none; z-index:1; }
+.input-group.ta > i { top:14px; }
+
+.fb-form input,
+.fb-form textarea {
+  width:100%; padding:12px 14px 12px 40px;
+  border-radius:11px; border:1.5px solid var(--border);
+  background:#f9fafb; font-family:'DM Sans',sans-serif;
+  font-size:14px; color:var(--text); outline:none; transition:.2s var(--ease);
+}
+.fb-form textarea { padding-top:12px; min-height:90px; resize:vertical; }
+.fb-form input:focus, .fb-form textarea:focus {
+  border-color:var(--accent); background:#fff;
+  box-shadow:0 0 0 3px rgba(79,124,255,.12);
+}
+
+/* Star rating */
+.stars-row { display:flex; gap:5px; align-items:center; }
+.star-btn {
+  background:none; border:none; font-size:28px;
+  cursor:pointer; color:#d1d5db; transition:.12s var(--ease); line-height:1; padding:0;
+}
+.star-btn.lit { color:var(--amber); }
+.star-btn:hover { transform:scale(1.18); }
+.rating-label { font-size:12.5px; color:var(--muted); margin-left:8px; min-width:72px; }
+
+/* Submit btn */
+.form-btn {
+  width:100%; padding:13px; border:none; border-radius:12px;
+  font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px;
+  cursor:pointer; transition:.2s var(--ease);
+  background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+  color:#fff; display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.form-btn:hover { transform:translateY(-2px); opacity:.9; }
+.form-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+.form-note {
+  padding:13px; border-radius:11px;
+  background:#eef2ff; border:1px solid #dce4ff;
+  font-size:12.5px; color:#475569; line-height:1.65;
+}
+
+/* ═══ POPUP SYSTEM — identical to Allevents ═══ */
+.popup-overlay {
+  position:fixed; inset:0; background:rgba(4,12,48,.55);
+  backdrop-filter:blur(7px); z-index:9990; display:none;
+}
+.popup-overlay.open { display:block; }
+.popup-box {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:92%; max-width:400px; background:#fff; border-radius:24px;
+  overflow:hidden; z-index:9999; display:none;
+  box-shadow:0 24px 60px rgba(4,12,48,.22); border:1px solid var(--border);
+  animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+.popup-box.open { display:block; }
+@keyframes popIn {
+  from { opacity:0; transform:translate(-50%,-50%) scale(.88); }
+  to   { opacity:1; transform:translate(-50%,-50%) scale(1); }
+}
+.popup-bar { height:4px; }
+.popup-bar.success { background:linear-gradient(90deg,#065f46,var(--success),#34d399); }
+.popup-bar.error   { background:linear-gradient(90deg,#7f1d1d,var(--danger),#f87171); }
+.popup-bar.warning { background:linear-gradient(90deg,#78350f,var(--amber),#fcd34d); }
+.popup-inner { padding:30px 28px 24px; text-align:center; }
+.popup-icon-wrap {
+  width:64px; height:64px; border-radius:50%; margin:0 auto 18px;
+  display:flex; align-items:center; justify-content:center; font-size:24px;
+}
+.popup-icon-wrap.success { background:#dcfce7; color:#15803d; }
+.popup-icon-wrap.error   { background:#fee2e2; color:#dc2626; }
+.popup-icon-wrap.warning { background:#fef3c7; color:#b45309; }
+.popup-inner h2 { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:var(--primary-dark); margin-bottom:9px; }
+.popup-inner p  { font-size:14px; color:var(--muted); line-height:1.7; margin-bottom:22px; }
+.popup-btn-row { display:flex; gap:10px; }
+.popup-btn {
+  flex:1; padding:12px; border:none; border-radius:11px;
+  font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px;
+  cursor:pointer; transition:.2s var(--ease);
+}
+.popup-btn.primary { background:linear-gradient(135deg,var(--primary-dark),var(--primary)); color:#fff; }
+.popup-btn.primary:hover { transform:translateY(-2px); }
+.popup-btn.primary.success-btn { background:linear-gradient(135deg,#065f46,#16a34a); }
+.popup-close-x {
+  position:absolute; top:14px; right:14px; width:32px; height:32px;
+  border-radius:9px; background:#f3f4f6; border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:13px; color:#6b7280; transition:.2s; z-index:2;
+}
+.popup-close-x:hover { background:var(--primary); color:#fff; }
+@keyframes checkDraw { from{stroke-dashoffset:60} to{stroke-dashoffset:0} }
+.popup-icon-wrap svg .draw {
+  stroke-dasharray:60; stroke-dashoffset:60;
+  animation:checkDraw .45s .15s ease forwards;
+}
+
+/* ═══ FAB ═══ */
+.back-fab {
+  position:fixed; left:20px; bottom:20px; width:54px; height:54px;
+  border-radius:50%; background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+  color:#fff; border:none; cursor:pointer; z-index:90;
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+  box-shadow:0 8px 24px rgba(4,12,48,.25); transition:.2s var(--ease);
+}
+.back-fab:hover { transform:scale(1.08); }
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:768px){
+  .modal-box { grid-template-columns:1fr; max-height:94vh; overflow-y:auto; }
+  .modal-left { border-right:none; border-bottom:1px solid var(--border); }
+  .hero h1 { font-size:32px; }
+  .events { padding:20px; }
+  .topbar { padding:0 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo"><img src="images/UClogo.png" alt="UniConnect"></div>
+  <div class="top-actions">
+    <a href="HomePage.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="Allevents.html"><i class="fa-solid fa-calendar-days"></i> All Events</a>
+    <a href="EventFeedback.html" class="active"><i class="fa-solid fa-star-half-stroke"></i> Feedback</a>
+  </div>
+
+    <!-- Language Picker — prominent -->
+  <div class="sidebar-lang">
+    
+    <div class="lang-select-wrap">
+      <i class="fa-solid fa-globe"></i>
+      <select id="langSelect" onchange="doGoogleTranslate(this.value)">
+        <option value="en">English</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+        <option value="si">සිංහල (Sinhala)</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <i class="fa-solid fa-flag-checkered"></i> Ended Events
+  </div>
+  <h1>Share Your Feedback</h1>
+  <p>These events have concluded. Rate your experience and leave a comment to help organizers improve future events.</p>
+  <div class="search-box">
+    <i class="fas fa-search"></i>
+    <input type="text" id="searchInput" placeholder="Search by title, venue, category or event code…">
+  </div>
+</section>
+
+<!-- EVENTS GRID -->
+<div class="events" id="eventsContainer"></div>
+
+<!-- FEEDBACK MODAL -->
+<div class="modal" id="fbModal">
+  <div class="modal-box">
+    <div class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></div>
+
+    <!-- Left: event info -->
+    <div class="modal-left">
+      <h2 id="modalTitle">Event Title</h2>
+      <p id="modalDesc">Event description</p>
+      <div class="event-meta">
+        <div class="meta-row"><i class="fa-solid fa-calendar"></i><span id="modalDate">—</span></div>
+        <div class="meta-row"><i class="fa-solid fa-location-dot"></i><span id="modalVenue">—</span></div>
+        <div class="meta-row"><i class="fa-solid fa-tag"></i><span id="modalCategory">—</span></div>
+      </div>
+    </div>
+
+    <!-- Right: feedback form -->
+    <div class="modal-right">
+      <img id="modalImage" class="modal-image" src="" alt="">
+      <div>
+        <div class="form-section-title">Leave Your Feedback</div>
+        <p style="font-size:13px;color:var(--muted);margin-top:4px">Rate the event and share what you thought.</p>
+      </div>
+
+      <div class="fb-form" style="display:flex;flex-direction:column;gap:14px;">
+
+        <div>
+          <div class="field-label">Your User ID</div>
+          <div class="input-group">
+            <i class="fa-solid fa-id-card"></i>
+            <input type="number" id="fbUserId" placeholder="Enter your User ID">
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label">Rating</div>
+          <div class="stars-row" id="starsRow">
+            <button class="star-btn" data-v="1" type="button">★</button>
+            <button class="star-btn" data-v="2" type="button">★</button>
+            <button class="star-btn" data-v="3" type="button">★</button>
+            <button class="star-btn" data-v="4" type="button">★</button>
+            <button class="star-btn" data-v="5" type="button">★</button>
+            <span class="rating-label" id="ratingLabel">Not rated</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label">Comment</div>
+          <div class="input-group ta">
+            <i class="fa-solid fa-pen"></i>
+            <textarea id="fbComment" placeholder="What went well? What could be improved?"></textarea>
+          </div>
+        </div>
+
+        <div class="form-note">
+          Share your Feedbacks With us.
+        </div>
+
+        <button class="form-btn" id="fbSubmit" type="button" onclick="submitFeedback()">
+          <i class="fa-solid fa-paper-plane"></i> Submit Feedback
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- POPUP SYSTEM -->
+<div class="popup-overlay" id="popupOverlay"></div>
+<div class="popup-box" id="mainPopup">
+  <button class="popup-close-x" onclick="closePopup()"><i class="fas fa-times"></i></button>
+  <div class="popup-bar" id="popupBar"></div>
+  <div class="popup-inner">
+    <div class="popup-icon-wrap" id="popupIcon"></div>
+    <h2 id="popupTitle">Title</h2>
+    <p id="popupMsg">Message</p>
+    <div class="popup-btn-row" id="popupBtns">
+      <button class="popup-btn primary" onclick="closePopup()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="back-fab" title="Back to All Events" onclick="location.href='Allevents.html'">
+  <i class="fa-solid fa-arrow-left"></i>
+</button>
+
+<script>
+let allEvents = [], endedEvents = [], activeEventId = null, rating = 0;
+const ratingLabels = ['','Poor','Fair','Good','Very Good','Excellent'];
+
+function getImageUrl(p){
+  if(!p) return 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&q=80';
+  if(p.startsWith('http')) return p;
+  return `http://localhost:3000${p}`;
+}
+function formatDate(d){
+  if(!d) return '—';
+  return String(d).split('T')[0];
+}
+function todayISO(){
+  const d = new Date();
+  return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())).toISOString().split('T')[0];
+}
+
+async function loadEvents(){
+  try{
+    const res = await fetch('http://localhost:3000/api/events');
+    const data = await res.json();
+    if(!data.success) return;
+    allEvents = data.data || [];
+    const now = todayISO();
+    endedEvents = allEvents.filter(ev => String(ev.event_date).split('T')[0] < now);
+    renderEvents(endedEvents);
+  }catch(e){
+    console.error(e);
+    openPopup('error','Error','Failed to load events. Please try again.');
+  }
+}
+
+function renderEvents(list){
+  const c = document.getElementById('eventsContainer');
+  c.innerHTML = '';
+  if(!list.length){
+    c.innerHTML = `<div style="text-align:center;padding:60px 20px;font-size:16px;color:#888;grid-column:1/-1"><i class="fa-solid fa-calendar-xmark" style="font-size:32px;opacity:.3;display:block;margin-bottom:12px"></i>No ended events found.</div>`;
+    return;
+  }
+  list.forEach(ev => {
+    const card = document.createElement('div');
+    card.className = 'event-card';
+    card.innerHTML = `
+      <div class="badge-stack">
+        <span class="card-badge badge-ended"><i class="fa-solid fa-flag-checkered"></i> ENDED</span>
+      </div>
+      <img class="event-image" src="${getImageUrl(ev.image_url)}" alt="${ev.title||'Event'}"
+           onerror="this.src='https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&q=80'">
+      <div class="card-content">
+        <h2>${ev.title||'Untitled Event'}</h2>
+        <p>${(ev.description||'No description.').substring(0,110)}…</p>
+        <div class="tags">
+          <div class="tag">🆔 UCE${ev.event_id}</div>
+          <div class="tag">📅 ${formatDate(ev.event_date)}</div>
+          <div class="tag">📍 ${ev.venue||'—'}</div>
+          <div class="tag">${ev.category||'General'}</div>
+        </div>
+        <div class="card-buttons">
+          <button class="details-btn" onclick="location.href='Availableeventdetails.html?id=${ev.event_id}'">
+            <i class="fa-solid fa-circle-info"></i> Details
+          </button>
+          <button class="feedback-btn" onclick="openFb(${ev.event_id})">
+            <i class="fa-solid fa-star"></i> Leave Feedback
+          </button>
+        </div>
+      </div>`;
+    c.appendChild(card);
+  });
+}
+
+function openFb(id){
+  activeEventId = id;
+  const ev = allEvents.find(e => e.event_id === id);
+  if(!ev){ openPopup('error','Not Found','Event not found.'); return; }
+  document.getElementById('modalTitle').textContent    = ev.title || 'Event';
+  document.getElementById('modalDesc').textContent     = ev.description || '—';
+  document.getElementById('modalDate').textContent     = formatDate(ev.event_date);
+  document.getElementById('modalVenue').textContent    = ev.venue || '—';
+  document.getElementById('modalCategory').textContent = ev.category || 'General';
+  document.getElementById('modalImage').src = getImageUrl(ev.image_url);
+  document.getElementById('fbUserId').value = '';
+  document.getElementById('fbComment').value = '';
+  setRating(0);
+  document.getElementById('fbModal').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('fbModal').classList.remove('open');
+}
+
+/* Stars */
+const ratingLabelsArr = ['','Poor','Fair','Good','Very Good','Excellent'];
+function setRating(v){
+  rating = v;
+  document.querySelectorAll('#starsRow .star-btn').forEach(b =>
+    b.classList.toggle('lit', parseInt(b.dataset.v) <= v));
+  document.getElementById('ratingLabel').textContent = v ? ratingLabelsArr[v] : 'Not rated';
+}
+document.querySelectorAll('#starsRow .star-btn').forEach(b => {
+  b.addEventListener('click', () => setRating(parseInt(b.dataset.v)));
+  b.addEventListener('mouseenter', () => {
+    const v = parseInt(b.dataset.v);
+    document.querySelectorAll('#starsRow .star-btn').forEach(x =>
+      x.classList.toggle('lit', parseInt(x.dataset.v) <= v));
+  });
+});
+document.getElementById('starsRow').addEventListener('mouseleave', () => setRating(rating));
+
+async function submitFeedback() {
+  const uid = (document.getElementById('fbUserId').value || '').trim();
+  const comment = (document.getElementById('fbComment').value || '').trim();
+
+  // Only rating is required
+  if (!rating) {
+    openPopup(
+      'warning',
+      'Rating Required',
+      'Please select a star rating before submitting.'
+    );
+    return;
+  }
+
+  const btn = document.getElementById('fbSubmit');
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting…`;
+
+
+
+
+
+  try {
+    const payload = {
+      rating
+    };
+
+    // Add user_id only if entered
+    if (uid) {
+      payload.user_id = parseInt(uid);
+    }
+
+    // Add comment only if entered
+    if (comment) {
+      payload.comment = comment;
+    }
+
+    const res = await fetch(
+      `http://localhost:3000/api/events/${activeEventId}/feedback`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      closeModal();
+
+      openPopup(
+        'success',
+        'Thank You!',
+        'Your feedback has been submitted successfully.',
+        `
+        <button class="popup-btn primary success-btn" onclick="closePopup()">
+          <i class="fa-solid fa-check"></i> Done
+        </button>
+        `
+      );
+    } else {
+      openPopup(
+        'error',
+        'Failed',
+        data.message || 'Could not submit feedback.'
+      );
+    }
+  } catch (e) {
+    openPopup(
+      'error',
+      'Server Error',
+      'Could not submit feedback. Please try again.'
+    );
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML =
+      `<i class="fa-solid fa-paper-plane"></i> Submit Feedback`;
+  }
+}
+
+/* Popup */
+function openPopup(type,title,msg,btns){
+  const bar  = document.getElementById('popupBar');
+  const icon = document.getElementById('popupIcon');
+  document.getElementById('popupTitle').textContent = title;
+  document.getElementById('popupMsg').innerHTML = msg;
+  bar.className = `popup-bar ${type}`;
+  const cfgs = {
+    success:{ cls:'success', svg:`<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path class="draw" d="M6 17l7 7L26 8" stroke="#15803d" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+    error:  { cls:'error',   svg:`<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path class="draw" d="M8 8l16 16M24 8L8 24" stroke="#dc2626" stroke-width="2.8" stroke-linecap="round"/></svg>` },
+    warning:{ cls:'warning', html:'<i class="fa-solid fa-triangle-exclamation"></i>' },
+  };
+  const cfg = cfgs[type] || cfgs.warning;
+  icon.className = `popup-icon-wrap ${cfg.cls}`;
+  icon.innerHTML = cfg.svg || cfg.html || '';
+  icon.querySelectorAll('.draw').forEach(p=>{ p.style.animation='none'; void p.offsetWidth; p.style.animation=''; });
+  document.getElementById('popupBtns').innerHTML = btns || `<button class="popup-btn primary" onclick="closePopup()">OK</button>`;
+  document.getElementById('popupOverlay').classList.add('open');
+  document.getElementById('mainPopup').classList.add('open');
+}
+function closePopup(){
+  document.getElementById('mainPopup').classList.remove('open');
+  document.getElementById('popupOverlay').classList.remove('open');
+}
+document.getElementById('popupOverlay').addEventListener('click', closePopup);
+
+/* Search */
+document.getElementById('searchInput').addEventListener('input', function(){
+  const q = this.value.toLowerCase().trim();
+  renderEvents(endedEvents.filter(ev =>
+    `uce${ev.event_id}`.includes(q) ||
+    (ev.title||'').toLowerCase().includes(q) ||
+    (ev.description||'').toLowerCase().includes(q) ||
+    (ev.category||'').toLowerCase().includes(q) ||
+    (ev.venue||'').toLowerCase().includes(q)
+  ));
+});
+
+window.onclick = e => {
+  if(e.target === document.getElementById('fbModal')) closeModal();
+};
+
+loadEvents();
+
+/* ── GOOGLE TRANSLATE ── */
+function doGoogleTranslate(lang) {
+  if (!lang || lang === "en") {
+    /* Save English preference */
+    localStorage.setItem("uc_lang", "en");
+
+    /* Remove the Google Translate cookie so the page stays in English */
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + location.hostname + ";";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + location.hostname + ";";
+
+    /* Also try setting the combo to English first, then reload */
+    const combo = document.querySelector("select.goog-te-combo");
+    if (combo) {
+      combo.value = "en";
+      combo.dispatchEvent(new Event("change"));
+      /* Small delay then reload to fully clear the translation */
+      setTimeout(() => location.reload(), 400);
+    } else {
+      location.reload();
+    }
+    return;
+  }
+
+  /* Save chosen language */
+  localStorage.setItem("uc_lang", lang);
+  _applyTranslate(lang);
+}
+
+function _applyTranslate(lang) {
+  const tryApply = (attempts) => {
+    const combo = document.querySelector("select.goog-te-combo");
+    if (combo) {
+      combo.value = lang;
+      combo.dispatchEvent(new Event("change"));
+    } else if (attempts > 0) {
+      setTimeout(() => tryApply(attempts - 1), 600);
+    }
+  };
+  tryApply(15);
+}
+
+/* Restore saved language on load — but only if it's NOT English */
+document.addEventListener("DOMContentLoaded", () => {
+  const saved  = localStorage.getItem("uc_lang");
+  const picker = document.getElementById("langSelect");
+
+  /* Clear any stale GT cookie if saved language is English */
+  if (!saved || saved === "en") {
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + location.hostname + ";";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + location.hostname + ";";
+    if (picker) picker.value = "en";
+    return;
+  }
+
+  /* Restore non-English language */
+  if (picker) picker.value = saved;
+  setTimeout(() => _applyTranslate(saved), 2000);
+});
+</script>
+</body>
+</html>

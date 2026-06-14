@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UniConnect - My Event Feedbacks</title>
+<script src="uc-translate.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+/* ═══════════════════════════════
+   ROOT — same tokens as existing pages
+═══════════════════════════════ */
+:root {
+  --primary:      #1f276f;
+  --primary-dark: #040c30;
+  --accent:       #4f7cff;
+  --bg:           #e9f3fc;
+  --card:         #ffffff;
+  --soft:         #f0f4ff;
+  --text:         #1f2937;
+  --muted:        #6b7280;
+  --border:       #e5e7eb;
+  --success:      #22c55e;
+  --danger:       #ef4444;
+  --amber:        #f59e0b;
+  --shadow:       0 10px 30px rgba(0,0,0,0.08);
+  --ease:         cubic-bezier(.4,0,.2,1);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+/* ═══ TOPBAR ═══ */
+.topbar {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0 50px; height:100px;
+  background:#fff; border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 16px rgba(4,12,48,.05);
+}
+.logo img { width:100px; }
+.top-actions { display:flex; gap:8px; }
+.top-actions a {
+  text-decoration:none; padding:9px 18px; border-radius:10px;
+  font-weight:600; font-size:13px; color:var(--primary);
+  background:var(--soft); transition:.2s var(--ease);
+  display:inline-flex; align-items:center; gap:7px;
+}
+.top-actions a:hover { background:var(--primary); color:#fff; }
+
+.top-actions a.active { background:var(--primary); color:#fff; }
+
+/* === LANGUAGE PICKER — prominent === */
+.sidebar-lang{padding:10px 16px;margin:4px 0}
+.sidebar-lang label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:6px;padding-left:2px}
+.lang-select-wrap{position:relative;display:flex;align-items:center}
+.lang-select-wrap i{position:absolute;left:11px;color:var(--accent-blue);font-size:14px;pointer-events:none;z-index:1}
+.sidebar-lang select{
+  width:100%;
+  padding:10px 12px 10px 34px;
+  border-radius:10px;
+  border:1.5px solid var(--border);
+  background:#f8fafc;
+  color:var(--text-main);
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  outline:none;
+  font-family:inherit;
+  transition:var(--trans-fast);
+  appearance:none;
+  -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+}
+
+/* ═══ HERO ═══ */
+.hero { text-align:center; padding:60px 20px 32px; }
+.hero-badge {
+  display:inline-flex; gap:8px; align-items:center;
+  padding:7px 16px; border-radius:999px;
+  background:var(--soft); color:var(--primary);
+  font-size:12px; font-weight:700;
+  letter-spacing:.5px; text-transform:uppercase;
+  margin-bottom:18px; border:1px solid #dce4ff;
+}
+.hero h1 {
+  font-family:'Sora',sans-serif; font-size:46px; font-weight:800;
+  color:var(--primary-dark); letter-spacing:-.5px;
+}
+.hero p { color:var(--muted); max-width:620px; margin:14px auto 0; line-height:1.75; font-size:15px; }
+
+/* ═══ LOGIN SECTION ═══ */
+.login-wrap {
+  max-width:480px; margin:36px auto 60px;
+  background:#fff; border-radius:22px;
+  box-shadow:var(--shadow); border:1px solid var(--border);
+  overflow:hidden;
+}
+.login-bar { height:5px; background:linear-gradient(90deg,var(--primary-dark),var(--accent)); }
+.login-inner { padding:32px 30px; }
+.login-inner h3 {
+  font-family:'Sora',sans-serif; font-size:18px; font-weight:800;
+  color:var(--primary-dark); margin-bottom:6px;
+}
+.login-inner p { color:var(--muted); font-size:13.5px; margin-bottom:22px; line-height:1.6; }
+.field-label { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:7px; }
+.input-group { position:relative; display:flex; align-items:center; }
+.input-group > i { position:absolute; left:14px; color:#94a3b8; font-size:13px; pointer-events:none; }
+.input-group input {
+  width:100%; padding:13px 14px 13px 42px;
+  border-radius:12px; border:1.5px solid var(--border);
+  background:#f9fafb; font-family:'DM Sans',sans-serif;
+  font-size:14px; color:var(--text); outline:none; transition:.2s var(--ease);
+}
+.input-group input:focus {
+  border-color:var(--accent); background:#fff;
+  box-shadow:0 0 0 3px rgba(79,124,255,.12);
+}
+.load-btn {
+  width:100%; margin-top:16px; padding:14px; border:none; border-radius:12px;
+  font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px;
+  cursor:pointer; transition:.2s var(--ease);
+  background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+  color:#fff; display:flex; align-items:center; justify-content:center; gap:9px;
+}
+.load-btn:hover { transform:translateY(-2px); opacity:.92; }
+.load-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+/* ═══ DASHBOARD ═══ */
+#dashSection { display:none; padding:0 40px 60px; }
+
+/* Organizer header strip */
+.org-header {
+  background:#fff; border-radius:20px; padding:22px 28px;
+  margin-bottom:28px; border:1px solid var(--border);
+  display:flex; align-items:center; gap:18px;
+  box-shadow:0 4px 18px rgba(4,12,48,.06);
+}
+.org-avatar {
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg,var(--primary-dark),var(--accent));
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; color:#fff; font-weight:800; font-family:'Sora',sans-serif;
+  flex-shrink:0;
+}
+.org-info h3 { font-family:'Sora',sans-serif; font-size:17px; font-weight:800; color:var(--primary-dark); }
+.org-info p  { font-size:13px; color:var(--muted); margin-top:3px; }
+.org-actions { margin-left:auto; display:flex; gap:9px; align-items:center; }
+.org-tag {
+  padding:6px 13px; border-radius:999px;
+  background:var(--soft); color:var(--primary);
+  font-size:12px; font-weight:700; border:1px solid #dce4ff;
+}
+.switch-btn {
+  padding:8px 16px; border-radius:10px; border:1.5px solid var(--border);
+  font-family:'DM Sans',sans-serif; font-weight:700; font-size:12.5px;
+  cursor:pointer; background:#fff; color:var(--primary); transition:.2s var(--ease);
+  display:flex; align-items:center; gap:7px;
+}
+.switch-btn:hover { background:var(--soft); border-color:var(--accent); }
+
+/* Stats row */
+.stats-row {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:16px; margin-bottom:28px;
+}
+.stat-card {
+  background:#fff; border-radius:18px; padding:20px 22px;
+  border:1px solid var(--border); box-shadow:0 4px 18px rgba(4,12,48,.06);
+  position:relative; overflow:hidden;
+}
+.stat-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,var(--primary-dark),var(--accent));
+}
+.stat-card .stat-icon {
+  width:40px; height:40px; border-radius:12px;
+  background:var(--soft); display:flex; align-items:center; justify-content:center;
+  font-size:16px; color:var(--accent); margin-bottom:12px;
+}
+.stat-card .stat-val {
+  font-family:'Sora',sans-serif; font-size:26px; font-weight:800;
+  color:var(--primary-dark); line-height:1;
+}
+.stat-card .stat-lbl { font-size:12px; color:var(--muted); margin-top:5px; font-weight:600; }
+
+/* Filter + search row */
+.filter-row {
+  display:flex; gap:12px; align-items:center; margin-bottom:24px; flex-wrap:wrap;
+}
+.search-box { flex:1; min-width:220px; position:relative; }
+.search-box input {
+  width:100%; padding:12px 16px 12px 42px;
+  border-radius:12px; border:1.5px solid var(--border);
+  background:#fff; font-family:'DM Sans',sans-serif;
+  font-size:14px; color:var(--text); outline:none; transition:.2s var(--ease);
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+.search-box input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,124,255,.12); }
+.search-box i { position:absolute; left:15px; top:50%; transform:translateY(-50%); color:#aaa; font-size:14px; }
+.sort-sel {
+  padding:12px 16px; border-radius:12px; border:1.5px solid var(--border);
+  background:#fff; font-family:'DM Sans',sans-serif; font-size:13.5px;
+  color:var(--text); outline:none; cursor:pointer; transition:.2s;
+  box-shadow:0 2px 8px rgba(0,0,0,.04); min-width:160px;
+}
+.sort-sel:focus { border-color:var(--accent); }
+.filter-btn {
+  padding:12px 18px; border-radius:12px; border:1.5px solid var(--border);
+  background:#fff; font-family:'DM Sans',sans-serif; font-size:13px;
+  font-weight:700; color:var(--primary); cursor:pointer; transition:.2s var(--ease);
+  display:flex; align-items:center; gap:7px; white-space:nowrap;
+}
+.filter-btn:hover, .filter-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+/* Event accordion */
+.event-section {
+  background:#fff; border-radius:20px; margin-bottom:18px;
+  border:1px solid var(--border); overflow:hidden;
+  box-shadow:0 4px 18px rgba(4,12,48,.06);
+  transition:.2s var(--ease);
+}
+.event-section:hover { box-shadow:0 8px 32px rgba(4,12,48,.1); }
+
+.event-acc-header {
+  display:flex; align-items:center; gap:16px; padding:20px 24px;
+  cursor:pointer; user-select:none;
+  border-bottom:1px solid transparent; transition:.2s;
+}
+.event-acc-header:hover { background:#fafbff; }
+.event-acc-header.open { border-bottom-color:var(--border); }
+
+.ev-thumb {
+  width:68px; height:68px; border-radius:14px; object-fit:cover;
+  flex-shrink:0; border:2px solid var(--border);
+}
+.ev-info { flex:1; min-width:0; }
+.ev-info h3 { font-family:'Sora',sans-serif; font-size:15.5px; font-weight:800; color:var(--primary-dark); margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ev-meta-tags { display:flex; flex-wrap:wrap; gap:6px; }
+.ev-tag { padding:4px 10px; font-size:11.5px; border-radius:999px; background:var(--soft); color:var(--primary); font-weight:600; }
+.ev-tag.cat { background:#eef2ff; }
+
+.ev-stats { display:flex; gap:16px; align-items:center; flex-shrink:0; }
+.ev-stat { text-align:center; }
+.ev-stat .val { font-family:'Sora',sans-serif; font-size:17px; font-weight:800; color:var(--primary-dark); }
+.ev-stat .lbl { font-size:10.5px; color:var(--muted); font-weight:600; text-transform:uppercase; }
+
+.mini-stars { display:flex; gap:2px; align-items:center; }
+.mini-stars span { font-size:13px; }
+.mini-stars span.lit { color:var(--amber); }
+.mini-stars span.dim { color:#d1d5db; }
+
+.acc-arrow {
+  width:32px; height:32px; border-radius:9px; background:var(--soft);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; color:var(--primary); flex-shrink:0;
+  transition:.25s var(--ease);
+}
+.acc-arrow.open { transform:rotate(180deg); background:var(--primary); color:#fff; }
+
+/* Feedback list inside accordion */
+.fb-list { display:none; padding:0 24px 20px; }
+.fb-list.open { display:block; }
+
+.no-feedback {
+  padding:30px; text-align:center; color:var(--muted);
+  font-size:14px; background:#fafbff; border-radius:14px; margin-top:16px;
+}
+.no-feedback i { font-size:28px; opacity:.3; display:block; margin-bottom:10px; }
+
+/* Individual feedback row */
+.fb-row {
+  display:grid; grid-template-columns:auto 1fr auto;
+  gap:14px; align-items:start;
+  padding:16px 0; border-bottom:1px solid #f3f4f6;
+  animation:fadeUp .25s var(--ease) both;
+}
+.fb-row:last-child { border-bottom:none; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.fb-avatar {
+  width:40px; height:40px; border-radius:50%;
+  background:linear-gradient(135deg,#e0e7ff,#c7d2fe);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:800; color:var(--primary); flex-shrink:0;
+  font-family:'Sora',sans-serif;
+}
+.fb-body {}
+.fb-top { display:flex; align-items:center; gap:9px; margin-bottom:5px; flex-wrap:wrap; }
+.fb-uid { font-size:13px; font-weight:700; color:var(--primary-dark); }
+.fb-date { font-size:11.5px; color:var(--muted); }
+.fb-comment { font-size:13.5px; color:var(--text); line-height:1.65; }
+
+.fb-stars { display:flex; gap:2px; flex-shrink:0; }
+.fb-stars span { font-size:14px; }
+.fb-stars span.lit { color:var(--amber); }
+.fb-stars span.dim { color:#d1d5db; }
+
+/* Rating badge */
+.rating-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700;
+}
+.rating-badge.r5 { background:#dcfce7; color:#15803d; }
+.rating-badge.r4 { background:#d1fae5; color:#059669; }
+.rating-badge.r3 { background:#fef3c7; color:#b45309; }
+.rating-badge.r2 { background:#fee2e2; color:#dc2626; }
+.rating-badge.r1 { background:#fee2e2; color:#dc2626; }
+
+/* Empty state */
+.empty-state { text-align:center; padding:80px 20px; }
+.empty-state i { font-size:48px; opacity:.2; color:var(--primary); margin-bottom:18px; display:block; }
+.empty-state h3 { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:var(--primary-dark); margin-bottom:9px; }
+.empty-state p { color:var(--muted); font-size:14px; }
+
+/* Shimmer loading */
+.shimmer {
+  background: linear-gradient(90deg, #f0f4ff 25%, #e8edff 50%, #f0f4ff 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 10px;
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+.shimmer-card {
+  background:#fff; border-radius:20px; border:1px solid var(--border);
+  padding:22px 24px; margin-bottom:18px; display:flex; gap:16px; align-items:center;
+}
+.shimmer-thumb { width:68px; height:68px; border-radius:14px; flex-shrink:0; }
+.shimmer-lines { flex:1; display:flex; flex-direction:column; gap:10px; }
+.shimmer-line { height:14px; }
+
+/* Popup system */
+.popup-overlay {
+  position:fixed; inset:0; background:rgba(4,12,48,.55);
+  backdrop-filter:blur(7px); z-index:9990; display:none;
+}
+.popup-overlay.open { display:block; }
+.popup-box {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:92%; max-width:400px; background:#fff; border-radius:24px;
+  overflow:hidden; z-index:9999; display:none;
+  box-shadow:0 24px 60px rgba(4,12,48,.22); border:1px solid var(--border);
+  animation:popIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+.popup-box.open { display:block; }
+@keyframes popIn {
+  from { opacity:0; transform:translate(-50%,-50%) scale(.88); }
+  to   { opacity:1; transform:translate(-50%,-50%) scale(1); }
+}
+.popup-bar { height:4px; }
+.popup-bar.success { background:linear-gradient(90deg,#065f46,var(--success),#34d399); }
+.popup-bar.error   { background:linear-gradient(90deg,#7f1d1d,var(--danger),#f87171); }
+.popup-bar.warning { background:linear-gradient(90deg,#78350f,var(--amber),#fcd34d); }
+.popup-inner { padding:30px 28px 24px; text-align:center; }
+.popup-icon-wrap {
+  width:64px; height:64px; border-radius:50%; margin:0 auto 18px;
+  display:flex; align-items:center; justify-content:center; font-size:24px;
+}
+.popup-icon-wrap.success { background:#dcfce7; color:#15803d; }
+.popup-icon-wrap.error   { background:#fee2e2; color:#dc2626; }
+.popup-icon-wrap.warning { background:#fef3c7; color:#b45309; }
+.popup-inner h2 { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:var(--primary-dark); margin-bottom:9px; }
+.popup-inner p  { font-size:14px; color:var(--muted); line-height:1.7; margin-bottom:22px; }
+.popup-btn-row { display:flex; gap:10px; }
+.popup-btn {
+  flex:1; padding:12px; border:none; border-radius:11px;
+  font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px;
+  cursor:pointer; transition:.2s var(--ease);
+}
+.popup-btn.primary { background:linear-gradient(135deg,var(--primary-dark),var(--primary)); color:#fff; }
+.popup-btn.primary:hover { transform:translateY(-2px); }
+.popup-close-x {
+  position:absolute; top:14px; right:14px; width:32px; height:32px;
+  border-radius:9px; background:#f3f4f6; border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:13px; color:#6b7280; transition:.2s; z-index:2;
+}
+.popup-close-x:hover { background:var(--primary); color:#fff; }
+
+/* FAB */
+.back-fab {
+  position:fixed; left:20px; bottom:20px; width:54px; height:54px;
+  border-radius:50%; background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+  color:#fff; border:none; cursor:pointer; z-index:90;
+  display:flex; align-items:center; justify-content:center; font-size:16px;
+  box-shadow:0 8px 24px rgba(4,12,48,.25); transition:.2s var(--ease);
+}
+.back-fab:hover { transform:scale(1.08); }
+
+/* Responsive */
+@media(max-width:900px){
+  .stats-row { grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:640px){
+  .topbar { padding:0 18px; }
+  .hero h1 { font-size:30px; }
+  #dashSection { padding:0 16px 60px; }
+  .stats-row { grid-template-columns:repeat(2,1fr); }
+  .ev-stats { display:none; }
+  .ev-info h3 { font-size:14px; }
+  .org-header { flex-wrap:wrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo"><img src="images/UClogo.png" alt="UniConnect"></div>
+  <div class="top-actions">
+    <a href="HomePage.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="Allevents.html"><i class="fa-solid fa-calendar-days"></i> All Events</a>
+    <a href="EventFeedback.html"><i class="fa-solid fa-star-half-stroke"></i> Feedback</a>
+    <a href="ViewFeedbacks.html" class="active"><i class="fa-solid fa-chart-bar"></i> My Reviews</a>
+
+     <!-- Language Picker — prominent -->
+  <div class="sidebar-lang">
+   
+    <div class="lang-select-wrap">
+      <i class="fa-solid fa-globe"></i>
+      <select id="langSelect" onchange="doGoogleTranslate(this.value)">
+        <option value="en">English</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+        <option value="si">සිංහල (Sinhala)</option>
+      </select>
+    </div>
+  </div>
+  </div>
+
+  
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <i class="fa-solid fa-chart-bar"></i> FEEDBACKS
+  </div>
+  <h1>Find Your Event Feedbacks</h1>
+  <p>Enter your organizer ID to view all feedback received across your events - ratings, comments, and overall satisfaction scores at a glance.</p>
+</section>
+
+<!-- LOGIN SECTION -->
+<div id="loginSection">
+  <div class="login-wrap">
+    <div class="login-bar"></div>
+    <div class="login-inner">
+      <h3>Access Your Dashboard</h3>
+      <p>Enter your Organizer ID to load all events you've created and their participant feedback.</p>
+      <div class="field-label">Organizer ID</div>
+      <div class="input-group">
+        <i class="fa-solid fa-id-badge"></i>
+        <input type="number" id="orgIdInput" placeholder="Enter your Organizer ID" min="1">
+      </div>
+      <button class="load-btn" id="loadBtn" onclick="loadDashboard()">
+        <i class="fa-solid fa-chart-line"></i> Load My Dashboard
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD SECTION -->
+<div id="dashSection">
+
+  <!-- Organizer Header -->
+  <div class="org-header">
+    <div class="org-avatar" id="orgAvatar">?</div>
+    <div class="org-info">
+      <h3 id="orgName">Loading…</h3>
+      <p id="orgSub">Organizer Dashboard</p>
+    </div>
+    <div class="org-actions">
+      <span class="org-tag" id="orgIdTag"><i class="fa-solid fa-id-badge"></i> ID —</span>
+      <button class="switch-btn" onclick="switchOrganizer()">
+        <i class="fa-solid fa-arrows-rotate"></i> Switch Organizer
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+      <div class="stat-val" id="statEvents">—</div>
+      <div class="stat-lbl">Total Events</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-comments"></i></div>
+      <div class="stat-val" id="statFeedbacks">—</div>
+      <div class="stat-lbl">Total Feedbacks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+      <div class="stat-val" id="statAvgRating">—</div>
+      <div class="stat-lbl">Avg. Rating</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-face-smile"></i></div>
+      <div class="stat-val" id="statTopRated">—</div>
+      <div class="stat-lbl">5-Star Reviews</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-row">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="dashSearch" placeholder="Search events by title, venue, category…">
+    </div>
+    <select class="sort-sel" id="sortSel" onchange="applyFilters()">
+      <option value="date_desc">Date: Newest First</option>
+      <option value="date_asc">Date: Oldest First</option>
+      <option value="rating_desc">Highest Rating</option>
+      <option value="rating_asc">Lowest Rating</option>
+      <option value="feedback_desc">Most Feedbacks</option>
+    </select>
+    <button class="filter-btn" id="filterHasFb" onclick="toggleFilter(this)" data-key="hasfb">
+      <i class="fa-solid fa-comment-dots"></i> Has Feedback
+    </button>
+  </div>
+
+  <!-- Events list -->
+  <div id="eventsAccordion"></div>
+
+</div>
+
+<!-- POPUP -->
+<div class="popup-overlay" id="popupOverlay"></div>
+<div class="popup-box" id="mainPopup">
+  <button class="popup-close-x" onclick="closePopup()"><i class="fas fa-times"></i></button>
+  <div class="popup-bar" id="popupBar"></div>
+  <div class="popup-inner">
+    <div class="popup-icon-wrap" id="popupIcon"></div>
+    <h2 id="popupTitle"></h2>
+    <p id="popupMsg"></p>
+    <div class="popup-btn-row" id="popupBtns">
+      <button class="popup-btn primary" onclick="closePopup()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="back-fab" title="Back to All Events" onclick="location.href='Allevents.html'">
+  <i class="fa-solid fa-arrow-left"></i>
+</button>
+
+<script>
+/* ═══ State ═══ */
+let orgId = null;
+let orgEvents = [];        // events belonging to this organizer
+let eventFeedbacks = {};   // { event_id: [feedback,...] }
+let filterHasFb = false;
+
+/* ═══ Helpers ═══ */
+function getImageUrl(p){
+  if(!p) return 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&q=80';
+  if(p.startsWith('http')) return p;
+  return `http://localhost:3000${p}`;
+}
+function formatDate(d){
+  if(!d) return '—';
+  const s = String(d).split('T')[0];
+  const dt = new Date(s);
+  return dt.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+}
+function todayISO(){
+  const d = new Date();
+  return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())).toISOString().split('T')[0];
+}
+function starsHtml(rating, size='sm'){
+  let h = '';
+  for(let i=1;i<=5;i++) h += `<span class="${i<=rating?'lit':'dim'}">★</span>`;
+  return h;
+}
+function ratingBadge(r){
+  return `<span class="rating-badge r${r}">★ ${r}/5</span>`;
+}
+function initials(id){ return `U${id}`; }
+
+/* ═══ Load Dashboard ═══ */
+async function loadDashboard(){
+  const val = (document.getElementById('orgIdInput').value || '').trim();
+  if(!val || isNaN(val) || parseInt(val) < 1){
+    openPopup('warning','Required','Please enter a valid Organizer ID.');
+    return;
+  }
+  orgId = parseInt(val);
+  const btn = document.getElementById('loadBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Loading…`;
+
+  try {
+    // 1. Fetch all events
+    const res = await fetch('http://localhost:3000/api/events');
+    const data = await res.json();
+    if(!data.success) throw new Error(data.message || 'Failed to load events');
+
+    const allEvents = data.data || [];
+    // Filter by organizer_id
+    orgEvents = allEvents.filter(ev => parseInt(ev.organizer_id) === orgId);
+
+    if(!orgEvents.length){
+      openPopup('warning','No Events Found',`No events found for Organizer ID <strong>${orgId}</strong>. Please check the ID and try again.`);
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-chart-line"></i> Load My Dashboard`;
+      return;
+    }
+
+    // 2. Fetch feedbacks for each event
+    eventFeedbacks = {};
+    await Promise.all(orgEvents.map(async ev => {
+      try {
+        const fr = await fetch(`http://localhost:3000/api/events/${ev.event_id}/feedback`);
+        const fd = await fr.json();
+        eventFeedbacks[ev.event_id] = fd.success ? (fd.data || []) : [];
+      } catch {
+        eventFeedbacks[ev.event_id] = [];
+      }
+    }));
+
+    // 3. Show dashboard
+    showDashboard();
+
+  } catch(e) {
+    console.error(e);
+    openPopup('error','Error', e.message || 'Could not load data. Please try again.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fa-solid fa-chart-line"></i> Load My Dashboard`;
+  }
+}
+
+function showDashboard(){
+  // Org header
+  document.getElementById('orgAvatar').textContent = `O${orgId}`;
+  document.getElementById('orgName').textContent = `Organizer #${orgId}`;
+  document.getElementById('orgSub').textContent = `${orgEvents.length} event${orgEvents.length!==1?'s':''} found`;
+  document.getElementById('orgIdTag').innerHTML = `<i class="fa-solid fa-id-badge"></i> ID ${orgId}`;
+
+  // Stats
+  const totalFb = Object.values(eventFeedbacks).reduce((s,arr)=>s+arr.length,0);
+  const allRatings = Object.values(eventFeedbacks).flat().map(f=>f.rating).filter(Boolean);
+  const avgRating = allRatings.length ? (allRatings.reduce((a,b)=>a+b,0)/allRatings.length).toFixed(1) : '—';
+  const fiveStars = allRatings.filter(r=>r===5).length;
+
+  document.getElementById('statEvents').textContent    = orgEvents.length;
+  document.getElementById('statFeedbacks').textContent = totalFb;
+  document.getElementById('statAvgRating').textContent = avgRating;
+  document.getElementById('statTopRated').textContent  = fiveStars;
+
+  // Switch sections
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('dashSection').style.display = 'block';
+
+  applyFilters();
+}
+
+/* ═══ Filter & Render ═══ */
+function toggleFilter(btn){
+  btn.classList.toggle('active');
+  filterHasFb = btn.classList.contains('active');
+  applyFilters();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('dashSearch').addEventListener('input', applyFilters);
+
+  // Allow Enter key on organizer input
+  document.getElementById('orgIdInput').addEventListener('keydown', e => {
+    if(e.key === 'Enter') loadDashboard();
+  });
+});
+
+function applyFilters(){
+  const q = (document.getElementById('dashSearch').value || '').toLowerCase().trim();
+  const sort = document.getElementById('sortSel').value;
+
+  let list = [...orgEvents];
+
+  // Search filter
+  if(q){
+    list = list.filter(ev =>
+      (ev.title||'').toLowerCase().includes(q) ||
+      (ev.venue||'').toLowerCase().includes(q) ||
+      (ev.category||'').toLowerCase().includes(q) ||
+      `uce${ev.event_id}`.includes(q)
+    );
+  }
+
+  // Has feedback filter
+  if(filterHasFb){
+    list = list.filter(ev => (eventFeedbacks[ev.event_id]||[]).length > 0);
+  }
+
+  // Sort
+  list.sort((a,b) => {
+    const da = String(a.event_date).split('T')[0];
+    const db = String(b.event_date).split('T')[0];
+    const fa = eventFeedbacks[a.event_id] || [];
+    const fb2 = eventFeedbacks[b.event_id] || [];
+    const ra = fa.length ? fa.reduce((s,x)=>s+x.rating,0)/fa.length : 0;
+    const rb = fb2.length ? fb2.reduce((s,x)=>s+x.rating,0)/fb2.length : 0;
+
+    if(sort === 'date_desc')     return db > da ? 1 : -1;
+    if(sort === 'date_asc')      return da > db ? 1 : -1;
+    if(sort === 'rating_desc')   return rb - ra;
+    if(sort === 'rating_asc')    return ra - rb;
+    if(sort === 'feedback_desc') return fb2.length - fa.length;
+    return 0;
+  });
+
+  renderAccordion(list);
+}
+
+function renderAccordion(list){
+  const container = document.getElementById('eventsAccordion');
+  container.innerHTML = '';
+
+  if(!list.length){
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <h3>No Events Found</h3>
+        <p>Try adjusting your search or filters.</p>
+      </div>`;
+    return;
+  }
+
+  list.forEach((ev, idx) => {
+    const feedbacks = eventFeedbacks[ev.event_id] || [];
+    const avgRating = feedbacks.length
+      ? (feedbacks.reduce((s,f)=>s+f.rating,0)/feedbacks.length).toFixed(1)
+      : null;
+
+    const section = document.createElement('div');
+    section.className = 'event-section';
+    section.id = `evt-${ev.event_id}`;
+
+    // Mini star display
+    const fullStars = avgRating ? Math.round(parseFloat(avgRating)) : 0;
+    let miniStars = '';
+    for(let i=1;i<=5;i++) miniStars += `<span class="${i<=fullStars?'lit':'dim'}">★</span>`;
+
+    section.innerHTML = `
+      <div class="event-acc-header" onclick="toggleAcc(${ev.event_id})">
+        <img class="ev-thumb"
+          src="${getImageUrl(ev.image_url)}"
+          alt="${ev.title||'Event'}"
+          onerror="this.src='https://images.unsplash.com/photo-1511578314322-379afb476865?w=300&q=60'">
+        <div class="ev-info">
+          <h3>${ev.title || 'Untitled Event'}</h3>
+          <div class="ev-meta-tags">
+            <span class="ev-tag">🆔 UCE${ev.event_id}</span>
+            <span class="ev-tag">📅 ${formatDate(ev.event_date)}</span>
+            <span class="ev-tag">📍 ${ev.venue||'—'}</span>
+            <span class="ev-tag cat">${ev.category||'General'}</span>
+          </div>
+        </div>
+        <div class="ev-stats">
+          <div class="ev-stat">
+            <div class="val">${feedbacks.length}</div>
+            <div class="lbl">Reviews</div>
+          </div>
+          <div class="ev-stat">
+            <div class="val" style="font-size:13px">
+              <div class="mini-stars">${miniStars}</div>
+            </div>
+            <div class="lbl">${avgRating ? avgRating+' avg' : 'No ratings'}</div>
+          </div>
+        </div>
+        <div class="acc-arrow" id="arrow-${ev.event_id}">
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+      </div>
+      <div class="fb-list" id="fblist-${ev.event_id}">
+        ${renderFeedbackList(feedbacks)}
+      </div>
+    `;
+    container.appendChild(section);
+  });
+}
+
+function renderFeedbackList(feedbacks){
+  if(!feedbacks.length){
+    return `<div class="no-feedback"><i class="fa-regular fa-comment"></i>No feedback submitted for this event yet.</div>`;
+  }
+  return feedbacks.map((fb, i) => {
+    const r = parseInt(fb.rating) || 0;
+    let stars = '';
+    for(let s=1;s<=5;s++) stars += `<span class="${s<=r?'lit':'dim'}">★</span>`;
+    const dateStr = fb.created_at ? formatDate(fb.created_at) : '—';
+    const initLetter = String(fb.user_id||'?')[0].toUpperCase();
+    return `
+      <div class="fb-row" style="animation-delay:${i*0.05}s">
+        <div class="fb-avatar">${initLetter}${fb.user_id||''}</div>
+        <div class="fb-body">
+          <div class="fb-top">
+            <span class="fb-uid">User #${fb.user_id||'—'}</span>
+            ${ratingBadge(r)}
+            <span class="fb-date">${dateStr}</span>
+          </div>
+          <div class="fb-comment">${fb.comment || '<em style="color:#aaa">No comment left.</em>'}</div>
+        </div>
+        <div class="fb-stars">${stars}</div>
+      </div>`;
+  }).join('');
+}
+
+function toggleAcc(eventId){
+  const list  = document.getElementById(`fblist-${eventId}`);
+  const arrow = document.getElementById(`arrow-${eventId}`);
+  const header = list.previousElementSibling;
+  const isOpen = list.classList.contains('open');
+  list.classList.toggle('open', !isOpen);
+  arrow.classList.toggle('open', !isOpen);
+  header.classList.toggle('open', !isOpen);
+}
+
+function switchOrganizer(){
+  orgId = null;
+  orgEvents = [];
+  eventFeedbacks = {};
+  filterHasFb = false;
+  document.getElementById('filterHasFb').classList.remove('active');
+  document.getElementById('dashSearch').value = '';
+  document.getElementById('orgIdInput').value = '';
+  document.getElementById('dashSection').style.display = 'none';
+  document.getElementById('loginSection').style.display = 'block';
+}
+
+/* ═══ Popup ═══ */
+function openPopup(type,title,msg,btns){
+  const bar  = document.getElementById('popupBar');
+  const icon = document.getElementById('popupIcon');
+  document.getElementById('popupTitle').textContent = title;
+  document.getElementById('popupMsg').innerHTML = msg;
+  bar.className = `popup-bar ${type}`;
+  const cfgs = {
+    success:{ cls:'success', svg:`<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path class="draw" d="M6 17l7 7L26 8" stroke="#15803d" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+    error:  { cls:'error',   svg:`<svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path class="draw" d="M8 8l16 16M24 8L8 24" stroke="#dc2626" stroke-width="2.8" stroke-linecap="round"/></svg>` },
+    warning:{ cls:'warning', html:'<i class="fa-solid fa-triangle-exclamation"></i>' },
+  };
+  const cfg = cfgs[type] || cfgs.warning;
+  icon.className = `popup-icon-wrap ${cfg.cls}`;
+  icon.innerHTML = cfg.svg || cfg.html || '';
+  document.getElementById('popupBtns').innerHTML = btns || `<button class="popup-btn primary" onclick="closePopup()">OK</button>`;
+  document.getElementById('popupOverlay').classList.add('open');
+  document.getElementById('mainPopup').classList.add('open');
+}
+function closePopup(){
+  document.getElementById('mainPopup').classList.remove('open');
+  document.getElementById('popupOverlay').classList.remove('open');
+}
+document.getElementById('popupOverlay').addEventListener('click', closePopup);
+
+/* ── GOOGLE TRANSLATE ── */
+function doGoogleTranslate(lang) {
+  if (!lang || lang === "en") {
+    /* Save English preference */
+    localStorage.setItem("uc_lang", "en");
+
+    /* Remove the Google Translate cookie so the page stays in English */
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + location.hostname + ";";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + location.hostname + ";";
+
+    /* Also try setting the combo to English first, then reload */
+    const combo = document.querySelector("select.goog-te-combo");
+    if (combo) {
+      combo.value = "en";
+      combo.dispatchEvent(new Event("change"));
+      /* Small delay then reload to fully clear the translation */
+      setTimeout(() => location.reload(), 400);
+    } else {
+      location.reload();
+    }
+    return;
+  }
+
+  /* Save chosen language */
+  localStorage.setItem("uc_lang", lang);
+  _applyTranslate(lang);
+}
+
+function _applyTranslate(lang) {
+  const tryApply = (attempts) => {
+    const combo = document.querySelector("select.goog-te-combo");
+    if (combo) {
+      combo.value = lang;
+      combo.dispatchEvent(new Event("change"));
+    } else if (attempts > 0) {
+      setTimeout(() => tryApply(attempts - 1), 600);
+    }
+  };
+  tryApply(15);
+}
+
+/* Restore saved language on load — but only if it's NOT English */
+document.addEventListener("DOMContentLoaded", () => {
+  const saved  = localStorage.getItem("uc_lang");
+  const picker = document.getElementById("langSelect");
+
+  /* Clear any stale GT cookie if saved language is English */
+  if (!saved || saved === "en") {
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + location.hostname + ";";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + location.hostname + ";";
+    if (picker) picker.value = "en";
+    return;
+  }
+
+  /* Restore non-English language */
+  if (picker) picker.value = saved;
+  setTimeout(() => _applyTranslate(saved), 2000);
+});
+</script>
+</body>
+</html>

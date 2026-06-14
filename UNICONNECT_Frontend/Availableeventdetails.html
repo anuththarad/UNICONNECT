@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>UniConnect Event</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="/js/i18n.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════
+   ROOT
+═══════════════════════════════ */
+:root {
+    --ink:#0a0820; --ink-mid:#1a1740; --ink-light:#2d2a6e; --blue:#4f6ef7;
+    --blue-glow:rgba(79,110,247,.18); --teal:#06b6d4; --emerald:#10b981;
+    --amber:#f59e0b; --rose:#f43f5e; --purple:#8b5cf6; --bg:#f0f2ff;
+    --surface:#ffffff; --surface2:#f7f8ff; --border:#e4e7f5; --txt:#0f172a;
+    --muted:#64748b; --light:#94a3b8;
+    --sh-sm:0 1px 3px rgba(10,8,32,.06); --sh-md:0 4px 16px rgba(10,8,32,.09);
+    --sh-lg:0 12px 40px rgba(10,8,32,.13); --sh-xl:0 24px 64px rgba(10,8,32,.18);
+    --r-sm:10px; --r-md:16px; --r-lg:22px; --r-xl:28px;
+    --ease:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+    min-height:100vh;
+    font-family:'DM Sans',sans-serif;
+    background:radial-gradient(circle at top left,rgba(79,110,247,.14) 0%,transparent 28%),
+               radial-gradient(circle at bottom right,rgba(6,182,212,.10) 0%,transparent 30%),
+               var(--bg);
+    color:var(--txt);
+    overflow-x:hidden;
+}
+
+/* ═══════════════════════════════
+   TOPBAR
+═══════════════════════════════ */
+.topbar{
+    height:100px;display:flex;align-items:center;
+    justify-content:space-between;gap:20px;
+    padding:16px 36px;background:#fff;
+    border-bottom:1px solid #edf1f7;
+    box-shadow:0 0 30px rgba(15,23,42,.04);
+    position:sticky;top:0;z-index:100;
+}
+.topbar .logo-img{display:flex;align-items:center;gap:10px}
+.topbar .logo-img img{width:100px;max-width:100%;height:auto;display:block}
+.topbar-actions{display:flex;align-items:center;gap:12px}
+.back-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 16px;border-radius:10px;
+    background:var(--surface2);color:#030a2b;
+    font-size:14px;font-weight:600;text-decoration:none;
+    transition:all .2s ease;border:1px solid var(--border);
+}
+.back-btn:hover{background:var(--border);transform:translateY(-2px)}
+
+/* LANGUAGE PICKER */
+#language-picker{
+    padding:8px 14px;border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--surface2);color:var(--ink);
+    font-weight:600;font-size:13px;cursor:pointer;
+    outline:none;font-family:'DM Sans',sans-serif;
+    transition:.2s var(--ease);
+}
+#language-picker:hover{border-color:var(--blue);background:var(--surface);}
+
+/* ═══════════════════════════════
+   LAYOUT
+═══════════════════════════════ */
+.page{width:min(1180px,calc(100% - 72px));margin:0 auto;padding:36px 0 48px}
+
+/* ═══════════════════════════════
+   HERO
+═══════════════════════════════ */
+.hero-split{
+    display:grid;grid-template-columns:minmax(0,1.1fr) minmax(340px,.9fr);
+    align-items:center;gap:34px;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--r-xl);padding:34px;
+    box-shadow:var(--sh-md);position:relative;overflow:hidden;
+}
+.hero-split::after{
+    content:'';position:absolute;top:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,#1e3a8a,var(--blue),var(--teal));
+}
+.eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;
+    border-radius:999px;padding:7px 12px;
+    font-size:11px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.7px;margin-bottom:15px;
+}
+.title{
+    font-family:'Sora',sans-serif;
+    font-size:clamp(30px,4vw,48px);font-weight:800;
+    line-height:1.1;letter-spacing:-.8px;color:var(--ink);margin-bottom:15px;
+}
+.desc{max-width:720px;line-height:1.75;font-size:15.5px;color:var(--muted)}
+.tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.tag{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--surface2);border:1px solid var(--border);
+    color:var(--ink);padding:8px 13px;border-radius:999px;
+    font-size:12.5px;font-weight:700;
+}
+.tag::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--blue)}
+.hero-right{display:flex;justify-content:center}
+.hero-right img{
+    width:100%;max-width:440px;aspect-ratio:4/3;
+    border-radius:18px;object-fit:cover;
+    box-shadow:var(--sh-lg);cursor:pointer;
+    border:1px solid var(--border);
+    transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+    background:var(--surface2);
+}
+.hero-right img:hover{transform:scale(1.025);box-shadow:var(--sh-xl)}
+
+/* ═══════════════════════════════
+   COUNTDOWN
+═══════════════════════════════ */
+.countdown{
+    text-align:center;margin:22px 0;padding:15px 18px;
+    background:linear-gradient(135deg,var(--ink),var(--ink-light));
+    color:#fff;border-radius:var(--r-lg);
+    font-family:'Sora',sans-serif;font-size:20px;font-weight:800;
+    box-shadow:0 12px 34px rgba(10,8,32,.22);
+}
+
+/* ═══════════════════════════════
+   INFO CARDS
+═══════════════════════════════ */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:22px}
+.card{
+    background:var(--surface);padding:22px;
+    border-radius:var(--r-lg);border:1px solid var(--border);
+    box-shadow:var(--sh-sm);transition:.25s var(--ease);
+}
+.card:hover{transform:translateY(-3px);box-shadow:var(--sh-md)}
+.card b{display:block;font-family:'Sora',sans-serif;font-size:14px;color:var(--ink);margin-bottom:9px}
+.card p{color:var(--muted);font-size:14px;line-height:1.55}
+
+/* ═══════════════════════════════
+   FEATURE BADGES STRIP
+═══════════════════════════════ */
+.feature-strip{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.feature-badge{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:11px 18px;border-radius:999px;
+    font-size:13px;font-weight:800;border:1.5px solid;
+    transition:.2s var(--ease);
+}
+.feature-badge:hover{transform:translateY(-2px)}
+.badge-tickets-on {background:#d1fae5;color:#065f46;border-color:#6ee7b7}
+.badge-tickets-off{background:#f1f5f9;color:#64748b;border-color:#e2e8f0}
+.badge-payment-on {background:#dbeafe;color:#1e40af;border-color:#93c5fd}
+.badge-payment-off{background:#f1f5f9;color:#64748b;border-color:#e2e8f0}
+.badge-volunteer-on {background:#ede9fe;color:#5b21b6;border-color:#c4b5fd}
+.badge-volunteer-off{background:#f1f5f9;color:#64748b;border-color:#e2e8f0}
+.badge-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-green {background:#10b981}
+.dot-blue  {background:#3b82f6}
+.dot-purple{background:#8b5cf6}
+.dot-gray  {background:#94a3b8}
+
+/* ═══════════════════════════════
+   TICKET & PAYMENT PANEL
+═══════════════════════════════ */
+.tp-panel{
+    margin-top:26px;background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--r-xl);
+    box-shadow:var(--sh-md);overflow:hidden;
+}
+.tp-panel-header{padding:26px 28px 22px;border-bottom:1px solid var(--border);position:relative}
+.tp-panel-header::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,#1e3a8a,var(--blue),var(--teal));
+}
+.tp-header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.tp-header-top h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:var(--ink);margin-bottom:6px}
+.tp-header-top p{color:var(--muted);font-size:14px;line-height:1.6;max-width:560px}
+.tp-pills{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
+.tp-pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 13px;font-size:11.5px;font-weight:800}
+.pill-on {background:#d1fae5;color:#047857;border:1px solid #a7f3d0}
+.pill-off{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0}
+.tp-stats{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--border)}
+.tp-stat{padding:20px 26px;border-right:1px solid var(--border)}
+.tp-stat:last-child{border-right:0}
+.tp-stat-label{font-size:11px;text-transform:uppercase;letter-spacing:.9px;font-weight:800;color:var(--light);margin-bottom:7px}
+.tp-stat-value{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:var(--ink)}
+.tp-stat-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.tp-actions{padding:22px 26px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.tp-btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    border:none;border-radius:var(--r-sm);padding:14px 22px;
+    font-family:'DM Sans',sans-serif;font-weight:800;font-size:14px;
+    cursor:pointer;text-decoration:none;transition:.22s var(--ease);
+    position:relative;overflow:hidden;
+}
+.tp-btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.12);opacity:0;transition:.2s}
+.tp-btn:hover::after{opacity:1}
+.tp-btn-ticket{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;box-shadow:0 4px 18px rgba(30,58,138,.28)}
+.tp-btn-ticket:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(30,58,138,.36)}
+.tp-btn-pay{background:linear-gradient(135deg,#065f46,#059669);color:#fff;box-shadow:0 4px 18px rgba(5,150,105,.28)}
+.tp-btn-pay:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(5,150,105,.36)}
+.tp-btn-disabled{background:var(--surface2);color:var(--muted);border:1.5px solid var(--border);cursor:not-allowed;box-shadow:none}
+.tp-btn-disabled:hover::after{opacity:0}
+.tp-btn-disabled:hover{transform:none}
+.tp-note{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-left:auto}
+.tp-note i{color:var(--amber)}
+.tp-closed{padding:32px 28px;text-align:center}
+.tp-closed-icon{width:56px;height:56px;background:var(--surface2);border:1.5px solid var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;color:var(--muted)}
+.tp-closed h3{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:7px}
+.tp-closed p{color:var(--muted);font-size:14px}
+
+/* ═══════════════════════════════
+   VOLUNTEER SECTION
+═══════════════════════════════ */
+#volunteerSection{
+    margin-top:24px;border-radius:var(--r-xl);padding:36px;
+    text-align:center;display:none;
+    background:linear-gradient(135deg,var(--ink) 0%,var(--ink-light) 60%,#1a3a6e 100%);
+    color:#fff;box-shadow:0 20px 48px rgba(10,8,32,.25);
+    position:relative;overflow:hidden;
+}
+#volunteerSection::before{
+    content:'';position:absolute;top:-80px;right:100px;
+    width:240px;height:240px;border-radius:50%;
+    background:radial-gradient(circle,rgba(79,110,247,.26) 0%,transparent 65%);
+    pointer-events:none;
+}
+.vol-section-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+    border-radius:999px;padding:7px 14px;
+    font-size:11px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.8px;color:#fff;margin-bottom:16px;
+}
+#volunteerSection h2{
+    position:relative;font-family:'Sora',sans-serif;
+    font-size:24px;font-weight:800;margin-bottom:10px;
+}
+#volunteerSection p{
+    position:relative;color:rgba(255,255,255,.76);
+    margin:0 auto;max-width:520px;line-height:1.65;
+}
+#volunteerBtn{
+    position:relative;margin-top:22px;
+    background:#fff;color:var(--ink);border:none;
+    padding:14px 28px;border-radius:var(--r-sm);
+    cursor:pointer;font-family:'DM Sans',sans-serif;
+    font-weight:800;font-size:14px;
+    box-shadow:0 6px 20px rgba(0,0,0,.2);
+    transition:.2s var(--ease);
+}
+#volunteerBtn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.25)}
+
+/* ═══════════════════════════════
+   MODAL BACKDROP
+═══════════════════════════════ */
+.modal{
+    position:fixed;inset:0;
+    background:rgba(2,6,23,.70);
+    backdrop-filter:blur(8px);
+    display:none;justify-content:center;align-items:center;
+    z-index:99999;padding:24px;
+}
+
+/* ═══════════════════════════════
+   VOLUNTEER MODAL BOX
+═══════════════════════════════ */
+.volunteer-modal-box{
+    width:100%;max-width:950px;max-height:92vh;
+    overflow:hidden;background:#fff;border-radius:28px;
+    display:grid;grid-template-columns:360px 1fr;
+    box-shadow:0 30px 80px rgba(0,0,0,.25);
+    animation:modalIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+.close-btn{
+    position:absolute;top:18px;right:18px;
+    width:42px;height:42px;border-radius:12px;
+    border:1px solid #e5e7eb;background:#fff;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;font-size:18px;color:#64748b;
+    transition:.2s ease;z-index:20;
+}
+.close-btn:hover{background:#f3f4f6;color:#111827;transform:rotate(90deg)}
+
+/* VOL LEFT */
+.vol-left{
+    padding:30px;
+    background:linear-gradient(180deg,#fff7ed,#fff);
+    border-right:1px solid #f1f5f9;
+}
+.vol-event-img{width:100%;height:190px;object-fit:cover;border-radius:18px;margin-bottom:18px}
+.vol-badge{
+    display:inline-flex;align-items:center;gap:7px;
+    padding:6px 14px;border-radius:999px;
+    background:linear-gradient(135deg,#b45309,var(--amber));
+    color:white;font-size:11px;font-weight:800;
+    letter-spacing:.4px;text-transform:uppercase;width:fit-content;
+}
+.vol-left h2{font-size:22px;line-height:1.3;margin:12px 0;color:#0f172a}
+.vol-left p{font-size:13.5px;color:var(--muted);line-height:1.65}
+.vol-meta-row{display:flex;align-items:center;gap:9px;font-size:13px;color:#6b7280}
+.vol-meta-row i{color:var(--amber);width:14px;text-align:center}
+
+/* VOL RIGHT */
+.vol-right{padding:34px;overflow-y:auto}
+.vol-right::-webkit-scrollbar{width:8px}
+.vol-right::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:20px}
+.vol-right-header{display:flex;flex-direction:column;gap:5px;margin-bottom:4px}
+.vol-right-header h3{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:#0f172a}
+.vol-right-header p{font-size:13px;color:var(--muted)}
+
+/* FORM */
+.vol-form{display:flex;flex-direction:column;gap:18px;margin-top:10px}
+.field-label{font-size:13px;font-weight:700;color:#1e293b;margin-bottom:8px;display:block}
+.input-group{
+    position:relative;display:flex;align-items:center;
+    background:#f8fafc;border:1.5px solid #e2e8f0;
+    border-radius:14px;transition:.2s ease;overflow:hidden;
+}
+.input-group:focus-within{border-color:#3b82f6;background:#fff;box-shadow:0 0 0 4px rgba(59,130,246,.10)}
+.input-group i{width:48px;min-width:48px;text-align:center;color:#64748b;font-size:14px}
+.input-group input,
+.input-group select,
+.input-group textarea{
+    width:100%;border:none;outline:none;background:transparent;
+    padding:14px 14px 14px 0;
+    font-family:'DM Sans',sans-serif;font-size:14px;color:#0f172a;
+}
+.input-group textarea{min-height:110px;resize:vertical;padding-top:14px;line-height:1.6}
+.input-group.ta{align-items:flex-start}
+.input-group.ta i{padding-top:16px}
+.input-group select{cursor:pointer;appearance:none}
+.input-group input::placeholder,
+.input-group textarea::placeholder{color:#94a3b8}
+.form-note{
+    background:#eff6ff;border:1px solid #bfdbfe;
+    color:#1e40af;padding:14px 16px;border-radius:14px;
+    font-size:13px;line-height:1.6;
+}
+
+/* SKILL CHIPS */
+.skill-chips{display:flex;flex-wrap:wrap;gap:10px}
+.skill-chip{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 15px;border-radius:999px;
+    border:1.5px solid #e2e8f0;background:#f8fafc;
+    cursor:pointer;transition:.2s ease;
+    font-size:12px;font-weight:700;color:#64748b;
+}
+.skill-chip:hover{border-color:#cbd5e1;transform:translateY(-1px)}
+.skill-chip.checked{background:#dbeafe;border-color:#93c5fd;color:#1d4ed8}
+.skill-chip input{display:none}
+
+/* SUBMIT BUTTON */
+.vol-submit-btn{
+    margin-top:6px;width:100%;border:none;border-radius:16px;
+    padding:15px;font-size:14px;font-weight:800;
+    font-family:'DM Sans',sans-serif;cursor:pointer;
+    transition:.25s ease;color:#fff;
+    background:linear-gradient(135deg,#f59e0b,#d97706);
+    box-shadow:0 10px 25px rgba(217,119,6,.25);
+    display:flex;align-items:center;justify-content:center;gap:9px;
+}
+.vol-submit-btn:hover{transform:translateY(-2px);box-shadow:0 18px 35px rgba(217,119,6,.35)}
+.vol-submit-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+/* ═══════════════════════════════
+   FEEDBACK SECTION
+═══════════════════════════════ */
+#feedbackSection{
+    margin-top:28px;background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--r-xl);
+    box-shadow:var(--sh-md);overflow:hidden;display:none;
+}
+.fb-section-head{padding:26px 28px 22px;border-bottom:1px solid var(--border);position:relative}
+.fb-section-head::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,#f59e0b,#fbbf24,#fde68a);
+}
+.fb-section-head h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:var(--ink);margin-bottom:6px}
+.fb-section-head p{color:var(--muted);font-size:14px}
+.fb-summary{display:flex;align-items:center;gap:28px;padding:22px 28px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.fb-big-score{font-family:'Sora',sans-serif;font-size:56px;font-weight:800;color:var(--ink);line-height:1}
+.fb-score-info{display:flex;flex-direction:column;gap:4px}
+.fb-stars-display{display:flex;gap:3px;font-size:22px;color:var(--amber)}
+.fb-score-sub{font-size:13px;color:var(--muted)}
+.fb-bars{flex:1;min-width:180px;display:flex;flex-direction:column;gap:7px}
+.fb-bar-row{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted)}
+.fb-bar-track{flex:1;height:8px;background:var(--surface2);border-radius:999px;overflow:hidden;border:1px solid var(--border)}
+.fb-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--teal));transition:width .6s ease}
+.fb-bar-count{font-size:12px;color:var(--muted);min-width:18px;text-align:right}
+.fb-list{padding:22px 28px;display:flex;flex-direction:column;gap:16px}
+.fb-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;transition:.2s var(--ease)}
+.fb-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.fb-card-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.fb-avatar{
+    width:40px;height:40px;border-radius:50%;flex-shrink:0;
+    background:linear-gradient(135deg,var(--ink),var(--ink-light));
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:800;color:#fff;font-family:'Sora',sans-serif;
+}
+.fb-meta{flex:1}
+.fb-user{font-weight:700;font-size:14px;color:var(--ink)}
+.fb-date{font-size:12px;color:var(--light);margin-top:1px}
+.fb-rating{display:flex;gap:3px;font-size:16px;color:var(--amber);flex-shrink:0}
+.fb-comment{font-size:14px;color:var(--muted);line-height:1.7}
+.fb-empty{text-align:center;padding:48px 28px;color:var(--muted);font-size:14px}
+.fb-empty i{font-size:32px;opacity:.3;display:block;margin-bottom:12px}
+
+/* ═══════════════════════════════
+   POPUP
+═══════════════════════════════ */
+#popup{
+    position:fixed;inset:0;background:rgba(15,23,42,.55);
+    backdrop-filter:blur(6px);display:none;
+    align-items:center;justify-content:center;
+    z-index:99999;padding:20px;
+}
+.popup-box{
+    background:#fff;padding:30px;border-radius:24px;
+    text-align:center;color:var(--txt);
+    width:330px;max-width:100%;
+    border:1px solid var(--border);box-shadow:var(--sh-xl);
+    position:relative;overflow:hidden;
+}
+.popup-box::after{
+    content:'';position:absolute;top:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,#10b981,#34d399);
+}
+.popup-box h3{font-family:'Sora',sans-serif;color:var(--ink);font-size:19px;margin-bottom:18px}
+.popup-box button{
+    padding:11px 18px;border:none;border-radius:var(--r-sm);
+    background:linear-gradient(135deg,var(--ink),var(--ink-light));
+    color:white;cursor:pointer;
+    font-family:'DM Sans',sans-serif;font-weight:800;
+}
+
+/* ═══════════════════════════════
+   FULLSCREEN VIEWER
+═══════════════════════════════ */
+.viewer{
+    position:fixed;inset:0;background:rgba(15,23,42,.86);
+    backdrop-filter:blur(8px);display:none;
+    justify-content:center;align-items:center;
+    z-index:9999;padding:24px;
+}
+.viewer img{max-width:92%;max-height:88%;border-radius:18px;box-shadow:var(--sh-xl)}
+.viewer::after{
+    content:"✕";position:absolute;top:25px;right:35px;
+    font-size:28px;color:white;cursor:pointer;font-family:'DM Sans',sans-serif;
+}
+
+/* ═══════════════════════════════
+   ANIMATION
+═══════════════════════════════ */
+@keyframes modalIn{
+    from{opacity:0;transform:translateY(20px) scale(.96)}
+    to  {opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* ═══════════════════════════════
+   RESPONSIVE
+═══════════════════════════════ */
+@media(max-width:900px){
+    .topbar{padding:14px 18px}
+    .page{width:calc(100% - 36px);padding:24px 0 36px}
+    .hero-split{grid-template-columns:1fr;padding:24px}
+    .cards,.tp-stats{grid-template-columns:1fr}
+    .tp-stat{border-right:0;border-bottom:1px solid var(--border)}
+    .tp-stat:last-child{border-bottom:0}
+    .volunteer-modal-box{grid-template-columns:1fr;max-height:94vh;overflow-y:auto}
+    .vol-left{border-right:none;border-bottom:1px solid #e5e7eb}
+}
+@media(max-width:560px){
+    .topbar{height:auto;flex-direction:column;align-items:flex-start}
+    .topbar-actions{width:100%;flex-wrap:wrap}
+    .title{font-size:30px}
+    .tp-actions{flex-direction:column}
+    .tp-btn{width:100%}
+    .tp-note{margin-left:0}
+}
+</style>
+</head>
+
+<body>
+
+<!-- ═══════════════ TOPBAR ═══════════════ -->
+<div class="topbar">
+    <div class="logo-img">
+        <img src="images/UClogo.png" alt="Logo">
+    </div>
+    <div class="topbar-actions">
+        <!-- LANGUAGE PICKER -->
+        <select id="language-picker" onchange="i18n.change(this.value)">
+            <option value="en">🌐 English</option>
+            <option value="ta">தமிழ்</option>
+            <option value="si">සිංහල</option>
+        </select>
+        <a class="back-btn" href="OrganizerDash.html">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span data-i18n="nav.dashboard">Dashboard</span>
+        </a>
+    </div>
+</div>
+
+
+<!-- ═══════════════ VOLUNTEER MODAL ═══════════════ -->
+<div class="modal" id="volunteerModal">
+  <div class="volunteer-modal-box" style="position:relative">
+    <div class="close-btn" onclick="closeVolunteerModal()"><i class="fa-solid fa-xmark"></i></div>
+
+    <!-- Left: event info -->
+    <div class="vol-left">
+      <img id="volEventImage" class="vol-event-img" src="" alt="">
+      <div class="vol-badge">
+        <i class="fa-solid fa-hands-helping"></i>
+        <span data-i18n="volunteer.badge">Volunteer</span>
+      </div>
+      <h2 id="volEventTitle">Event Name</h2>
+      <div class="vol-meta-row"><i class="fa-solid fa-hashtag"></i> UCE<span id="volEventId">--</span></div>
+      <div class="vol-meta-row"><i class="fa-solid fa-calendar"></i> <span id="volEventDate">--</span></div>
+      <div class="vol-meta-row"><i class="fa-solid fa-location-dot"></i> <span id="volEventVenue">--</span></div>
+      <p style="margin-top:6px" data-i18n="volunteer.left_desc">Join as a volunteer, support the event team and gain real-world experience.</p>
+    </div>
+
+    <!-- Right: form -->
+    <div class="vol-right">
+      <div class="vol-right-header">
+        <h3>
+          <i class="fa-solid fa-hands-helping" style="color:var(--amber)"></i>
+          <span data-i18n="volunteer.application_title">Volunteer Application</span>
+        </h3>
+        <p data-i18n="volunteer.application_sub">Complete the form below to apply as a volunteer for this event.</p>
+      </div>
+
+      <div class="vol-form">
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.your_user_id">Your User ID</div>
+          <div class="input-group">
+            <i class="fa-solid fa-id-card"></i>
+            <input type="number" id="volUserId"
+                   data-i18n-placeholder="modal.user_id_placeholder"
+                   placeholder="Enter your User ID">
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.email">Email Address</div>
+          <div class="input-group">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="volEmail"
+                   data-i18n-placeholder="volunteer.email_placeholder"
+                   placeholder="your@email.com">
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.phone">Phone Number</div>
+          <div class="input-group">
+            <i class="fa-solid fa-phone"></i>
+            <input type="text" id="volPhone"
+                   data-i18n-placeholder="volunteer.phone_placeholder"
+                   placeholder="+94 7XX XXX XXX">
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.preferred_role">Preferred Role</div>
+          <div class="input-group">
+            <i class="fa-solid fa-briefcase"></i>
+            <select id="volRole">
+              <option value="General Volunteer"     data-i18n="volunteer.role.general">General Volunteer</option>
+              <option value="Event Coordinator"     data-i18n="volunteer.role.coordinator">Event Coordinator</option>
+              <option value="Registration Desk"     data-i18n="volunteer.role.reg_desk">Registration Desk</option>
+              <option value="Stage Management"      data-i18n="volunteer.role.stage">Stage Management</option>
+              <option value="Technical Support"     data-i18n="volunteer.role.tech">Technical Support</option>
+              <option value="Logistics"             data-i18n="volunteer.role.logistics">Logistics</option>
+              <option value="Marketing & Promotion" data-i18n="volunteer.role.marketing">Marketing &amp; Promotion</option>
+              <option value="Security"              data-i18n="volunteer.role.security">Security</option>
+              <option value="Photography / Media"   data-i18n="volunteer.role.photo">Photography / Media</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.task_label">Task / What You Can Help With</div>
+          <div class="input-group ta">
+            <i class="fa-solid fa-list-check"></i>
+            <textarea id="volTask"
+                      data-i18n-placeholder="volunteer.task_placeholder"
+                      placeholder="Describe what you can help with at this event…"></textarea>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.skills_label">Relevant Skills</div>
+          <div class="skill-chips" id="skillChips">
+            <label class="skill-chip"><input type="checkbox" value="Communication"> <span data-i18n="volunteer.skill.communication">Communication</span></label>
+            <label class="skill-chip"><input type="checkbox" value="Leadership">    <span data-i18n="volunteer.skill.leadership">Leadership</span></label>
+            <label class="skill-chip"><input type="checkbox" value="Technical">     <span data-i18n="volunteer.skill.technical">Technical</span></label>
+            <label class="skill-chip"><input type="checkbox" value="Design">        <span data-i18n="volunteer.skill.design">Design</span></label>
+            <label class="skill-chip"><input type="checkbox" value="Photography">   <span data-i18n="volunteer.skill.photography">Photography</span></label>
+            <label class="skill-chip"><input type="checkbox" value="First Aid">     <span data-i18n="volunteer.skill.first_aid">First Aid</span></label>
+            <label class="skill-chip"><input type="checkbox" value="Driving">       <span data-i18n="volunteer.skill.driving">Driving</span></label>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label" data-i18n="volunteer.why_label">Why do you want to volunteer?</div>
+          <div class="input-group ta">
+            <i class="fa-solid fa-pen"></i>
+            <textarea id="volNotes"
+                      data-i18n-placeholder="volunteer.why_placeholder"
+                      placeholder="Tell us why you want to be part of this event…"></textarea>
+          </div>
+        </div>
+
+        <div class="form-note" data-i18n="volunteer.form_note">
+          Your application will be reviewed by the event organizer. You will be notified of the outcome via email.
+        </div>
+
+        <button class="vol-submit-btn" id="volSubmitBtn" onclick="submitVolunteer()">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span data-i18n="volunteer.submit">Submit Application</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ MAIN PAGE ═══════════════ -->
+<main class="page">
+
+    <!-- HERO -->
+    <div class="hero-split">
+        <div class="hero-left">
+            <div class="eyebrow">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span data-i18n="eventdetails.eyebrow">UniConnect Event</span>
+            </div>
+            <div class="title" id="title">Loading...</div>
+            <div class="desc"  id="desc"></div>
+            <div class="tags">
+                <div class="tag" id="date"></div>
+                <div class="tag" id="venue"></div>
+                <div class="tag" id="category"></div>
+            </div>
+        </div>
+        <div class="hero-right">
+            <img id="img" src="" alt="Event Image" onclick="openFullscreen(this.src)">
+        </div>
+    </div>
+
+    <!-- FEATURE BADGES -->
+    <div class="feature-strip" id="featureStrip"></div>
+
+    <!-- COUNTDOWN -->
+    <div class="countdown" id="countdown"></div>
+
+    <!-- INFO CARDS -->
+    <div class="cards">
+        <div class="card"><b data-i18n="table.title">Title</b><p id="cTitle"></p></div>
+        <div class="card"><b data-i18n="table.venue">Venue</b><p id="cVenue"></p></div>
+        <div class="card"><b data-i18n="events.date">Date</b> <p id="cDate"></p></div>
+    </div>
+
+    <!-- TICKET & PAYMENT PANEL -->
+    <section class="tp-panel" id="tpPanel"></section>
+
+    <!-- VOLUNTEER SECTION -->
+    <div id="volunteerSection">
+        <div class="vol-section-badge">
+            <i class="fa-solid fa-hands-helping"></i>
+            <span data-i18n="eventdetails.vol_needed">Volunteers Needed</span>
+        </div>
+        <h2 data-i18n="eventdetails.vol_title">We Need Volunteers!</h2>
+        <p data-i18n="eventdetails.vol_desc">Join our volunteer team and help make this event a success. Sign up below and we'll be in touch with details.</p>
+        <button id="volunteerBtn">
+            <i class="fa-solid fa-hand-holding-heart"></i>
+            <span data-i18n="eventdetails.vol_btn">Register as Volunteer</span>
+        </button>
+    </div>
+
+    <!-- FEEDBACK SECTION -->
+    <section id="feedbackSection">
+        <div class="fb-section-head">
+            <h2>
+                <i class="fa-solid fa-star" style="color:var(--amber);margin-right:10px"></i>
+                <span data-i18n="eventdetails.feedback_title">Attendee Feedback</span>
+            </h2>
+            <p data-i18n="eventdetails.feedback_sub">Reviews submitted by people who attended this event.</p>
+        </div>
+        <div class="fb-summary">
+            <div class="fb-big-score" id="fbBigScore">—</div>
+            <div class="fb-score-info">
+                <div class="fb-stars-display" id="fbSummaryStars"></div>
+                <div class="fb-score-sub"     id="fbScoreSub"></div>
+            </div>
+            <div class="fb-bars" id="fbBars"></div>
+        </div>
+        <div class="fb-list" id="fbList"></div>
+    </section>
+
+</main>
+
+
+<!-- POPUP -->
+<div id="popup">
+    <div class="popup-box">
+        <h3 id="popupText">Success</h3>
+        <button onclick="closePopup()" data-i18n="common.close">Close</button>
+    </div>
+</div>
+
+<!-- FULLSCREEN VIEWER -->
+<div id="viewer" class="viewer" onclick="closeViewer()">
+    <img id="viewerImg" alt="Full Event Image">
+</div>
+
+
+<!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+<script>
+/* ─── STATE ─── */
+let volEventId     = null;
+let currentEvent   = null;
+let countdownTimer = null;
+
+const id = new URLSearchParams(window.location.search).get("id");
+if (!id) { alert("Missing Event ID: ?id=1"); throw new Error("Missing Event ID"); }
+
+const API_BASE = "http://localhost:3000";
+const API_URL  = `${API_BASE}/api/events/${id}`;
+
+/* ─── UTILS ─── */
+function formatDate(d) { return d ? String(d).split("T")[0] : ""; }
+function truthy(v)     { return v === true || v === 1 || v === "1" || v === "true"; }
+function money(v)      { const n = Number(v||0); return n > 0 ? `LKR ${n.toLocaleString()}` : "Free"; }
+function getImage(url) {
+    if (!url) return "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800";
+    if (url.startsWith("http")) return url;
+    return `${API_BASE}${url}`;
+}
+
+/* ─── LOAD EVENT ─── */
+async function loadEvent() {
+    try {
+        const res    = await fetch(API_URL);
+        if (!res.ok) throw new Error("Backend request failed");
+        const result = await res.json();
+        const event  = result?.data?.event || result?.data?.events?.[0] || result?.event;
+        if (!event) { document.getElementById("title").textContent = "Event not found"; return; }
+        currentEvent = event;
+        renderEvent(event);
+    } catch (err) {
+        console.error(err);
+        document.getElementById("title").textContent = "Backend not running / API not reachable";
+    }
+}
+
+/* ─── RENDER EVENT ─── */
+function renderEvent(e) {
+    document.getElementById("title").textContent    = e.title        || "";
+    document.getElementById("desc").textContent     = e.description  || "";
+    document.getElementById("cTitle").textContent   = e.title        || "-";
+    document.getElementById("cVenue").textContent   = e.venue        || "-";
+    document.getElementById("cDate").textContent    = formatDate(e.event_date);
+    document.getElementById("date").textContent     = "📅 " + formatDate(e.event_date);
+    document.getElementById("venue").textContent    = "📍 " + (e.venue    || "-");
+    document.getElementById("category").textContent = e.category     || "-";
+    document.getElementById("img").src              = getImage(e.image_url);
+
+    renderFeatureStrip(e);
+    renderTicketPaymentPanel(e);
+    handleVolunteer(e);
+    startCountdown(e.event_date, e.start_time, e.end_time);
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const evtStr   = String(e.event_date).split('T')[0];
+    if (evtStr < todayStr) loadFeedback(e.event_id || e.id);
+}
+
+/* ─── FEATURE BADGES ─── */
+function renderFeatureStrip(e) {
+    const hasTickets  = truthy(e.allow_ticket_booking);
+    const hasPayments = truthy(e.allow_payments);
+    const hasVol      = truthy(e.needs_volunteers);
+    document.getElementById("featureStrip").innerHTML = `
+        <span class="feature-badge ${hasTickets ? 'badge-tickets-on' : 'badge-tickets-off'}">
+            <span class="badge-dot ${hasTickets ? 'dot-green' : 'dot-gray'}"></span>
+            <i class="fa-solid fa-ticket"></i>
+            Ticket Booking ${hasTickets ? 'Available' : 'Unavailable'}
+        </span>
+        <span class="feature-badge ${hasPayments ? 'badge-payment-on' : 'badge-payment-off'}">
+            <span class="badge-dot ${hasPayments ? 'dot-blue' : 'dot-gray'}"></span>
+            <i class="fa-solid fa-credit-card"></i>
+            Online Payment ${hasPayments ? 'Enabled' : 'Disabled'}
+        </span>
+        <span class="feature-badge ${hasVol ? 'badge-volunteer-on' : 'badge-volunteer-off'}">
+            <span class="badge-dot ${hasVol ? 'dot-purple' : 'dot-gray'}"></span>
+            <i class="fa-solid fa-hands-helping"></i>
+            Volunteers ${hasVol ? 'Needed' : 'Not Required'}
+        </span>`;
+}
+
+/* ─── TICKET & PAYMENT PANEL ─── */
+function renderTicketPaymentPanel(e) {
+    const panel       = document.getElementById("tpPanel");
+    const eventId     = e.event_id || e.id || id;
+    const hasTickets  = truthy(e.allow_ticket_booking);
+    const hasPayments = truthy(e.allow_payments);
+    const ticketType  = e.ticket_type  || (hasPayments ? "Paid" : "Free");
+    const ticketPrice = Number(e.ticket_price    || 0);
+    const ticketQty   = Number(e.ticket_quantity || e.capacity || 0);
+    const userId      = localStorage.getItem("user_id") || "";
+    const ticketUrl   = `TicketBooking.html?event_id=${encodeURIComponent(eventId)}${userId ? `&user_id=${encodeURIComponent(userId)}` : ""}`;
+    const paymentUrl  = `Payment.html?event_id=${encodeURIComponent(eventId)}${userId ? `&user_id=${encodeURIComponent(userId)}` : ""}`;
+
+    if (!hasTickets && !hasPayments) {
+        panel.innerHTML = `
+            <div class="tp-closed">
+                <div class="tp-closed-icon"><i class="fa-solid fa-lock"></i></div>
+                <h3>Booking Not Available</h3>
+                <p>The organizer has not enabled ticket booking or payments for this event.</p>
+            </div>`;
+        return;
+    }
+
+    panel.innerHTML = `
+        <div class="tp-panel-header">
+            <div class="tp-header-top">
+                <div>
+                    <h2>Tickets &amp; Payments</h2>
+                    <p>${hasTickets
+                        ? "Secure your spot now. Book your ticket and optionally complete payment below."
+                        : "Payment is required to participate. Use the payment button below to proceed."}</p>
+                </div>
+                <div class="tp-pills">
+                    <span class="tp-pill ${hasTickets  ? 'pill-on' : 'pill-off'}">
+                        <i class="fa-solid ${hasTickets  ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+                        Tickets ${hasTickets ? 'Open' : 'Closed'}
+                    </span>
+                    <span class="tp-pill ${hasPayments ? 'pill-on' : 'pill-off'}">
+                        <i class="fa-solid ${hasPayments ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+                        Payments ${hasPayments ? 'On' : 'Off'}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="tp-stats">
+            <div class="tp-stat">
+                <div class="tp-stat-label">Ticket Type</div>
+                <div class="tp-stat-value">${hasTickets ? ticketType : "—"}</div>
+                <div class="tp-stat-sub">${hasTickets ? "per ticket" : "booking unavailable"}</div>
+            </div>
+            <div class="tp-stat">
+                <div class="tp-stat-label">Ticket Price</div>
+                <div class="tp-stat-value">${hasTickets ? money(ticketPrice) : "—"}</div>
+                <div class="tp-stat-sub">${hasTickets ? (ticketPrice > 0 ? "per person" : "no charge") : "n/a"}</div>
+            </div>
+            <div class="tp-stat">
+                <div class="tp-stat-label">Available Seats</div>
+                <div class="tp-stat-value">${hasTickets ? (ticketQty > 0 ? ticketQty : "Unlimited") : "—"}</div>
+                <div class="tp-stat-sub">${hasTickets ? "spots remaining" : "n/a"}</div>
+            </div>
+        </div>
+        <div class="tp-actions">
+            ${hasTickets
+                ? `<a class="tp-btn tp-btn-ticket" href="${ticketUrl}"><i class="fa-solid fa-ticket"></i> Book Your Ticket</a>`
+                : `<button class="tp-btn tp-btn-disabled" disabled><i class="fa-solid fa-ticket"></i> Ticket Booking Closed</button>`}
+            ${hasPayments
+                ? `<a class="tp-btn tp-btn-pay" href="${paymentUrl}"><i class="fa-solid fa-credit-card"></i> Make Payment</a>`
+                : `<button class="tp-btn tp-btn-disabled" disabled><i class="fa-solid fa-credit-card"></i> Payment Not Required</button>`}
+            ${(hasTickets || hasPayments)
+                ? `<span class="tp-note"><i class="fa-solid fa-shield-halved"></i> Secure checkout</span>`
+                : ""}
+        </div>`;
+}
+
+/* ─── VOLUNTEER ─── */
+function handleVolunteer(e) {
+    const section = document.getElementById("volunteerSection");
+    const btn     = document.getElementById("volunteerBtn");
+    if (truthy(e.needs_volunteers)) {
+        section.style.display = "block";
+        btn.onclick = () => openVolunteerModal(e.event_id || e.id);
+    } else {
+        section.style.display = "none";
+    }
+}
+
+/* ─── COUNTDOWN ─── */
+function startCountdown(eventDate, startTime, endTime) {
+    clearInterval(countdownTimer);
+    if (!eventDate) { document.getElementById("countdown").textContent = "Date unavailable"; return; }
+    const baseDate = new Date(eventDate);
+    if (isNaN(baseDate.getTime())) { document.getElementById("countdown").textContent = "Invalid event date"; return; }
+    startTime = startTime || "00:00:00";
+    endTime   = endTime   || "23:59:59";
+    if (startTime.length === 5) startTime += ":00";
+    if (endTime.length   === 5) endTime   += ":00";
+    const [sh,sm,ss] = startTime.split(":").map(Number);
+    const [eh,em,es] = endTime.split(":").map(Number);
+    const start = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), sh||0, sm||0, ss||0);
+    const end   = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), eh||23, em||59, es||59);
+    function updateCountdown() {
+        const now = new Date();
+        if (now >= end)   { document.getElementById("countdown").textContent = "⛔ Event Ended"; clearInterval(countdownTimer); return; }
+        if (now >= start) { document.getElementById("countdown").textContent = "🔥 Event is Live Now!"; return; }
+        const diff = start - now;
+        const days  = Math.floor(diff / (1000*60*60*24));
+        const hours = Math.floor((diff / (1000*60*60)) % 24);
+        const mins  = Math.floor((diff / (1000*60))    % 60);
+        const secs  = Math.floor((diff / 1000)         % 60);
+        document.getElementById("countdown").textContent = `⏳ Starts in ${days}d ${hours}h ${mins}m ${secs}s`;
+    }
+    updateCountdown();
+    countdownTimer = setInterval(updateCountdown, 1000);
+}
+
+/* ─── VOLUNTEER MODAL ─── */
+function openVolunteerModal(eid) {
+    volEventId = eid;
+    const ev   = currentEvent;
+    document.getElementById('volEventTitle').textContent  = ev?.title       || 'Event';
+    document.getElementById('volEventImage').src          = getImage(ev?.image_url);
+    document.getElementById('volEventId').textContent     = ev?.event_id    || ev?.id || '—';
+    document.getElementById('volEventDate').textContent   = formatDate(ev?.event_date);
+    document.getElementById('volEventVenue').textContent  = ev?.venue       || '—';
+    ['volUserId','volEmail','volPhone','volTask','volNotes'].forEach(i => document.getElementById(i).value = '');
+    document.getElementById('volRole').value = 'General Volunteer';
+    document.querySelectorAll('.skill-chip').forEach(c => c.classList.remove('checked'));
+    document.getElementById('volunteerModal').style.display = "flex";
+}
+
+function closeVolunteerModal() {
+    document.getElementById('volunteerModal').style.display = "none";
+    ['volUserId','volEmail','volPhone','volTask','volNotes'].forEach(i => document.getElementById(i).value = '');
+    document.getElementById('volRole').value = 'General Volunteer';
+    document.querySelectorAll('.skill-chip').forEach(c => c.classList.remove('checked'));
+    volEventId = null;
+}
+
+/* ─── SUBMIT VOLUNTEER ─── */
+async function submitVolunteer() {
+    const user_id = document.getElementById('volUserId').value.trim();
+    const role    = document.getElementById('volRole').value;
+    const task    = document.getElementById('volTask').value.trim();
+    const notes   = document.getElementById('volNotes').value.trim();
+    const skills  = [...document.querySelectorAll('.skill-chip.checked input')].map(c => c.value).join(', ');
+
+    if (!user_id || !task) {
+        showPopup('Please fill in your User ID and the task description.');
+        return;
+    }
+
+    const btn = document.getElementById('volSubmitBtn');
+    btn.disabled  = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span data-i18n="common.submitting">Submitting…</span>`;
+
+    try {
+        const r = await fetch(`${API_BASE}/api/events/${volEventId}/volunteer`, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ user_id:parseInt(user_id), event_id:volEventId, role, assigned_task:task, task:notes, skills, status:'pending' })
+        });
+        const d = await r.json();
+        if (d.success) {
+            closeVolunteerModal();
+            showPopup('✅ Your volunteer application has been submitted and is pending review.');
+        } else {
+            showPopup('❌ ' + (d.message || 'Volunteer application failed.'));
+        }
+    } catch(e) {
+        console.error(e);
+        showPopup('❌ Could not submit your application. Please try again.');
+    } finally {
+        btn.disabled  = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span data-i18n="volunteer.submit">Submit Application</span>`;
+    }
+}
+
+/* ─── SKILL CHIPS ─── */
+document.querySelectorAll('.skill-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        chip.classList.toggle('checked');
+        chip.querySelector('input').checked = chip.classList.contains('checked');
+    });
+});
+
+/* ─── FEEDBACK ─── */
+async function loadFeedback(eventId) {
+    try {
+        const res  = await fetch(`${API_BASE}/api/events/${eventId}/feedback`);
+        const data = await res.json();
+        renderFeedback(data.data || data.feedbacks || []);
+    } catch(e) { console.error(e); }
+}
+
+function renderFeedback(list) {
+    const section = document.getElementById('feedbackSection');
+    section.style.display = 'block';
+    if (list.length) {
+        const avg  = list.reduce((s,f) => s + Number(f.rating), 0) / list.length;
+        document.getElementById('fbBigScore').textContent = avg.toFixed(1);
+        document.getElementById('fbScoreSub').textContent = `${list.length} review${list.length > 1 ? 's' : ''}`;
+        document.getElementById('fbSummaryStars').innerHTML = [1,2,3,4,5].map(i =>
+            `<i class="fa-${i <= Math.round(avg) ? 'solid' : 'regular'} fa-star"></i>`).join('');
+        document.getElementById('fbBars').innerHTML = [5,4,3,2,1].map(star => {
+            const cnt = list.filter(f => Math.round(Number(f.rating)) === star).length;
+            const pct = list.length ? Math.round((cnt/list.length)*100) : 0;
+            return `<div class="fb-bar-row">
+                <span>${star}<i class="fa-solid fa-star" style="color:var(--amber);font-size:11px;margin-left:2px"></i></span>
+                <div class="fb-bar-track"><div class="fb-bar-fill" style="width:${pct}%"></div></div>
+                <span class="fb-bar-count">${cnt}</span>
+            </div>`;
+        }).join('');
+    } else {
+        document.getElementById('fbBigScore').textContent = '—';
+        document.getElementById('fbScoreSub').textContent = 'No reviews yet';
+    }
+    const listEl = document.getElementById('fbList');
+    if (!list.length) {
+        listEl.innerHTML = `<div class="fb-empty"><i class="fa-regular fa-comment-dots"></i>No feedback has been submitted for this event yet.</div>`;
+        return;
+    }
+    listEl.innerHTML = list.map(f => {
+        const stars   = [1,2,3,4,5].map(i => `<i class="fa-${i <= Number(f.rating) ? 'solid' : 'regular'} fa-star"></i>`).join('');
+        const dateStr = f.feedback_date ? String(f.feedback_date).split('T')[0] : '—';
+        return `<div class="fb-card">
+            <div class="fb-card-top">
+                <div class="fb-avatar">U${f.user_id||'?'}</div>
+                <div class="fb-meta">
+                    <div class="fb-user">User #${f.user_id}</div>
+                    <div class="fb-date">${dateStr}</div>
+                </div>
+                <div class="fb-rating">${stars}</div>
+            </div>
+            <div class="fb-comment">${f.comments || f.comment || ''}</div>
+        </div>`;
+    }).join('');
+}
+
+/* ─── UI UTILS ─── */
+function openFullscreen(src) {
+    document.getElementById("viewerImg").src        = src;
+    document.getElementById("viewer").style.display = "flex";
+}
+function closeViewer() { document.getElementById("viewer").style.display = "none"; }
+function showPopup(msg) {
+    document.getElementById("popupText").textContent = msg;
+    document.getElementById("popup").style.display   = "flex";
+}
+function closePopup() { document.getElementById("popup").style.display = "none"; }
+
+/* ─── INIT ─── */
+document.addEventListener("DOMContentLoaded", loadEvent);
+</script>
+</body>
+</html>

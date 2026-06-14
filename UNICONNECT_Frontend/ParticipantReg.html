@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Participant Registration</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --primary:#2563eb;
+    --bg:#071226;
+    --card:#0f172a;
+    --border:#1e3a8a;
+    --text:#ffffff;
+    --muted:#94a3b8;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,sans-serif;
+}
+
+body{
+    background:linear-gradient(
+        135deg,
+        #071226,
+        #0f172a
+    );
+
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
+}
+
+.card{
+
+    width:100%;
+    max-width:520px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:28px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.45);
+}
+
+.banner{
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
+    padding:40px;
+
+    text-align:center;
+}
+
+.banner h1{
+
+    color:white;
+    font-size:34px;
+
+    margin-bottom:12px;
+}
+
+.banner p{
+
+    color:#dbeafe;
+    line-height:1.7;
+}
+
+.content{
+
+    padding:35px;
+}
+
+.group{
+
+    margin-bottom:22px;
+}
+
+.group label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    color:#dbeafe;
+
+    font-size:14px;
+}
+
+.group input{
+
+    width:100%;
+
+    padding:16px;
+
+    border-radius:14px;
+
+    border:1px solid #1e40af;
+
+    background:#081120;
+
+    color:white;
+
+    font-size:15px;
+}
+
+.group input:focus{
+
+    outline:none;
+
+    border-color:#3b82f6;
+}
+
+.event-box{
+
+    background:#081120;
+
+    border:1px solid #1e40af;
+
+    border-radius:16px;
+
+    padding:20px;
+
+    margin-bottom:25px;
+}
+
+.event-box h2{
+
+    font-size:24px;
+
+    margin-bottom:12px;
+}
+
+.event-box p{
+
+    color:var(--muted);
+
+    line-height:1.6;
+}
+
+.info{
+
+    margin-top:15px;
+
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.tag{
+
+    background:#1e3a8a;
+
+    padding:8px 12px;
+
+    border-radius:20px;
+
+    font-size:13px;
+}
+
+button{
+
+    width:100%;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #1d4ed8
+    );
+
+    color:white;
+
+    font-size:16px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:0.2s;
+}
+
+button:hover{
+
+    transform:translateY(-2px);
+}
+
+.popup{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,0.7);
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:999;
+}
+
+.popup-box{
+
+    width:90%;
+    max-width:420px;
+
+    background:#0f172a;
+
+    border-radius:24px;
+
+    padding:40px;
+
+    text-align:center;
+
+    border:1px solid #2563eb;
+}
+
+.check{
+
+    width:90px;
+    height:90px;
+
+    margin:auto auto 20px;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:42px;
+    color:white;
+}
+
+.popup-box h2{
+
+    margin-bottom:14px;
+}
+
+.popup-box p{
+
+    color:#cbd5e1;
+
+    line-height:1.7;
+}
+
+.popup-box button{
+
+    margin-top:25px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="banner">
+
+        <h1>Event Registration</h1>
+
+        <p>
+            Register yourself as a participant
+            and secure your seat for this event.
+        </p>
+
+    </div>
+
+    <div class="content">
+
+        <div class="event-box">
+
+            <h2 id="eventTitle">
+                Loading...
+            </h2>
+
+            <p id="eventDesc"></p>
+
+            <div class="info">
+
+                <div class="tag" id="eventDate"></div>
+
+                <div class="tag" id="eventVenue"></div>
+
+            </div>
+
+        </div>
+
+        <form id="registerForm">
+
+            <div class="group">
+
+                <label>User ID</label>
+
+                <input
+                    type="number"
+                    id="userId"
+                    required
+                >
+            </div>
+
+            <div class="group">
+
+                <label>Participant Type</label>
+
+                <input
+                    type="text"
+                    id="participantType"
+                    placeholder="Student / Guest / Lecturer"
+                >
+            </div>
+
+            <button type="submit">
+                Register Now
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div class="popup" id="popup">
+
+    <div class="popup-box">
+
+        <div class="check">
+            ✓
+        </div>
+
+        <h2>
+            Registration Successful
+        </h2>
+
+        <p>
+            You are now registered
+            as a participant for this event.
+        </p>
+
+        <button onclick="goBack()">
+            Back To Events
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+const eventId =
+    new URLSearchParams(
+        window.location.search
+    ).get("eventId");
+
+let currentEvent = null;
+
+async function loadEvent(){
+
+    try{
+
+        const res =
+            await fetch(
+                `http://localhost:3000/api/events/${eventId}`
+            );
+
+        const result =
+            await res.json();
+
+        const event =
+            result.data.event;
+
+        currentEvent = event;
+
+        document.getElementById(
+            "eventTitle"
+        ).textContent = event.title;
+
+        document.getElementById(
+            "eventDesc"
+        ).textContent =
+            event.description || "No description";
+
+        document.getElementById(
+            "eventDate"
+        ).textContent =
+            "📅 " + event.event_date;
+
+        document.getElementById(
+            "eventVenue"
+        ).textContent =
+            "📍 " + event.venue;
+
+    }catch(err){
+
+        console.error(err);
+    }
+}
+
+document
+.getElementById("registerForm")
+.addEventListener(
+    "submit",
+    async (e) => {
+
+        e.preventDefault();
+
+        try{
+
+            const payload = {
+
+                user_id:
+                    parseInt(
+                        document.getElementById(
+                            "userId"
+                        ).value
+                    ),
+
+                event_id:
+                    parseInt(eventId),
+
+                participant_type:
+                    document.getElementById(
+                        "participantType"
+                    ).value || "Participant"
+            };
+
+            const res =
+                await fetch(
+                    "http://localhost:3000/api/participant-registration",
+                    {
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(payload)
+                    }
+                );
+
+            const result =
+                await res.json();
+
+            if(!res.ok){
+
+                throw new Error(
+                    result.message
+                );
+            }
+
+            document.getElementById(
+                "popup"
+            ).style.display = "flex";
+
+        }catch(err){
+
+            alert(err.message);
+        }
+    }
+);
+
+function goBack(){
+
+    window.location.href =
+        "Events.html";
+}
+
+loadEvent();
+
+</script>
+
+</body>
+</html>
